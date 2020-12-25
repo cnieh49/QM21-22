@@ -20,17 +20,7 @@ public final class simpleBotConstants {
     public static final float TRIGGER_THRESHOLD = .5f;
 
     //Servo:
-    public static final double RIGHT_PLATFORM_UP = .34;
-    public static final double RIGHT_PLATFORM_DOWN = .71;
-
-
-    public static final double LEFT_PLATFORM_UP = .76;
-    public static final double LEFT_PLATFORM_DOWN = .09;
-
-    public static final double BLOCK_UP = .78;
-    public static final double BLOCK_DOWN = .39;
-
-    public static final double CAP_UP = .78;
-    public static final double CAP_DOWN = .39;
+    public static final double SHOOTER_OUT = .69;
+    public static final double SHOOTER_IN = .55;
 
 }

@@ -43,27 +43,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class HardwareSimpleBot {
     /* Public OpMode members. */
-    public DcMotor FR   = null;
-    public DcMotor FL  = null;
+    public DcMotor FR = null;
+    public DcMotor FL = null;
     public DcMotor BR = null;
     public DcMotor BL = null;
+    public DcMotor flywheel = null;
 
-//    DcMotor tape = null;
-//    DcMotor intakeleft = null;
-//    DcMotor intakeright = null;
-//
-//    Servo platformleft = null;
-//    Servo platformright = null;
-//    public Servo blockservo = null;
-    Servo capservo = null;
+    public Servo lifter = null;
+    public Servo shooter = null;
+
 
 //    RevBlinkinLedDriver blinkinLedDriver ;
 //    RevBlinkinLedDriver.BlinkinPattern pattern ;
 
-
+    //idk what this is:
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    HardwareMap hwMap = null;
+    private final ElapsedTime period = new ElapsedTime();
     LinearOpMode opMode;
 
 
@@ -74,28 +70,24 @@ public class HardwareSimpleBot {
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        FR  = hwMap.get(DcMotor.class, "FR");
+        FR = hwMap.get(DcMotor.class, "FR");
         FL = hwMap.get(DcMotor.class, "FL");
-        BR  = hwMap.get(DcMotor.class, "BR");
-        BL  = hwMap.get(DcMotor.class, "BL");
-//        intakeright  = hwMap.get(DcMotor.class, "intakeright");
-//        intakeleft  = hwMap.get(DcMotor.class, "intakeleft");
-//        tape  = hwMap.get(DcMotor.class, "tape");
-//        platformleft = hwMap.get(Servo.class, "platform left");
-//        platformright = hwMap.get(Servo.class, "platform right");
-//        capservo = hwMap.get(Servo.class, "capservo");
-//        blockservo = hwMap.get(Servo.class, "blockservo");
+        BR = hwMap.get(DcMotor.class, "BR");
+        BL = hwMap.get(DcMotor.class, "BL");
+        flywheel = hwMap.get(DcMotor.class, "flywheel");
 
-      // blinkinLedDriver = hwMap.get(RevBlinkinLedDriver.class, "blinkin");
+        // Define and Initialize Servos
+        shooter = hwMap.get(Servo.class, "shooter");
+
+        // Define and Initialize LED's
+        // blinkinLedDriver = hwMap.get(RevBlinkinLedDriver.class, "blinkin");
 
         // Set motor directions
         FR.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         FL.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         BR.setDirection(DcMotor.Direction.REVERSE);
         BL.setDirection(DcMotor.Direction.FORWARD);
-//        intakeright.setDirection(DcMotor.Direction.FORWARD);
-//        intakeleft.setDirection(DcMotor.Direction.REVERSE);
-//        tape.setDirection(DcMotor.Direction.FORWARD);
+        flywheel.setDirection(DcMotor.Direction.FORWARD);
 
 
         // Set rb to brake when power is zero
@@ -104,32 +96,28 @@ public class HardwareSimpleBot {
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        intakeright.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        intakeleft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        tape.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // Set all motors to zero power
         FR.setPower(0);
         FL.setPower(0);
         BR.setPower(0);
         BL.setPower(0);
-//        intakeright.setPower(0);
-//        intakeleft.setPower(0);
-//        tape.setPower(0);
-
+        flywheel.setPower(0);
 
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
+        //TODO: Enable encoders
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        intakeright.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        intakeleft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        tape.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
+
 
     //Driving Functions
     public void driveStop() {
@@ -139,12 +127,6 @@ public class HardwareSimpleBot {
         BL.setPower(0);
     }
 
-//    void drives() {
-//        FR.setPower(-Constants.MAX_DRIVE_SPEED);
-//        FL.setPower(Constants.MAX_DRIVE_SPEED);
-//        BR.setPower(-Constants.MAX_DRIVE_SPEED);
-//        BL.setPower(Constants.MAX_DRIVE_SPEED);
-//    }
 
 public void drive(double speed) {
     FR.setPower(speed);
@@ -167,19 +149,6 @@ public void drive(double speed) {
         BL.setPower(backleftPower);
     }
 
-//    void driveBackwards() {
-//        FR.setPower(Constants.MAX_DRIVE_SPEED);
-//        FL.setPower(-Constants.MAX_DRIVE_SPEED);
-//        BR.setPower(Constants.MAX_DRIVE_SPEED);
-//        BL.setPower(-Constants.MAX_DRIVE_SPEED);
-//    }
-//
-//    void driveBackwards(double speed) {
-//        FR.setPower(speed);
-//        FL.setPower(-speed);
-//        BR.setPower(speed);
-//        BL.setPower(-speed);
-//    }
 
     public void strafe(double speed) {
         FR.setPower(speed);
@@ -195,20 +164,32 @@ public void drive(double speed) {
         BL.setPower(speed);
     }
 
-    public void setPlatformUp(boolean isUp) {
-//        if(isUp) {
-//            platformleft.setPosition(simpleBotConstants.LEFT_PLATFORM_UP);
-//            platformright.setPosition(simpleBotConstants.RIGHT_PLATFORM_UP);
-//        } else {
-//            platformleft.setPosition(simpleBotConstants.LEFT_PLATFORM_DOWN);
-//            platformright.setPosition(simpleBotConstants.RIGHT_PLATFORM_DOWN);
-//        }
+//NEW ROBOT MECHANISM FUNCTIONS:
+
+    public void moveShooter(boolean isOut) {
+        if (isOut) {
+            shooter.setPosition(simpleBotConstants.SHOOTER_OUT);
+        } else {
+            shooter.setPosition(simpleBotConstants.SHOOTER_IN);
+        }
     }
 
+    public void runFlywheel(boolean isOn) {
+
+        if (isOn) {
+            flywheel.setPower(1);
+        } else {
+            flywheel.setPower(0);
+        }
+    }
+
+
+    //OLD ROBOT MECHANISM FUNCTIONS
     public void blockUp() {
 
 //            blockservo.setPosition(simpleBotConstants.BLOCK_UP);
     }
+
     public void blockDown() {
 //        blockservo.setPosition(simpleBotConstants.BLOCK_DOWN);
 

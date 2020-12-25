@@ -15,15 +15,19 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.Constants.DRIVE_STICK
 @TeleOp(name = "!QM TeleOP", group = "Sensor")
 public class simpleBotTeleOp extends LinearOpMode {
 
-    private HardwareSimpleBot rb = new HardwareSimpleBot();
+    private final HardwareSimpleBot rb = new HardwareSimpleBot();
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
+
+    //Setup variables:
+    private boolean flywheelOn = false;
+    private final boolean shooterOut = false;
 
 //    RevBlinkinLedDriver blinkinLedDriver;
 //    RevBlinkinLedDriver.BlinkinPattern pattern;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initializing");
         telemetry.update();
         rb.init(hardwareMap, this);
@@ -39,35 +43,32 @@ public class simpleBotTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             drive();
-
-//            intake();
-//            platform();
-//            tapeMeasure();
-//            capstone();
-//            blockGrabber();
+            shooter();
+            flywheel();
 
 
-           //  Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.update();
+            //  Show the elapsed game time and wheel power.
+//            telemetry.addData("Status", "Run Time: " + runtime.toString());
+//            telemetry.update();
 
             /* CONTROLS:
-            * Driver: (Start + A)
-            * Left Stick - Movement
-            * Right Stick - Rotation
-            *
-            * Gunner: (Start + B)
-            *
-            * */
+             * Driver: (Start + A)
+             * Left Stick - Movement
+             * Right Stick - Rotation
+             *
+             * Gunner: (Start + B)
+             *
+             * */
         }
     }
 
+
     private void drive() {
         //Init variables
-        double leadleftPower = 0;
-        double leadrightPower = 0;
-        double rearRightPower = 0;
-        double rearLeftPower = 0;
+        double leadleftPower;
+        double leadrightPower;
+        double rearRightPower;
+        double rearLeftPower;
 
         double leftY = gamepad1.left_stick_y;
         double leftX = gamepad1.left_stick_x;
@@ -78,8 +79,8 @@ public class simpleBotTeleOp extends LinearOpMode {
 
         if (rightX < -DRIVE_STICK_THRESHOLD || rightX > DRIVE_STICK_THRESHOLD || leftY < -DRIVE_STICK_THRESHOLD || leftY > DRIVE_STICK_THRESHOLD || leftX < -DRIVE_STICK_THRESHOLD || leftX > DRIVE_STICK_THRESHOLD) {
             //Get stick values and apply modifiers:
-            double drive = -gamepad1.left_stick_y*1.10;
-            double turn  =  gamepad1.right_stick_x*1.25;
+            double drive = -gamepad1.left_stick_y * 1.10;
+            double turn = gamepad1.right_stick_x * 1.25;
             double strafe = gamepad1.left_stick_x;
 
             //Calculate each individual motor speed using the stick values:
@@ -96,10 +97,48 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.addData("Front-left motor", "%5.2f", leadleftPower);
             telemetry.addData("Back-left motor", "%5.2f", rearLeftPower);
             telemetry.update();
-        }
-        else {
+        } else {
             rb.driveStop(); //Stop robot if no stick value (delete this if u want to drift lol)
         }
+
+    }
+
+
+    //TODO: Setup teleop for 2 driver control w/ gamepad2
+    private void shooter() throws InterruptedException {
+        if (gamepad1.right_bumper && flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5 isnt working
+            telemetry.addData(">", "Shooter Out!");
+            telemetry.update();
+
+            rb.moveShooter(true); //Shoot
+            Thread.sleep(250); //Wait a tiny bit before going back
+            rb.moveShooter(false);
+            Thread.sleep(1500); //Wait for flywheel to get back to 100 percent speed
+        } else if (gamepad1.right_bumper && flywheelOn == false) {
+            telemetry.addData("WARNING:", "flywheel is not running");
+            telemetry.update();
+
+        }
+
+    }
+
+    private void flywheel() throws InterruptedException {
+        boolean leftb = gamepad1.left_bumper;
+
+        if (leftb && flywheelOn == false) {
+            telemetry.addData(">", "Flywheel should be running");
+            telemetry.update();
+            rb.runFlywheel(true);
+            flywheelOn = true;
+            Thread.sleep(500);
+        } else if (leftb && flywheelOn) {
+            telemetry.addData(">", "Flywheel should NOT be running");
+            telemetry.update();
+            rb.runFlywheel(false);
+            flywheelOn = false;
+            Thread.sleep(500);
+        }
+
 
     }
 
