@@ -34,6 +34,8 @@ movement and other things.
  */
 package org.firstinspires.ftc.teamcode.simpleBotCode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -43,20 +45,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class HardwareSimpleBot {
     /* Public OpMode members. */
+    //motors
     public DcMotor FR = null;
     public DcMotor FL = null;
     public DcMotor BR = null;
     public DcMotor BL = null;
     public DcMotor flywheel = null;
-
+    //servos
     public Servo lifter = null;
     public Servo shooter = null;
+    //imu:
+    public BNO055IMU imu;
 
-
+    //Leds: for future use
 //    RevBlinkinLedDriver blinkinLedDriver ;
 //    RevBlinkinLedDriver.BlinkinPattern pattern ;
 
-    //idk what this is:
+
     /* local OpMode members. */
     HardwareMap hwMap = null;
     private final ElapsedTime period = new ElapsedTime();
@@ -66,6 +71,19 @@ public class HardwareSimpleBot {
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap, LinearOpMode opMode) {
         this.opMode = opMode;
+        //IMU Setup:
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+
         // Save reference to Hardware map
         hwMap = ahwMap;
 
@@ -78,6 +96,10 @@ public class HardwareSimpleBot {
 
         // Define and Initialize Servos
         shooter = hwMap.get(Servo.class, "shooter");
+
+        //Define and Initalize BNO055IMU
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
         // Define and Initialize LED's
         // blinkinLedDriver = hwMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -96,7 +118,7 @@ public class HardwareSimpleBot {
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
         // Set all motors to zero power
@@ -116,10 +138,15 @@ public class HardwareSimpleBot {
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-    }
 
+        // Set up our telemetry dashboard
+
+
+    }//End init code
 
     //Driving Functions
+
+
     public void driveStop() {
         FR.setPower(0);
         FL.setPower(0);
@@ -127,14 +154,15 @@ public class HardwareSimpleBot {
         BL.setPower(0);
     }
 
+    //Sets all wheels to same speed
+    public void drive(double speed) {
+        FR.setPower(speed);
+        FL.setPower(speed);
+        BR.setPower(speed);
+        BL.setPower(speed);
+    }
 
-public void drive(double speed) {
-    FR.setPower(speed);
-    FL.setPower(speed);
-    BR.setPower(speed);
-    BL.setPower(speed);
-}
-
+    //Sets wheels on left and right sides to different speeds
     public void drive(double leftPower, double rightPower) {
         FR.setPower(rightPower);
         FL.setPower(leftPower);
@@ -142,13 +170,13 @@ public void drive(double speed) {
         BL.setPower(leftPower);
     }
 
+    //Sets each motor to individual speeds
     public void drive(double frontrightPower, double frontleftPower, double backrightPower, double backleftPower) {
         FR.setPower(frontrightPower);
         FL.setPower(frontleftPower);
         BR.setPower(backrightPower);
         BL.setPower(backleftPower);
     }
-
 
     public void strafe(double speed) {
         FR.setPower(speed);
@@ -164,95 +192,7 @@ public void drive(double speed) {
         BL.setPower(speed);
     }
 
-//NEW ROBOT MECHANISM FUNCTIONS:
-
-    public void moveShooter(boolean isOut) {
-        if (isOut) {
-            shooter.setPosition(simpleBotConstants.SHOOTER_OUT);
-        } else {
-            shooter.setPosition(simpleBotConstants.SHOOTER_IN);
-        }
-    }
-
-    public void runFlywheel(boolean isOn) {
-
-        if (isOn) {
-            flywheel.setPower(1);
-        } else {
-            flywheel.setPower(0);
-        }
-    }
-
-
-    //OLD ROBOT MECHANISM FUNCTIONS
-    public void blockUp() {
-
-//            blockservo.setPosition(simpleBotConstants.BLOCK_UP);
-    }
-
-    public void blockDown() {
-//        blockservo.setPosition(simpleBotConstants.BLOCK_DOWN);
-
-    }
-
-
-    public void intakeIn() {
-//        intakeleft.setPower(-simpleBotConstants.INTAKE_SPEED);
-//        intakeright.setPower(-simpleBotConstants.INTAKE_SPEED );
-    }
-    public void intakeIn(double speed) {
-//        intakeleft.setPower(-speed);
-//        intakeright.setPower(-speed);
-    }
-
-    public void intakeOut(){
-//        intakeleft.setPower(simpleBotConstants.OUTTAKE_SPEED);
-//        intakeright.setPower(simpleBotConstants.OUTTAKE_SPEED);
-    }
-    public void intakeStop(){
-//        intakeleft.setPower(0);
-//        intakeright.setPower(0);
-    }
-//    public void tapeIn(){
-//        tape.setPower(1);
-//    }
-//    public void tapeOut(){
-//        tape.setPower(-1);
-//    }
-
-    public void tapeStop(){
-//        tape.setPower(0);
-
-    }
-
-//    public void ledColorFLashYellow() {
-//        pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD;
-//        blinkinLedDriver.setPattern(pattern);
-//    }
-//
-//    public void ledColorGreen() {
-//        pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
-//        blinkinLedDriver.setPattern(pattern);
-//    }
-//
-//    public void ledColorOrange() {
-//        pattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
-//        blinkinLedDriver.setPattern(pattern);
-//    }
-//
-//    public void flashRed() {
-//        pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_RED;
-//        blinkinLedDriver.setPattern(pattern);
-//    }
-//
-//    public void ledOff() {
-//        pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
-//        blinkinLedDriver.setPattern(pattern);
-//    }
-
-
-
-
+    //Encoder Drive Functions:
     public void driveForwardByEncoder(int positionChange, DcMotor motor, double power) {
         power = Math.abs(power);
 
@@ -299,7 +239,8 @@ public void drive(double speed) {
         }
 
     }
-    public void turnClockwiseByEncoder (int positionChange, DcMotor motor, double power){
+
+    public void turnClockwiseByEncoder(int positionChange, DcMotor motor, double power) {
         power = Math.abs(power);
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition + positionChange;
@@ -335,9 +276,9 @@ public void drive(double speed) {
 
             driveStop();
         } else if (positionChange < 0) {
-            FR.setPower(-power*.66);
+            FR.setPower(-power * .66);
             FL.setPower(-power);
-            BR.setPower(-power*.66);
+            BR.setPower(-power * .66);
             BL.setPower(-power);
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
                 Thread.yield();
@@ -364,9 +305,9 @@ public void drive(double speed) {
             driveStop();
         } else if (positionChange < 0) {
             FR.setPower(-power);
-            FL.setPower(-power*.66);
+            FL.setPower(-power * .66);
             BR.setPower(-power);
-            BL.setPower(-power*.66);
+            BL.setPower(-power * .66);
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
                 Thread.yield();
             }
@@ -374,6 +315,83 @@ public void drive(double speed) {
         }
 
     }
+
+    //MECHANISM FUNCTIONS:
+    //moves shooter servo either out or in to preset values
+    public void moveShooter(boolean isOut) {
+        if (isOut) {
+            shooter.setPosition(simpleBotConstants.SHOOTER_OUT);
+        } else {
+            shooter.setPosition(simpleBotConstants.SHOOTER_IN);
+        }
+    }
+
+    public void runFlywheel(boolean isOn) {
+
+        if (isOn) {
+            flywheel.setPower(1);
+        } else {
+            flywheel.setPower(0);
+        }
+    }
+
+
+//    //OLD ROBOT MECHANISM FUNCTIONS
+//    public void blockUp() {
+////            blockservo.setPosition(simpleBotConstants.BLOCK_UP);
+//    }
+//
+//    public void blockDown() {
+////        blockservo.setPosition(simpleBotConstants.BLOCK_DOWN);
+//    }
+//
+//
+//    public void intakeIn() {
+////        intakeleft.setPower(-simpleBotConstants.INTAKE_SPEED);
+////        intakeright.setPower(-simpleBotConstants.INTAKE_SPEED );
+//    }
+//
+//    public void intakeIn(double speed) {
+////        intakeleft.setPower(-speed);
+////        intakeright.setPower(-speed);
+//    }
+//
+//    public void intakeOut() {
+////        intakeleft.setPower(simpleBotConstants.OUTTAKE_SPEED);
+////        intakeright.setPower(simpleBotConstants.OUTTAKE_SPEED);
+//    }
+//
+//    public void intakeStop() {
+////        intakeleft.setPower(0);
+////        intakeright.setPower(0);
+//    }
+////    public void ledColorFLashYellow() {
+////        pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD;
+////        blinkinLedDriver.setPattern(pattern);
+////    }
+////
+////    public void ledColorGreen() {
+////        pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+////        blinkinLedDriver.setPattern(pattern);
+////    }
+////
+////    public void ledColorOrange() {
+////        pattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
+////        blinkinLedDriver.setPattern(pattern);
+////    }
+////
+////    public void flashRed() {
+////        pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_RED;
+//        blinkinLedDriver.setPattern(pattern);
+//    }
+//
+//    public void ledOff() {
+//        pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
+//        blinkinLedDriver.setPattern(pattern);
+//    }
+
+
+
 
 
 }

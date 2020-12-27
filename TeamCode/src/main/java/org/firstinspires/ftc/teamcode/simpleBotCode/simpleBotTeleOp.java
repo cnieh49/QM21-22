@@ -4,10 +4,20 @@ This is the main driver control code. Mostly uses functions in the simpleBotCons
  */
 package org.firstinspires.ftc.teamcode.simpleBotCode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.Constants.DRIVE_STICK_THRESHOLD;
 
@@ -23,35 +33,43 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean flywheelOn = false;
     private final boolean shooterOut = false;
 
+    // State used for updating telemetry
+    Orientation angles;
+    Acceleration gravity;
+
+
 //    RevBlinkinLedDriver blinkinLedDriver;
 //    RevBlinkinLedDriver.BlinkinPattern pattern;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         telemetry.addData("Status", "Initializing");
         telemetry.update();
-        rb.init(hardwareMap, this);
+        rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
+        composeTelemetry();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-//        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+
+        waitForStart(); //Everything up to here is initialization
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            drive();
-            shooter();
-            flywheel();
-
+            drive(); //Drive robot with sticks
+            shooter(); // Triggers servo that pushes rings into flywheel
+            flywheel(); // Turns flywheel on and off
+            captureAngle(); //TESTING ONLY: Captures angle and
+            driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
+            telemetry.update();
 
             //  Show the elapsed game time and wheel power.
 //            telemetry.addData("Status", "Run Time: " + runtime.toString());
 //            telemetry.update();
 
-            /* CONTROLS:
+            /* CONTROLS: //TODO: Update controls
              * Driver: (Start + A)
              * Left Stick - Movement
              * Right Stick - Rotation
@@ -63,12 +81,15 @@ public class simpleBotTeleOp extends LinearOpMode {
     }
 
 
+
     private void drive() {
+        //Front of robot is  intake side rn
         //Init variables
-        double leadleftPower;
-        double leadrightPower;
-        double rearRightPower;
+        double frontLeftPower;
+        double frontRightPower;
         double rearLeftPower;
+        double rearRightPower;
+
 
         double leftY = gamepad1.left_stick_y;
         double leftX = gamepad1.left_stick_x;
@@ -76,7 +97,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
 //        pattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
 //        blinkinLedDriver.setPattern(pattern);
-
+        //DRIVE_STICK_THRESHOLD = deadzone
         if (rightX < -DRIVE_STICK_THRESHOLD || rightX > DRIVE_STICK_THRESHOLD || leftY < -DRIVE_STICK_THRESHOLD || leftY > DRIVE_STICK_THRESHOLD || leftX < -DRIVE_STICK_THRESHOLD || leftX > DRIVE_STICK_THRESHOLD) {
             //Get stick values and apply modifiers:
             double drive = -gamepad1.left_stick_y * 1.10;
@@ -85,16 +106,16 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             //Calculate each individual motor speed using the stick values:
             //range.clip calculates a value between min and max, change those values to reduce overall speed
-            leadleftPower = Range.clip(drive + turn + strafe, -1.0, 1.0);
-            leadrightPower = Range.clip(drive - turn - strafe, -1.0, 1.0);
+            frontLeftPower = Range.clip(drive + turn + strafe, -1.0, 1.0);
+            frontRightPower = Range.clip(drive - turn - strafe, -1.0, 1.0);
             rearLeftPower = Range.clip(drive + turn - strafe, -1.0, 1.0);
             rearRightPower = Range.clip(drive - turn + strafe, -1.0, 1.0);
 
-            rb.drive(-leadrightPower, -leadleftPower, -rearRightPower, -rearLeftPower); //Uses each of the motor values calculated above
+            rb.drive(-frontRightPower, -frontLeftPower, -rearRightPower, -rearLeftPower); //Uses each of the motor values calculated above
 
-            telemetry.addData("Front-right motor", "%5.2f", leadrightPower);
+            telemetry.addData("Front-right motor", "%5.2f", frontRightPower);
             telemetry.addData("Back-right motor", "%5.2f", rearRightPower);
-            telemetry.addData("Front-left motor", "%5.2f", leadleftPower);
+            telemetry.addData("Front-left motor", "%5.2f", frontLeftPower);
             telemetry.addData("Back-left motor", "%5.2f", rearLeftPower);
             telemetry.update();
         } else {
@@ -106,14 +127,18 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     //TODO: Setup teleop for 2 driver control w/ gamepad2
     private void shooter() throws InterruptedException {
-        if (gamepad1.right_bumper && flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5 isnt working
+        if (gamepad1.right_bumper) { //TODO: Figure out why trigger gamepad1.right_trigger > .5 isnt working
             telemetry.addData(">", "Shooter Out!");
             telemetry.update();
 
             rb.moveShooter(true); //Shoot
-            Thread.sleep(250); //Wait a tiny bit before going back
+            //Make screen red to indicate wait
+
+
+            Thread.sleep(100); //Wait a tiny bit before going back
             rb.moveShooter(false);
-            Thread.sleep(1500); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(610); //Wait for flywheel to get back to 100 percent speed
+
         } else if (gamepad1.right_bumper && flywheelOn == false) {
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
@@ -130,16 +155,109 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.update();
             rb.runFlywheel(true);
             flywheelOn = true;
-            Thread.sleep(500);
+            Thread.sleep(250);
         } else if (leftb && flywheelOn) {
             telemetry.addData(">", "Flywheel should NOT be running");
             telemetry.update();
             rb.runFlywheel(false);
             flywheelOn = false;
-            Thread.sleep(500);
+            Thread.sleep(250);
         }
 
 
+    }
+
+
+    private void captureAngle() {
+        if (gamepad1.dpad_down) {
+            //Capture angle
+        }
+    }
+
+    private void driveToAngle() {
+        if (gamepad1.right_stick_button) {
+            //Rotate to captured angle
+        }
+    }
+
+
+    void composeTelemetry() {
+
+        // At the beginning of each telemetry update, grab a bunch of data
+        // from the IMU that we will then display in separate lines.
+        telemetry.addAction(new Runnable() {
+            @Override
+            public void run() {
+                // Acquiring the angles is relatively expensive; we don't want
+                // to do that in each of the three items that need that info, as that's
+                // three times the necessary expense.
+                angles = rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = rb.imu.getGravity();
+            }
+        });
+
+        telemetry.addLine()
+                .addData("status", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return rb.imu.getSystemStatus().toShortString();
+                    }
+                })
+                .addData("calib", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return rb.imu.getCalibrationStatus().toString();
+                    }
+                });
+
+        telemetry.addLine()
+                .addData("heading", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return formatAngle(angles.angleUnit, angles.firstAngle);
+                    }
+                })
+                .addData("roll", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return formatAngle(angles.angleUnit, angles.secondAngle);
+                    }
+                })
+                .addData("pitch", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return formatAngle(angles.angleUnit, angles.thirdAngle);
+                    }
+                });
+
+        telemetry.addLine()
+                .addData("grvty", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return gravity.toString();
+                    }
+                })
+                .addData("mag", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return String.format(Locale.getDefault(), "%.3f",
+                                Math.sqrt(gravity.xAccel * gravity.xAccel
+                                        + gravity.yAccel * gravity.yAccel
+                                        + gravity.zAccel * gravity.zAccel));
+                    }
+                });
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Formatting
+    //----------------------------------------------------------------------------------------------
+
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees) {
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
 
