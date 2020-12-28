@@ -216,7 +216,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.right_stick_button) {
             telemetry.addData("log:", "Driving to angle...");
             telemetry.update();
-            rb.rotateToGlobalAngle(90, .5);
+            rb.rotateToGlobalAngle(45, .5);
             telemetry.addData("log:", "Done driving to angle!");
             telemetry.update();
 

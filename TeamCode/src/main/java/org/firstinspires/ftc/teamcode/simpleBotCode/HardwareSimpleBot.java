@@ -278,61 +278,98 @@ public class HardwareSimpleBot {
     /**
      * Rotate relative to a global heading from IMU sensor
      *
-     * @param targetAngle Target global angle to rotate to
-     * @param power       Motor power during turn (should not be negative)
+     * @param targetAngle  Target global angle to rotate to
+     * @param InitialPower Motor power during turn (should not be negative)
      */
-    public void rotateToGlobalAngle(int targetAngle, double power) throws InterruptedException {
+    public void rotateToGlobalAngle(int targetAngle, double InitialPower) throws InterruptedException {
 
         int currentAngle = (int) getGlobalAngle(); //Get current angle to determine which direction to rotate towards
-
+        System.out.println("Current Raw Angle: " + currentAngle);
         //Convert target angle from (-180 -- 180) range to (0 -- 360)
-        int convertedTargetAngle;
-        if (currentAngle > 0) {
+        int convertedTargetAngle; //IMPORTANT: You only need to use this if you are capturing an angle from the IMU in the -180 to 180 format, otherwise make sure this is off if you are trying to input your own angle. TODO: Double check this for acutal matches
+        if (targetAngle > 0) {
             convertedTargetAngle = targetAngle;
-        } else if (currentAngle < 0) {
+        } else if (targetAngle < 0) {
             convertedTargetAngle = 180 + Math.abs(targetAngle);
         } else {
             convertedTargetAngle = targetAngle;
         }
-
+        System.out.println("Converted Target Angle: " + convertedTargetAngle);
         //Convert current angle from (-180 -- 180) range to (0 -- 360)
         int convertedCurrentAngle;
         if (currentAngle > 0) {
-            convertedCurrentAngle = targetAngle;
+            convertedCurrentAngle = currentAngle;
         } else if (currentAngle < 0) {
-            convertedCurrentAngle = 180 + Math.abs(targetAngle);
+            convertedCurrentAngle = 180 + Math.abs(currentAngle);
         } else {
-            convertedCurrentAngle = targetAngle;
+            convertedCurrentAngle = currentAngle;
         }
-
+        System.out.println("Converted Current Angle: " + convertedCurrentAngle);
         //Calculate which way to rotate:
-        int diff = convertedTargetAngle - convertedCurrentAngle;
-        if (diff < 0) {
-            diff += 360;
-        }
+        //TARGET ANGLE = 0 DEGREES
+        //CURRENT ANGLE = idk 90 DEGREES
+        //SHOULD TURN RIGHT?
+
+        //TARGET ANGLE = 0 DEGREES
+        //CURRENT ANGLE = 270 DEGREES
+        //SHOULD TURN LEFT
+
+        //TARGET ANGLE = 270 DEGREES
+        //CURRENT ANGLE = 45 DEGREES
+        //SHOULD TURN RIGHT
+
+        int diff = Math.abs(convertedTargetAngle - convertedCurrentAngle);
+//        if (diff < 0) {
+//            diff += 360;
+//        }
+
+
         if (diff > 180) {
-            return; // turn left a.k.a power = power
+            System.out.println("Starting Turning Right...");
+            InitialPower = -InitialPower; //turn right
+
         } else {
-            power = -power; //turn right
+            System.out.println("Starting Turning Left..."); //TODO: Delete all of these before competition
+
         }
 
 
-        turn(power);
+        turn(InitialPower);
 
         // rotate until turn is completed.
-        if (targetAngle < 0) {
+        if (diff < 180) {
             // On right turn we have to get off zero first.
-            while (opMode.opModeIsActive() && getGlobalAngle() == 0) {
-            }
+//            while (opMode.opModeIsActive() && getGlobalAngle() == 0) {
+//            }
 
+            //TODO: Tried to add deceleration here but idk why it's not working....
+            while (opMode.opModeIsActive() && getGlobalAngle() > 22.5 + targetAngle) {
+            }
+            driveStop();
+            turn(.25);
+            while (opMode.opModeIsActive() && getGlobalAngle() > 8 + targetAngle) {
+            }
+            driveStop();
+            turn(.10);
             while (opMode.opModeIsActive() && getGlobalAngle() > targetAngle) {
             }
-        } else    // left turn.
-            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle) {
+
+        } else if (diff > 180) {   // left turn.
+            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 22.5) {
             }
+            turn(-.25);
+            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 8) {
+            }
+            turn(.10);
+            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 8) {
+            }
+
+        }
+
 
         // turn the motors off.
         driveStop();
+        System.out.println("Turn Completed!");
 
         // wait for rotation to stop.
         Thread.sleep(100);
