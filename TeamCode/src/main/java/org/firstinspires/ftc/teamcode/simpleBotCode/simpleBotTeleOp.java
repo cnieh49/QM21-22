@@ -1,9 +1,4 @@
-/*
-About this File:
-This is the main driver control code. Mostly uses functions in the simpleBotConstants file.
- */
 package org.firstinspires.ftc.teamcode.simpleBotCode;
-
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -32,6 +27,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     //Setup variables:
     private boolean flywheelOn = false;
     private final boolean shooterOut = false;
+    private boolean intakeOn = false;
 
     // State used for updating telemetry
     Orientation angles;
@@ -47,11 +43,25 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initializing");
         telemetry.update();
         rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
+
+        telemetry.addData("Mode", "calibrating IMU...");
+        telemetry.update();
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !rb.imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status: ", rb.imu.getCalibrationStatus().toString());
+
         composeTelemetry();
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
 
@@ -61,12 +71,15 @@ public class simpleBotTeleOp extends LinearOpMode {
             drive(); //Drive robot with sticks
             shooter(); // Triggers servo that pushes rings into flywheel
             flywheel(); // Turns flywheel on and off
+            intake();//Turns intake on and off
             captureAngle(); //TESTING ONLY: Captures angle and
             driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
-            telemetry.update();
+
+            telemetry.addData("Trigger Value: ", gamepad1.right_trigger);
+            telemetry.update(); //for imu display
 
             //  Show the elapsed game time and wheel power.
-//            telemetry.addData("Status", "Run Time: " + runtime.toString());
+//            telemetry.addD    ata("Status", "Run Time: " + runtime.toString());
 //            telemetry.update();
 
             /* CONTROLS: //TODO: Update controls
@@ -81,7 +94,9 @@ public class simpleBotTeleOp extends LinearOpMode {
     }
 
 
-
+    /**
+     * Main mecanum movement function
+     */
     private void drive() {
         //Front of robot is  intake side rn
         //Init variables
@@ -124,22 +139,24 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     }
 
-
+    /**
+     * Triggers servo that pushes rings into flywheel
+     */
     //TODO: Setup teleop for 2 driver control w/ gamepad2
+    //TODO: Configure delay variable in simpleBotConstants.java
     private void shooter() throws InterruptedException {
-        if (gamepad1.right_bumper) { //TODO: Figure out why trigger gamepad1.right_trigger > .5 isnt working
+        if (gamepad1.a) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
             telemetry.addData(">", "Shooter Out!");
             telemetry.update();
 
             rb.moveShooter(true); //Shoot
             //Make screen red to indicate wait
 
-
             Thread.sleep(100); //Wait a tiny bit before going back
             rb.moveShooter(false);
             Thread.sleep(610); //Wait for flywheel to get back to 100 percent speed
 
-        } else if (gamepad1.right_bumper && flywheelOn == false) {
+        } else if (gamepad1.a && flywheelOn == false) {
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
@@ -147,17 +164,19 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     }
 
+    /**
+     * Turns flywheel on and off
+     */
     private void flywheel() throws InterruptedException {
-        boolean leftb = gamepad1.left_bumper;
 
-        if (leftb && flywheelOn == false) {
-            telemetry.addData(">", "Flywheel should be running");
+        if (gamepad1.right_bumper && flywheelOn == false) {
+            telemetry.addData(">", "Flywheel ON");
             telemetry.update();
             rb.runFlywheel(true);
             flywheelOn = true;
             Thread.sleep(250);
-        } else if (leftb && flywheelOn) {
-            telemetry.addData(">", "Flywheel should NOT be running");
+        } else if (gamepad1.right_bumper && flywheelOn) {
+            telemetry.addData(">", "Flywheel OFF");
             telemetry.update();
             rb.runFlywheel(false);
             flywheelOn = false;
@@ -167,6 +186,25 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     }
 
+    /**
+     * Turns intake on and off
+     */
+    private void intake() throws InterruptedException {
+        if (gamepad1.left_bumper && intakeOn == false) {
+            telemetry.addData(">", "Intake ON");
+            telemetry.update();
+            rb.runIntake(true, false);
+            intakeOn = true;
+            Thread.sleep(250);
+        } else if (gamepad1.left_bumper && intakeOn) {
+            telemetry.addData(">", "Intake OFF");
+            telemetry.update();
+            rb.runIntake(false, false);
+            intakeOn = false;
+            Thread.sleep(250);
+        }
+    }
+
 
     private void captureAngle() {
         if (gamepad1.dpad_down) {
@@ -174,14 +212,21 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
-    private void driveToAngle() {
+    private void driveToAngle() throws InterruptedException {
         if (gamepad1.right_stick_button) {
-            //Rotate to captured angle
+            telemetry.addData("log:", "Driving to angle...");
+            telemetry.update();
+            rb.rotateToGlobalAngle(90, .5);
+            telemetry.addData("log:", "Done driving to angle!");
+            telemetry.update();
+
         }
     }
 
-
-    void composeTelemetry() {
+    /**
+     * Logs IMU data to telemetry, TODO: Throttle or disable for competition
+     */
+    void composeTelemetry() throws InterruptedException {
 
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
@@ -192,7 +237,7 @@ public class simpleBotTeleOp extends LinearOpMode {
                 // to do that in each of the three items that need that info, as that's
                 // three times the necessary expense.
                 angles = rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                gravity = rb.imu.getGravity();
+//               gravity = rb.imu.getGravity(); dont need gravity?
             }
         });
 
@@ -230,22 +275,7 @@ public class simpleBotTeleOp extends LinearOpMode {
                     }
                 });
 
-        telemetry.addLine()
-                .addData("grvty", new Func<String>() {
-                    @Override
-                    public String value() {
-                        return gravity.toString();
-                    }
-                })
-                .addData("mag", new Func<String>() {
-                    @Override
-                    public String value() {
-                        return String.format(Locale.getDefault(), "%.3f",
-                                Math.sqrt(gravity.xAccel * gravity.xAccel
-                                        + gravity.yAccel * gravity.yAccel
-                                        + gravity.zAccel * gravity.zAccel));
-                    }
-                });
+        Thread.sleep(3000); //throttle display
     }
 
     //----------------------------------------------------------------------------------------------
