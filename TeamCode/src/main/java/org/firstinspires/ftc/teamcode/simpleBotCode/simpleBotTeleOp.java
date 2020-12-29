@@ -33,7 +33,6 @@ public class simpleBotTeleOp extends LinearOpMode {
     Orientation angles;
     Acceleration gravity;
 
-
 //    RevBlinkinLedDriver blinkinLedDriver;
 //    RevBlinkinLedDriver.BlinkinPattern pattern;
 
@@ -75,7 +74,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             captureAngle(); //TESTING ONLY: Captures angle and
             driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
 
-            telemetry.addData("Trigger Value: ", gamepad1.right_trigger);
+            telemetry.addData("Trigger Value: ", gamepad1.right_trigger * 1);
             telemetry.update(); //for imu display
 
             //  Show the elapsed game time and wheel power.
@@ -208,7 +207,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     private void captureAngle() {
         if (gamepad1.dpad_down) {
-            //Capture angle
+            rb.driveForwardByEncoder(200, rb.FL, .25);
         }
     }
 
