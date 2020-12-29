@@ -109,6 +109,7 @@ public class HardwareSimpleBot {
 
         // Define and Initialize Servos
         shooter = hwMap.get(Servo.class, "shooter");
+        lifter = hwMap.get(Servo.class, "lifter");
 
         //Define and Initalize BNO055IMU
         imu = hwMap.get(BNO055IMU.class, "imu");
@@ -573,6 +574,14 @@ public class HardwareSimpleBot {
             flywheel.setPower(FLYWHEEL_SPEED);
         } else {
             flywheel.setPower(0);
+        }
+    }
+
+    public void setLifter(boolean isUp) {
+        if (isUp) {
+            lifter.setPosition(simpleBotConstants.LIFTER_UP);
+        } else {
+            lifter.setPosition(simpleBotConstants.LIFTER_DOWN);
         }
     }
 

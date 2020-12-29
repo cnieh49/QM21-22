@@ -16,5 +16,10 @@ public final class simpleBotConstants {
     //Servo:
     public static final double SHOOTER_OUT = .69;
     public static final double SHOOTER_IN = .55;
+    public static final double LIFTER_MAXIMUM = .58;
+    public static final double LIFTER_UP = .60;
+    public static final double LIFTER_DOWN = .88;
+    public static final double LIFTER_MINIMUM = .99;
+
 
 }

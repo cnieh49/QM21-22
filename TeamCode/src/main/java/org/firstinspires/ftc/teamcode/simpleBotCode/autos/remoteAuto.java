@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-@Autonomous(name = "Remote Auto", group = "Sensor") //TODO: figure out what sensor means lol
+@Autonomous(name = "Remote Auto", group = "Autonomous")
 public class remoteAuto extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";

@@ -28,6 +28,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean flywheelOn = false;
     private final boolean shooterOut = false;
     private boolean intakeOn = false;
+    private boolean lifterUp = true; //Default is true becausae needs to start up to stay in 18in
 
     // State used for updating telemetry
     Orientation angles;
@@ -38,27 +39,35 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         telemetry.addData("Status", "Initializing");
         telemetry.update();
-        rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
 
-        telemetry.addData("Mode", "calibrating IMU...");
+        telemetry.addData("Status", "Initializing Hardware...");
+        telemetry.update();
+        rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
+        telemetry.addData("Status", "Hardware Map Initialized");
         telemetry.update();
 
+//        telemetry.addData("Status", "Initializing Servo Positions...");
+//        telemetry.update();
+//        rb.setLifter(true); //Activate Lifter Up for init
+//        telemetry.addData("Status", "Servo Positions Initialized");
+//        telemetry.update();
+
+        telemetry.addData("Status", "Calibrating IMU...");
+        telemetry.update();
         // make sure the imu gyro is calibrated before continuing.
         while (!isStopRequested() && !rb.imu.isGyroCalibrated()) {
             sleep(50);
             idle();
         }
 
-        telemetry.addData("Mode", "waiting for start");
         telemetry.addData("imu calib status: ", rb.imu.getCalibrationStatus().toString());
 
         composeTelemetry();
 
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Initialized, Ready to Start");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart(); //Everything up to here is initialization
@@ -71,6 +80,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             shooter(); // Triggers servo that pushes rings into flywheel
             flywheel(); // Turns flywheel on and off
             intake();//Turns intake on and off
+            lifter();//Moves lifter up and down
             captureAngle(); //TESTING ONLY: Captures angle and
             driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
 
@@ -204,6 +214,22 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
+    private void lifter() throws InterruptedException {
+        if (gamepad1.x && lifterUp == true) {
+            telemetry.addData(">", "Lifter DOWN");
+            telemetry.update();
+            rb.setLifter(false);
+            lifterUp = false;
+            Thread.sleep(250);
+        } else if (gamepad1.x && lifterUp == false) {
+            telemetry.addData(">", "Lifter UP");
+            telemetry.update();
+            rb.setLifter(true);
+            lifterUp = true;
+            Thread.sleep(250);
+        }
+    }
+
 
     private void captureAngle() {
         if (gamepad1.dpad_down) {
@@ -310,19 +336,6 @@ public class simpleBotTeleOp extends LinearOpMode {
 //
 //    }
 //
-//    private void capstone(){
-//        boolean y = gamepad2.y;
-//        boolean x = gamepad2.x;
-//
-//        if(x){
-//            rb.capservo.setPosition(simpleBotConstants.CAP_DOWN);
-//        }else if (y){
-//            rb.capservo.setPosition(simpleBotConstants.CAP_UP);
-//
-//        }
-//
-//    }
-//
 //    private void platform(){
 //        boolean dpadUp = gamepad2.dpad_up;
 //        boolean dpadDown = gamepad2.dpad_down;
@@ -351,15 +364,5 @@ public class simpleBotTeleOp extends LinearOpMode {
 ////        }
 //    }
 //
-//    private void blockGrabber(){
-//
-//        double rightTrigger = gamepad2.right_trigger;
-//
-//        if (gamepad2.a){
-//            rb.blockDown();
-//        } else {
-//            rb.blockUp();
-//        }
-//     }
 
 }
