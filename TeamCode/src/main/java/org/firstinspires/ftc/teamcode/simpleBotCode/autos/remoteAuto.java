@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.simpleBotCode.autos;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -68,8 +71,8 @@ public class remoteAuto extends LinearOpMode {
     Orientation angles;
     Acceleration gravity;
 
-//    RevBlinkinLedDriver blinkinLedDriver;
-//    RevBlinkinLedDriver.BlinkinPattern pattern;
+
+    ColorSensor groundColorSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -100,8 +103,22 @@ public class remoteAuto extends LinearOpMode {
             tfod.setZoom(2.5, 1.78);
         }
         //TODO: Move the above code to only activate once start button is pressed
+        telemetry.addData("Status", "Initializing Ground Color Sensor...");
+        telemetry.update();
+        // get a reference to the color sensor.
+        groundColorSensor = hardwareMap.get(ColorSensor.class, "groundcolorsensor");
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float[] hsvValues = {0F, 0F, 0F};
 
-        /** Wait for the game to begin */
+        // values is a reference to the hsvValues array.
+        final float[] values = hsvValues;
+
+        // sometimes it helps to multiply the raw RGB values with a scale factor
+        // to amplify/attentuate the measured values.
+        final double SCALE_FACTOR = 255;
+        telemetry.addData("Status", "Ground Color Sensor Initialized");
+        telemetry.update();
+
         telemetry.addData("Mode", "calibrating IMU...");
         telemetry.update();
 
@@ -119,6 +136,8 @@ public class remoteAuto extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
@@ -126,6 +145,21 @@ public class remoteAuto extends LinearOpMode {
         while (opModeIsActive()) {
             int numberOfRingsDetected;
             Thread.sleep(1000); //Wait 1000ms for camera to detect ring after pressing Start
+// convert the RGB values to HSV values.
+            // multiply by the SCALE_FACTOR.
+            // then cast it back to int (SCALE_FACTOR is a double)
+            Color.RGBToHSV((int) (groundColorSensor.red() * SCALE_FACTOR),
+                    (int) (groundColorSensor.green() * SCALE_FACTOR),
+                    (int) (groundColorSensor.blue() * SCALE_FACTOR),
+                    hsvValues);
+
+            // send the info back to driver station using telemetry function.
+            telemetry.addData("Alpha", groundColorSensor.alpha());
+            telemetry.addData("Red  ", groundColorSensor.red());
+            telemetry.addData("Green", groundColorSensor.green());
+            telemetry.addData("Blue ", groundColorSensor.blue());
+            telemetry.addData("Hue", hsvValues[0]);
+            telemetry.update();
 
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
