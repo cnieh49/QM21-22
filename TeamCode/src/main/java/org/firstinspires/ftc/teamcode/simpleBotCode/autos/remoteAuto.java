@@ -97,8 +97,9 @@ public class remoteAuto extends LinearOpMode {
             // (typically 1.78 or 16/9).
 
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-            //tfod.setZoom(2.5, 1.78);
+            tfod.setZoom(2.5, 1.78);
         }
+        //TODO: Move the above code to only activate once start button is pressed
 
         /** Wait for the game to begin */
         telemetry.addData("Mode", "calibrating IMU...");
@@ -113,7 +114,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.addData("Mode", "waiting for start");
         telemetry.addData("imu calib status: ", rb.imu.getCalibrationStatus().toString());
 
-        composeTelemetry();
+        //composeTelemetry();
 
 
         telemetry.addData("Status", "Initialized");
@@ -123,40 +124,53 @@ public class remoteAuto extends LinearOpMode {
         runtime.reset();
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            telemetry.addData(">", "Auto is running!");
-            telemetry.update(); //for imu display
-            if (opModeIsActive()) {
-                while (opModeIsActive()) {
-                    if (tfod != null) {
-                        // getUpdatedRecognitions() will return null if no new information is available since
-                        // the last time that call was made.
-                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                        if (updatedRecognitions != null) {
-                            telemetry.addData("# Object Detected", updatedRecognitions.size());
-                            // step through the list of recognitions and display boundary info.
-                            int i = 0;
-                            for (Recognition recognition : updatedRecognitions) {
-                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                        recognition.getLeft(), recognition.getTop());
-                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                        recognition.getRight(), recognition.getBottom());
-                            }
-                            telemetry.update();
-                        }
+            int numberOfRingsDetected;
+            Thread.sleep(1000); //Wait 1000ms for camera to detect ring after pressing Start
+
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                recognition.getLeft(), recognition.getTop());
+                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                recognition.getRight(), recognition.getBottom());
                     }
+                    telemetry.update();
+
+                    if (updatedRecognitions.isEmpty()) {
+                        numberOfRingsDetected = 0;
+                    } else if (updatedRecognitions.get(0).getLabel() == "Single") {
+                        numberOfRingsDetected = 1;
+                    } else if (updatedRecognitions.get(0).getLabel() == "Quad") {
+                        numberOfRingsDetected = 4;
+                    } else {
+                        telemetry.addData("ERROR:", "Couldn't find any rings, defaulting to 0?");
+                        numberOfRingsDetected = 0;
+                    }
+                    telemetry.addData("Update:", "Final number of rings detected is " + numberOfRingsDetected + "Shutting off detection...");
+                    telemetry.update();
                 }
             }
 
-            if (tfod != null) {
-                tfod.shutdown();
-            }
+
+//            if (tfod != null) {
+//                tfod.shutdown();
+//            }
+
             //  Show the elapsed game time and wheel power.
 //            telemetry.addD    ata("Status", "Run Time: " + runtime.toString());
 //            telemetry.update();
 
         }
     }
+
 
     /**
      * Initialize the Vuforia localization engine.
