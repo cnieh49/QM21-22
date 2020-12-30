@@ -47,9 +47,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
 
 public class HardwareSimpleBot {
     /* Public OpMode members. */
@@ -66,6 +68,7 @@ public class HardwareSimpleBot {
     //imu:
     public BNO055IMU imu;
 
+    Orientation angles;
     Orientation lastAngles = new Orientation();
     public double globalAngle, power = .30, correction;
 
@@ -146,7 +149,6 @@ public class HardwareSimpleBot {
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        //TODO: Enable encoders
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -426,6 +428,14 @@ public class HardwareSimpleBot {
     }
 
     //Encoder Drive Functions:
+
+    /**
+     * Drives forward using 1 encoder
+     *
+     * @param positionChange This should be positive or negative based on direction
+     * @param motor          rb.FL
+     * @param power          Always positive, direction controlled by positionChange
+     */
     public void driveForwardByEncoder(int positionChange, DcMotor motor, double power) {
         power = Math.abs(power);
 
@@ -449,7 +459,103 @@ public class HardwareSimpleBot {
 
     }
 
-    //robot.strafeRightByEncoder(encodervalue, FR, 0.9)
+    /**
+     * Drives forward using 1 encoder
+     *
+     * @param positionChange This should be positive or negative based on direction
+     * @param motor          rb.FL
+     * @param power          Always positive, direction controlled by positionChange
+     */
+    public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power) {
+
+        power = Math.abs(power);
+
+        int oldPosition = motor.getCurrentPosition();
+        int targetPosition = oldPosition + positionChange;
+
+        if (positionChange > 0) {
+            drive(power);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
+
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(.04);
+                drive((power + correction), (power - correction));
+                Thread.yield();
+            }
+
+            driveStop();
+        } else if (positionChange < 0) {
+            drive(-power);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(.04);
+                drive(-(power - correction), -(power + correction));
+                Thread.yield();
+            }
+            driveStop();
+        }
+
+    }
+
+    /**
+     * Drives forward with IMU to maintain heading to line on field
+     *
+     * @param power     NEGATIVE OR POSITIVE POWER CONTROLS DIRECTION
+     * @param lineColor Linecolor to detect (white, blue)
+     */
+    public void driveForwardByIMUtoLine(double power, String lineColor) {
+
+
+        if (lineColor.equals("white")) {
+            if (power > 0) {
+                drive(power);
+                while (opMode.opModeIsActive() && remoteAuto.groundColorSensor.alpha() < WHITE_ALPHA_THRESHOLD) {
+
+                    int currentAngle; //Stores heading at beginning of function
+                    // Use IMU to drive in a straight line.
+                    correction = checkCorrection(.1);
+                    drive((power + correction), (power - correction));
+                    Thread.yield();
+                }
+
+                driveStop();
+            } else if (power < 0) {
+                drive(-power);
+                while (opMode.opModeIsActive() && remoteAuto.groundColorSensor.alpha() < WHITE_ALPHA_THRESHOLD) {
+                    // Use IMU to drive in a straight line.
+                    correction = checkCorrection(.1);
+                    drive((power - correction), (power + correction));
+                    Thread.yield();
+                }
+                driveStop();
+            }
+        }
+
+
+    }
+
+
+    /**
+     * Checks how much of a correction to make
+     *
+     * @return Power adjustment, + is adjust left - is adjust right.
+     */
+    private double checkCorrection(Double correctionGain) {
+        // gain value determines how sensitive the correction is to direction changes
+        //default = .10
+        double correction, angle, gain = correctionGain;
+
+        angle = getAngle();
+
+        if (angle == 0)
+            correction = 0;             // no adjustment.
+        else
+            correction = -angle;        // reverse sign of angle for correction.
+
+        correction = correction * gain;
+
+        return correction;
+    }
 
 
     public void strafeRightByEncoder(int positionChange, DcMotor motor, double power) {
@@ -606,35 +712,8 @@ public class HardwareSimpleBot {
     }
 
 
-//    //OLD ROBOT MECHANISM FUNCTIONS
-//    public void blockUp() {
-////            blockservo.setPosition(simpleBotConstants.BLOCK_UP);
-//    }
-//
-//    public void blockDown() {
-////        blockservo.setPosition(simpleBotConstants.BLOCK_DOWN);
-//    }
-//
-//
-//    public void intakeIn() {
-////        intakeleft.setPower(-simpleBotConstants.INTAKE_SPEED);
-////        intakeright.setPower(-simpleBotConstants.INTAKE_SPEED );
-//    }
-//
-//    public void intakeIn(double speed) {
-////        intakeleft.setPower(-speed);
-////        intakeright.setPower(-speed);
-//    }
-//
-//    public void intakeOut() {
-////        intakeleft.setPower(simpleBotConstants.OUTTAKE_SPEED);
-////        intakeright.setPower(simpleBotConstants.OUTTAKE_SPEED);
-//    }
-//
-//    public void intakeStop() {
-////        intakeleft.setPower(0);
-////        intakeright.setPower(0);
-//    }
+//    //OLD ROBOT FUNCTIONS
+
 ////    public void ledColorFLashYellow() {
 ////        pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD;
 ////        blinkinLedDriver.setPattern(pattern);
@@ -659,7 +738,6 @@ public class HardwareSimpleBot {
 //        pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
 //        blinkinLedDriver.setPattern(pattern);
 //    }
-
 
 }
 

@@ -163,9 +163,9 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             Thread.sleep(100); //Wait a tiny bit before going back
             rb.moveShooter(false);
-            Thread.sleep(610); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(710); //Wait for flywheel to get back to 100 percent speed
 
-        } else if (gamepad1.a && flywheelOn == false) {
+        } else if (gamepad1.a && !flywheelOn) {
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
@@ -178,7 +178,7 @@ public class simpleBotTeleOp extends LinearOpMode {
      */
     private void flywheel() throws InterruptedException {
 
-        if (gamepad1.right_bumper && flywheelOn == false) {
+        if (gamepad1.right_bumper && !flywheelOn) {
             telemetry.addData(">", "Flywheel ON");
             telemetry.update();
             rb.runFlywheel(true);
@@ -199,7 +199,7 @@ public class simpleBotTeleOp extends LinearOpMode {
      * Turns intake on and off
      */
     private void intake() throws InterruptedException {
-        if (gamepad1.left_bumper && intakeOn == false) {
+        if (gamepad1.left_bumper && !intakeOn) {
             telemetry.addData(">", "Intake ON");
             telemetry.update();
             rb.runIntake(true, false);
@@ -215,13 +215,13 @@ public class simpleBotTeleOp extends LinearOpMode {
     }
 
     private void lifter() throws InterruptedException {
-        if (gamepad1.x && lifterUp == true) {
+        if (gamepad1.x && lifterUp) {
             telemetry.addData(">", "Lifter DOWN");
             telemetry.update();
             rb.setLifter(false);
             lifterUp = false;
             Thread.sleep(250);
-        } else if (gamepad1.x && lifterUp == false) {
+        } else if (gamepad1.x) {
             telemetry.addData(">", "Lifter UP");
             telemetry.update();
             rb.setLifter(true);

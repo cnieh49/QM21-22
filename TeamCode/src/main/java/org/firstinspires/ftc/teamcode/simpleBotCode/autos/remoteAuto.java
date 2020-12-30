@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.simpleBotCode.autos;
 
-import android.graphics.Color;
+import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.simpleBotCode.HardwareSimpleBot;
 
 import java.util.List;
 import java.util.Locale;
+
+//Import Constants:
 
 
 @Autonomous(name = "Remote Auto", group = "Autonomous")
@@ -72,10 +74,12 @@ public class remoteAuto extends LinearOpMode {
     Acceleration gravity;
 
 
-    ColorSensor groundColorSensor;
+    public static ColorSensor groundColorSensor;
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry.setAutoClear(false);
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
@@ -85,10 +89,11 @@ public class remoteAuto extends LinearOpMode {
         initVuforia();
         initTfod();
 
-        /**
-         * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
+        /*
+          Activate TensorFlow Object Detection before we wait for the start command.
+          Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         */
+
         if (tfod != null) {
             tfod.activate();
 
@@ -102,7 +107,7 @@ public class remoteAuto extends LinearOpMode {
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
             tfod.setZoom(2.5, 1.78);
         }
-        //TODO: Move the above code to only activate once start button is pressed
+
         telemetry.addData("Status", "Initializing Ground Color Sensor...");
         telemetry.update();
         // get a reference to the color sensor.
@@ -133,6 +138,8 @@ public class remoteAuto extends LinearOpMode {
 
         //composeTelemetry();
 
+        rb.setLifter(true);
+        rb.moveShooter(false);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -142,67 +149,112 @@ public class remoteAuto extends LinearOpMode {
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            int numberOfRingsDetected;
-            Thread.sleep(1000); //Wait 1000ms for camera to detect ring after pressing Start
-// convert the RGB values to HSV values.
-            // multiply by the SCALE_FACTOR.
-            // then cast it back to int (SCALE_FACTOR is a double)
-            Color.RGBToHSV((int) (groundColorSensor.red() * SCALE_FACTOR),
-                    (int) (groundColorSensor.green() * SCALE_FACTOR),
-                    (int) (groundColorSensor.blue() * SCALE_FACTOR),
-                    hsvValues);
+        //Create global variables here... //TODO: Someone who is better at coding tell me if this is actually where these should go...
+        int numberOfRingsDetected = 0; //Stores number of rings detected by webcam at start of auto
+        int angleFacingForward; //Stores heading at beginning of match so we can reference it later
+        angles = rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angleFacingForward = (int) angles.firstAngle;
+        telemetry.addData("Angle Captured=", angleFacingForward);
+        telemetry.update();
 
-            // send the info back to driver station using telemetry function.
-            telemetry.addData("Alpha", groundColorSensor.alpha());
-            telemetry.addData("Red  ", groundColorSensor.red());
-            telemetry.addData("Green", groundColorSensor.green());
-            telemetry.addData("Blue ", groundColorSensor.blue());
-            telemetry.addData("Hue", hsvValues[0]);
+        Thread.sleep(2000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk)
+        telemetry.addData(">", "One second has passsed... Counting Rings...");
+        //Get Number of Rings from Camera (which is already on)
+
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                            recognition.getLeft(), recognition.getTop());
+                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                            recognition.getRight(), recognition.getBottom());
+                }
+
+                telemetry.update();
+
+                if (updatedRecognitions.isEmpty()) {
+                    numberOfRingsDetected = 0;
+                } else if (updatedRecognitions.get(0).getLabel().equals("Single")) {
+                    numberOfRingsDetected = 1;
+                } else if (updatedRecognitions.get(0).getLabel().equals("Quad")) {
+                    numberOfRingsDetected = 4;
+                } else {
+                    telemetry.addData("ERROR:", "Couldn't find any rings :( defaulting to 0?");
+                    numberOfRingsDetected = 0;
+                }
+
+            } else {
+                numberOfRingsDetected = 0;
+                telemetry.addData("ERROR:", "Couldn't get new data because updatedRecognitions = null :(");
+                telemetry.update();
+            }
+        }
+
+        if (tfod != null) { //Shutdown to free up system resources
+            telemetry.addData(">", "tfod Shutting Down...");
             telemetry.update();
 
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Object Detected", updatedRecognitions.size());
-                    // step through the list of recognitions and display boundary info.
-                    int i = 0;
-                    for (Recognition recognition : updatedRecognitions) {
-                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                recognition.getLeft(), recognition.getTop());
-                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
-                    }
-                    telemetry.update();
+            tfod.shutdown();
 
-                    if (updatedRecognitions.isEmpty()) {
-                        numberOfRingsDetected = 0;
-                    } else if (updatedRecognitions.get(0).getLabel() == "Single") {
-                        numberOfRingsDetected = 1;
-                    } else if (updatedRecognitions.get(0).getLabel() == "Quad") {
-                        numberOfRingsDetected = 4;
-                    } else {
-                        telemetry.addData("ERROR:", "Couldn't find any rings, defaulting to 0?");
-                        numberOfRingsDetected = 0;
-                    }
-                    telemetry.addData("Update:", "Final number of rings detected is " + numberOfRingsDetected + "Shutting off detection...");
-                    telemetry.update();
-                }
-            }
+            telemetry.addData(">", "tfod Shutdown");
+            telemetry.update();
+        }
+
+        //Driving Starts here:
+        if (numberOfRingsDetected == 0) {
+            //0 Ring Code, Go to A (closest)
+            telemetry.addData(">", "Starting A Code...");
+            telemetry.update();
+
+            rb.driveForwardByEncoderAndIMU(2500, rb.FL, .75);
+            rb.driveStop();
+            rb.setLifter(false);
+            Thread.sleep(500);
+            rb.driveForwardByEncoderAndIMU(-500, rb.FL, .25);
+        } else if (numberOfRingsDetected == 1) {
+            //1 Ring Code, Go to B (middle)
+            telemetry.addData(">", "Starting B Code...");
+            telemetry.update();
+
+        } else if (numberOfRingsDetected == 4) {
+            //4 Ring Code, Go to C (furthest)
+            telemetry.addData(">", "Starting C Code...");
+            telemetry.update();
 
 
-//            if (tfod != null) {
-//                tfod.shutdown();
-//            }
+        } else {
+            telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");
+            telemetry.update();
+        }
 
-            //  Show the elapsed game time and wheel power.
-//            telemetry.addD    ata("Status", "Run Time: " + runtime.toString());
+        //rb.driveForwardByIMUtoLine(.25, "white");
+//            // convert the RGB values to HSV values.
+//            // multiply by the SCALE_FACTOR.
+//            // then cast it back to int (SCALE_FACTOR is a double)
+//            Color.RGBToHSV((int) (groundColorSensor.red() * SCALE_FACTOR),
+//                    (int) (groundColorSensor.green() * SCALE_FACTOR),
+//                    (int) (groundColorSensor.blue() * SCALE_FACTOR),
+//                    hsvValues);
+//            // send the info back to driver station using telemetry function.
+//            telemetry.addData("Alpha", groundColorSensor.alpha());
+//            telemetry.addData("Red  ", groundColorSensor.red());
+//            telemetry.addData("Green", groundColorSensor.green());
+//            telemetry.addData("Blue ", groundColorSensor.blue());
+//            telemetry.addData("Hue", hsvValues[0]);
 //            telemetry.update();
 
-        }
+        rb.driveStop();
+        telemetry.addData(">", "White Line Detected!");
+        telemetry.update();
+
+
     }
 
 
