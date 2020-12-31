@@ -213,11 +213,43 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting A Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU(2500, rb.FL, .75);
-            rb.driveStop();
-            rb.setLifter(false);
+            rb.driveForwardByEncoderAndIMU(2550, rb.FL, .75, .06); //Drive to A Zone
+//            rb.driveStop(); //Brake
+            rb.setLifter(false); //Drop Wobble Goal
+            Thread.sleep(500); //Wait a little bit for Servo to drop
+            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
+            rb.setLifter(true);
+            rb.flywheel.setPower(.4); //replace this with real function lol
             Thread.sleep(500);
-            rb.driveForwardByEncoderAndIMU(-500, rb.FL, .25);
+            telemetry.addData(">", "Strafing...");
+            telemetry.update();
+
+            rb.strafeRightByEncoderWithIMU(450, rb.FL, .5, .05);
+            rb.driveStop();
+            telemetry.addData(">", "Done Strafing");
+            telemetry.update();
+
+            rb.driveForwardByEncoderAndIMU(600, rb.FL, .4, .06);
+            Thread.sleep(200);
+            rb.moveShooter(true); //Shot 1
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 2
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 3
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            Thread.sleep(200);
+            rb.moveShooter(true); //Shot 4 just to make sure
+            Thread.sleep(200);
+            rb.moveShooter(false);
+
+            //rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse
+
+
         } else if (numberOfRingsDetected == 1) {
             //1 Ring Code, Go to B (middle)
             telemetry.addData(">", "Starting B Code...");

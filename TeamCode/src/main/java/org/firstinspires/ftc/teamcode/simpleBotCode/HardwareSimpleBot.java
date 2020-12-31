@@ -220,6 +220,17 @@ public class HardwareSimpleBot {
     }
 
     /**
+     * @param frontMotors Higher values = more right rotation
+     * @param rearMotors  Higher values = more left rotation
+     */
+    public void strafe(double frontMotors, double rearMotors) {
+        FR.setPower(frontMotors);
+        FL.setPower(-frontMotors);
+        BR.setPower(-rearMotors);
+        BL.setPower(rearMotors);
+    }
+
+    /**
      * Rotates robot using equal speeds for all drive motors
      *
      * @param speed + values are left and - values are right
@@ -243,6 +254,54 @@ public class HardwareSimpleBot {
 
         // restart imu movement tracking.
         resetAngle();
+
+        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+        // clockwise (right).
+
+        if (degrees < 0) {   // turn right.
+            power = -power;
+
+        } else if (degrees > 0) {   // turn left.
+            return; //power = power; dont need to change anything because assuming the power is already positive, that should make the robot turn right when put into the turn function
+        } else return;
+
+        // set power to rotate.
+        turn(power);
+
+        // rotate until turn is completed.
+        if (degrees < 0) {
+            // On right turn we have to get off zero first.
+            while (opMode.opModeIsActive() && getAngle() == 0) {
+            }
+
+            while (opMode.opModeIsActive() && getAngle() > degrees) {
+            }
+        } else    // left turn.
+            while (opMode.opModeIsActive() && getAngle() < degrees) {
+            }
+
+        // turn the motors off.
+        driveStop();
+
+        // wait for rotation to stop.
+        Thread.sleep(100);
+
+        // reset angle tracking on new heading.
+        resetAngle();
+    }
+
+    /**
+     * Rotate relative to a global heading from IMU sensor
+     *
+     *
+     * **/
+
+    public void rotateToGlobalAngle(int degrees, double power) throws InterruptedException {
+
+        // restart imu movement tracking.
+        Orientation currentAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = currentAngle.firstAngle;
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
         // clockwise (right).
@@ -277,106 +336,99 @@ public class HardwareSimpleBot {
 
         // reset angle tracking on new heading.
         resetAngle();
-    }
 
-    /**
-     * Rotate relative to a global heading from IMU sensor
-     *
-     * @param targetAngle  Target global angle to rotate to
-     * @param InitialPower Motor power during turn (should not be negative)
-     */
-    public void rotateToGlobalAngle(int targetAngle, double InitialPower) throws InterruptedException {
 
-        int currentAngle = (int) getGlobalAngle(); //Get current angle to determine which direction to rotate towards
-        System.out.println("Current Raw Angle: " + currentAngle);
-        //Convert target angle from (-180 -- 180) range to (0 -- 360)
-        int convertedTargetAngle; //IMPORTANT: You only need to use this if you are capturing an angle from the IMU in the -180 to 180 format, otherwise make sure this is off if you are trying to input your own angle. TODO: Double check this for acutal matches
-        if (targetAngle > 0) {
-            convertedTargetAngle = targetAngle;
-        } else if (targetAngle < 0) {
-            convertedTargetAngle = 180 + Math.abs(targetAngle);
-        } else {
-            convertedTargetAngle = targetAngle;
-        }
-        System.out.println("Converted Target Angle: " + convertedTargetAngle);
-        //Convert current angle from (-180 -- 180) range to (0 -- 360)
-        int convertedCurrentAngle;
-        if (currentAngle > 0) {
-            convertedCurrentAngle = currentAngle;
-        } else if (currentAngle < 0) {
-            convertedCurrentAngle = 180 + Math.abs(currentAngle);
-        } else {
-            convertedCurrentAngle = currentAngle;
-        }
-        System.out.println("Converted Current Angle: " + convertedCurrentAngle);
-        //Calculate which way to rotate:
-        //TARGET ANGLE = 0 DEGREES
-        //CURRENT ANGLE = idk 90 DEGREES
-        //SHOULD TURN RIGHT?
-
-        //TARGET ANGLE = 0 DEGREES
-        //CURRENT ANGLE = 270 DEGREES
-        //SHOULD TURN LEFT
-
-        //TARGET ANGLE = 270 DEGREES
-        //CURRENT ANGLE = 45 DEGREES
-        //SHOULD TURN RIGHT
-
-        int diff = Math.abs(convertedTargetAngle - convertedCurrentAngle);
-//        if (diff < 0) {
-//            diff += 360;
+//        //Old Code:
+//        int currentAngle = (int) getGlobalAngle(); //Get current angle to determine which direction to rotate towards
+//        System.out.println("Current Raw Angle: " + currentAngle);
+//        //Convert target angle from (-180 -- 180) range to (0 -- 360)
+//        int convertedTargetAngle; //IMPORTANT: You only need to use this if you are capturing an angle from the IMU in the -180 to 180 format, otherwise make sure this is off if you are trying to input your own angle. TODO: Double check this for acutal matches
+//        if (targetAngle > 0) {
+//            convertedTargetAngle = targetAngle;
+//        } else if (targetAngle < 0) {
+//            convertedTargetAngle = 180 + Math.abs(targetAngle);
+//        } else {
+//            convertedTargetAngle = targetAngle;
 //        }
-
-
-        if (diff > 180) {
-            System.out.println("Starting Turning Right...");
-            InitialPower = -InitialPower; //turn right
-
-        } else {
-            System.out.println("Starting Turning Left..."); //TODO: Delete all of these before competition
-
-        }
-
-
-        turn(InitialPower);
-
-        // rotate until turn is completed.
-        if (diff < 180) {
-            // On right turn we have to get off zero first.
-//            while (opMode.opModeIsActive() && getGlobalAngle() == 0) {
+//        System.out.println("Converted Target Angle: " + convertedTargetAngle);
+//        //Convert current angle from (-180 -- 180) range to (0 -- 360)
+//        int convertedCurrentAngle;
+//        if (currentAngle > 0) {
+//            convertedCurrentAngle = currentAngle;
+//        } else if (currentAngle < 0) {
+//            convertedCurrentAngle = 180 + Math.abs(currentAngle);
+//        } else {
+//            convertedCurrentAngle = currentAngle;
+//        }
+//        System.out.println("Converted Current Angle: " + convertedCurrentAngle);
+//        //Calculate which way to rotate:
+//        //TARGET ANGLE = 0 DEGREES
+//        //CURRENT ANGLE = idk 90 DEGREES
+//        //SHOULD TURN RIGHT?
+//
+//        //TARGET ANGLE = 0 DEGREES
+//        //CURRENT ANGLE = 270 DEGREES
+//        //SHOULD TURN LEFT
+//
+//        //TARGET ANGLE = 270 DEGREES
+//        //CURRENT ANGLE = 45 DEGREES
+//        //SHOULD TURN RIGHT
+//
+//        int diff = Math.abs(convertedTargetAngle - convertedCurrentAngle);
+////        if (diff < 0) {
+////            diff += 360;
+////        }
+//
+//
+//        if (diff > 180) {
+//            System.out.println("Starting Turning Right...");
+//            InitialPower = -InitialPower; //turn right
+//
+//        } else {
+//            System.out.println("Starting Turning Left..."); //TODO: Delete all of these before competition
+//
+//        }
+//
+//
+//        turn(InitialPower);
+//
+//        // rotate until turn is completed.
+//        if (diff < 180) {
+//            // On right turn we have to get off zero first.
+////            while (opMode.opModeIsActive() && getGlobalAngle() == 0) {
+////            }
+//
+//            //TODO: Tried to add deceleration here but idk why it's not working....
+//            while (opMode.opModeIsActive() && getGlobalAngle() > 22.5 + targetAngle) {
 //            }
-
-            //TODO: Tried to add deceleration here but idk why it's not working....
-            while (opMode.opModeIsActive() && getGlobalAngle() > 22.5 + targetAngle) {
-            }
-            driveStop();
-            turn(.25);
-            while (opMode.opModeIsActive() && getGlobalAngle() > 8 + targetAngle) {
-            }
-            driveStop();
-            turn(.10);
-            while (opMode.opModeIsActive() && getGlobalAngle() > targetAngle) {
-            }
-
-        } else if (diff > 180) {   // left turn.
-            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 22.5) {
-            }
-            turn(-.25);
-            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 8) {
-            }
-            turn(.10);
-            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 8) {
-            }
-
-        }
-
-
-        // turn the motors off.
-        driveStop();
-        System.out.println("Turn Completed!");
-
-        // wait for rotation to stop.
-        Thread.sleep(100);
+//            driveStop();
+//            turn(.25);
+//            while (opMode.opModeIsActive() && getGlobalAngle() > 8 + targetAngle) {
+//            }
+//            driveStop();
+//            turn(.10);
+//            while (opMode.opModeIsActive() && getGlobalAngle() > targetAngle) {
+//            }
+//
+//        } else if (diff > 180) {   // left turn.
+//            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 22.5) {
+//            }
+//            turn(-.25);
+//            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 8) {
+//            }
+//            turn(.10);
+//            while (opMode.opModeIsActive() && getGlobalAngle() < targetAngle - 8) {
+//            }
+//
+//        }
+//
+//
+//        // turn the motors off.
+//        driveStop();
+//        System.out.println("Turn Completed!");
+//
+//        // wait for rotation to stop.
+//        Thread.sleep(100);
 
     }
 
@@ -466,7 +518,7 @@ public class HardwareSimpleBot {
      * @param motor          rb.FL
      * @param power          Always positive, direction controlled by positionChange
      */
-    public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power) {
+    public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
 
         power = Math.abs(power);
 
@@ -478,7 +530,7 @@ public class HardwareSimpleBot {
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
 
                 // Use IMU to drive in a straight line.
-                correction = checkCorrection(.04);
+                correction = checkCorrection(correctionGain);
                 drive((power + correction), (power - correction));
                 Thread.yield();
             }
@@ -488,7 +540,7 @@ public class HardwareSimpleBot {
             drive(-power);
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
                 // Use IMU to drive in a straight line.
-                correction = checkCorrection(.04);
+                correction = checkCorrection(correctionGain);
                 drive(-(power - correction), -(power + correction));
                 Thread.yield();
             }
@@ -578,6 +630,57 @@ public class HardwareSimpleBot {
         }
 
     }
+
+    /**
+     * Strafes to the right using IMU to maintain angle and encoders for position
+     *
+     * @param positionChange Use negative to strafe to the left
+     * @param motor          rb.FL for example
+     * @param power          0 - 1, positive values only
+     */
+
+    public void strafeRightByEncoderWithIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+
+        power = Math.abs(power);
+
+        int oldPosition = motor.getCurrentPosition();
+        int targetPosition = oldPosition - positionChange;
+
+        //Current pos = 500
+        //pos change = 200
+        //target = 700
+        //new target = 300
+
+        if (positionChange > 0) {
+            System.out.println("Position Change > 0... Running...");
+            strafe(power);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(correctionGain);
+                strafe((power - correction), (power + correction));
+                Thread.yield();
+            }
+            driveStop();
+            System.out.println("Ok, done running.");
+
+
+        } else if (positionChange < 0) {
+            strafe(-power);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(correctionGain);
+                strafe(-(power + correction), -(power - correction));
+
+                Thread.yield();
+            }
+            driveStop();
+        }
+
+        driveStop();
+
+    }
+
 
     public void turnClockwiseByEncoder(int positionChange, DcMotor motor, double power) {
         power = Math.abs(power);

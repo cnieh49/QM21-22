@@ -14,7 +14,7 @@ public final class simpleBotConstants {
     public static final double INTAKE_SPEED = 1;
 
     //Sticks:
-    public static final float DRIVE_STICK_THRESHOLD = .05f;
+    public static final float DRIVE_STICK_THRESHOLD = .0f;
     public static final float DRIVE_STICK_THRESHOLD_SQUARED = DRIVE_STICK_THRESHOLD * DRIVE_STICK_THRESHOLD;
     public static final float TRIGGER_THRESHOLD = .5f;
 
