@@ -23,6 +23,7 @@ public class EncoderOdometryTest extends LinearOpMode {
         telemetry.addData("Flywheel Encoder", rb.flywheel.getCurrentPosition());
         telemetry.update();
         odometry.start(rb.FR.getCurrentPosition(), rb.FL.getCurrentPosition(), rb.BL.getCurrentPosition());
+        waitForStart();
         while (opModeIsActive()) {
             odometry.update(rb.FR.getCurrentPosition(), rb.FL.getCurrentPosition(), rb.BL.getCurrentPosition());
             telemetry.addData("FR Encoder", rb.FR.getCurrentPosition());

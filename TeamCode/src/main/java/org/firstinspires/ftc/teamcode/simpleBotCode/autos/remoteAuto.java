@@ -105,7 +105,7 @@ public class remoteAuto extends LinearOpMode {
             // (typically 1.78 or 16/9).
 
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-            tfod.setZoom(2.5, 1.78);
+            tfod.setZoom(3.25, 1.78);
         }
 
         telemetry.addData("Status", "Initializing Ground Color Sensor...");
@@ -216,28 +216,35 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(2550, rb.FL, .75, .06); //Drive to A Zone
 //            rb.driveStop(); //Brake
             rb.setLifter(false); //Drop Wobble Goal
-            Thread.sleep(500); //Wait a little bit for Servo to drop
+            Thread.sleep(750); //Wait a little bit for Servo to drop
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifter(true);
             rb.flywheel.setPower(.4); //replace this with real function lol
-            Thread.sleep(500);
+
             telemetry.addData(">", "Strafing...");
             telemetry.update();
 
-            rb.strafeRightByEncoderWithIMU(450, rb.FL, .5, .05);
+            rb.strafeRightByEncoderWithIMU(1100, rb.FL, .5, .05);
             rb.driveStop();
             telemetry.addData(">", "Done Strafing");
             telemetry.update();
+            Thread.sleep(100);
+            rb.driveForwardByEncoderAndIMU(710, rb.FL, .3, .06);
+            Thread.sleep(500);
 
-            rb.driveForwardByEncoderAndIMU(600, rb.FL, .4, .06);
-            Thread.sleep(200);
+            //rb.rotateToGlobalAngle(90, .2);
+
+
+            //rb.rotate(20, .3);
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
+            //rb.rotate(20, .3);
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 2
             Thread.sleep(200);
             rb.moveShooter(false);
+            // rb.rotate(20, .3);
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 3
             Thread.sleep(200);
@@ -254,12 +261,75 @@ public class remoteAuto extends LinearOpMode {
             //1 Ring Code, Go to B (middle)
             telemetry.addData(">", "Starting B Code...");
             telemetry.update();
+            rb.driveForwardByEncoderAndIMU(2800, rb.FL, .75, .06);
+            Thread.sleep(750);
+            rb.strafeRightByEncoderWithIMU(1220, rb.FL, .4, .05);
+            Thread.sleep(500);
+            rb.driveForwardByEncoderAndIMU(900, rb.FL, .4, .06);
+            Thread.sleep(200);
+            rb.setLifter(false);
+            Thread.sleep(650);
+            rb.driveForwardByEncoderAndIMU(-200, rb.FL, .5, .06);
+            rb.flywheel.setPower(.4); //replace this with real function lol
+            rb.setLifter(true);
+            rb.driveForwardByEncoderAndIMU(-600, rb.FL, .5, .06);
+            Thread.sleep(150);
+            rb.strafeRightByEncoderWithIMU(-180, rb.FL, .3, .05);
+
+            rb.rotateToGlobalAngle(0, .2);
+            Thread.sleep(600);
+            rb.moveShooter(true); //Shot 1
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            //rb.rotate(20, .3);
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 2
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            // rb.rotate(20, .3);
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 3
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            Thread.sleep(200);
+            rb.moveShooter(true); //Shot 4 just to make sure
+            Thread.sleep(200);
+            rb.moveShooter(false);
 
         } else if (numberOfRingsDetected == 4) {
             //4 Ring Code, Go to C (furthest)
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
+            rb.driveForwardByEncoderAndIMU(4650, rb.FL, .75, .08); //Drive to A Zone
+            //rb.driveStop(); //Brake
+            rb.setLifter(false); //Drop Wobble Goal
+            Thread.sleep(750); //Wait a little bit for Servo to drop
+            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
+            rb.setLifter(true);
+            rb.flywheel.setPower(.4); //replace this with real function lol
+            rb.autoDriveSouthWestWithEncoderAndIMU(1850, rb.FL, .6, .05);
+            rb.driveForwardByEncoderAndIMU(-500, rb.FL, .5, .06);
+
+            rb.rotateToGlobalAngle(0, .2);
+            Thread.sleep(600);
+            rb.moveShooter(true); //Shot 1
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            //rb.rotate(20, .3);
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 2
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            // rb.rotate(20, .3);
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 3
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            Thread.sleep(200);
+            rb.moveShooter(true); //Shot 4 just to make sure
+            Thread.sleep(200);
+            rb.moveShooter(false);
 
         } else {
             telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");

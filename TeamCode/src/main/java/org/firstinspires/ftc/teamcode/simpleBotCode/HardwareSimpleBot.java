@@ -242,6 +242,12 @@ public class HardwareSimpleBot {
         BL.setPower(speed);
     }
 
+    //This would be NorthEast if front of robot is intake side
+    public void driveSouthWestAuto(double FLspeed, double BRspeed) {
+        FL.setPower(FLspeed);
+        BR.setPower(BRspeed);
+    }
+
     //IMU Functions:
 
     /**
@@ -262,7 +268,7 @@ public class HardwareSimpleBot {
             power = -power;
 
         } else if (degrees > 0) {   // turn left.
-            return; //power = power; dont need to change anything because assuming the power is already positive, that should make the robot turn right when put into the turn function
+            //return; //power = power; dont need to change anything because assuming the power is already positive, that should make the robot turn right when put into the turn function
         } else return;
 
         // set power to rotate.
@@ -276,12 +282,15 @@ public class HardwareSimpleBot {
 
             while (opMode.opModeIsActive() && getAngle() > degrees) {
             }
-        } else    // left turn.
+        } else {  // left turn.
+            System.out.println("Starting Left Turn..?  Starting Angle is: " + getAngle());
             while (opMode.opModeIsActive() && getAngle() < degrees) {
+                System.out.println("Turning to angle... Angle right now is:" + getAngle());
             }
-
+        }
         // turn the motors off.
         driveStop();
+        System.out.println("Done rotating");
 
         // wait for rotation to stop.
         Thread.sleep(100);
@@ -607,6 +616,80 @@ public class HardwareSimpleBot {
         correction = correction * gain;
 
         return correction;
+    }
+
+    /**
+     * Drives southwest, assuming tower goals are North and robot shooter is facing towards tower goals.
+     *
+     * @param positionChange Positive or negative value controls direction, Negative Values move north east
+     * @param motor          RB.FL
+     * @param power          Positive value, 0-1
+     * @param correctionGain
+     */
+    public void autoDriveSouthWestWithEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+        power = Math.abs(power);
+
+        int oldPosition = motor.getCurrentPosition();
+        int targetPosition = oldPosition - positionChange;
+
+        if (positionChange > 0) {
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(correctionGain);
+                driveSouthWestAuto(-(power - correction), -(power + correction));
+                Thread.yield();
+            }
+
+            driveStop();
+        } else if (positionChange < 0) {
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(correctionGain);
+                driveSouthWestAuto((power - correction), (power + correction));
+                Thread.yield();
+            }
+            driveStop();
+        }
+
+    }
+
+    /**
+     * Drives southwest, assuming tower goals are North and robot shooter is facing towards tower goals.
+     *
+     * @param positionChange Positive or negative value controls direction, Negative Values move north east
+     * @param motor          RB.FL
+     * @param power          Positive value, 0-1
+     * @param correctionGain
+     */
+
+    //TODO: Add More Encoders so we can actually use this
+    public void autoDriveNorthEastWithEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+        power = Math.abs(power);
+
+        int oldPosition = motor.getCurrentPosition();
+        int targetPosition = oldPosition - positionChange;
+
+        if (positionChange > 0) {
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(correctionGain);
+                driveSouthWestAuto(-(power - correction), -(power + correction));
+                Thread.yield();
+            }
+
+            driveStop();
+        } else if (positionChange < 0) {
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+                // Use IMU to drive in a straight line.
+                correction = checkCorrection(correctionGain);
+                driveSouthWestAuto((power - correction), (power + correction));
+                Thread.yield();
+            }
+            driveStop();
+        }
+
     }
 
 
