@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -15,6 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
 
 
 @TeleOp(name = "!QM TeleOP", group = "Sensor")
@@ -32,7 +34,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     // State used for updating telemetry
     Orientation angles;
-    Acceleration gravity;
+    //Acceleration gravity;
 
 //    RevBlinkinLedDriver blinkinLedDriver;
 //    RevBlinkinLedDriver.BlinkinPattern pattern;
@@ -81,8 +83,9 @@ public class simpleBotTeleOp extends LinearOpMode {
             flywheel(); // Turns flywheel on and off
             intake();//Turns intake on and off
             lifter();//Moves lifter up and down
-            captureAngle(); //TESTING ONLY: Captures angle and
+            captureAngle(); //TESTING ONLY: Captures angle
             driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
+            volkswagenMode();
 
             telemetry.addData("Trigger Value: ", gamepad1.right_trigger * 1);
             telemetry.update(); //for imu display
@@ -161,9 +164,9 @@ public class simpleBotTeleOp extends LinearOpMode {
             rb.moveShooter(true); //Shoot
             //Make screen red to indicate wait
 
-            Thread.sleep(100); //Wait a tiny bit before going back
+            Thread.sleep(200); //Wait a tiny bit before going back
             rb.moveShooter(false);
-            Thread.sleep(710); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(550); //Wait for flywheel to get back to 100 percent speed
 
         } else if (gamepad1.a && !flywheelOn) {
             telemetry.addData("WARNING:", "flywheel is not running");
@@ -218,7 +221,9 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.x && lifterUp) {
             telemetry.addData(">", "Lifter DOWN");
             telemetry.update();
-            rb.setLifter(false);
+            rb.lifter.setPosition(LIFTER_MID);
+            Thread.sleep(1000);
+            rb.lifter.setPosition(LIFTER_DOWN);
             lifterUp = false;
             Thread.sleep(250);
         } else if (gamepad1.x) {
@@ -231,9 +236,9 @@ public class simpleBotTeleOp extends LinearOpMode {
     }
 
 
-    private void captureAngle() {
+    private void captureAngle() throws InterruptedException {
         if (gamepad1.dpad_down) {
-            rb.driveForwardByEncoder(200, rb.FL, .25);
+            rb.driveForwardByEncoderAndIMU(200, rb.FL, .25, .10);
         }
     }
 
@@ -247,6 +252,20 @@ public class simpleBotTeleOp extends LinearOpMode {
 
         }
     }
+
+
+    private void volkswagenMode() {
+        if (gamepad1.dpad_left && gamepad1.share && FLYWHEEL_SPEED != .7) {
+            FLYWHEEL_SPEED = .7;
+            telemetry.addData(">", "..1");
+            telemetry.update();
+        } else if (gamepad1.dpad_left && gamepad1.share && FLYWHEEL_SPEED == .7) {
+            FLYWHEEL_SPEED = .77;
+            telemetry.addData(">", "..0");
+            telemetry.update();
+        }
+    }
+
 
     /**
      * Logs IMU data to telemetry, TODO: Throttle or disable for competition

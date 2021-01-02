@@ -42,6 +42,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -49,6 +50,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
@@ -256,7 +258,7 @@ public class HardwareSimpleBot {
      * @param degrees Degrees to turn, + is left - is right
      * @param power   Motor power during turn (should not be negative)
      */
-    public void rotate(int degrees, double power) throws InterruptedException {
+    public void rotate(double degrees, double power) throws InterruptedException {
 
         // restart imu movement tracking.
         resetAngle();
@@ -497,16 +499,30 @@ public class HardwareSimpleBot {
      * @param motor          rb.FL
      * @param power          Always positive, direction controlled by positionChange
      */
-    public void driveForwardByEncoder(int positionChange, DcMotor motor, double power) {
+    public void driveForwardByEncoder(int positionChange, DcMotor motor, double power) throws InterruptedException {
         power = Math.abs(power);
 
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition + positionChange;
+        double currentPower = 0.2; //Always start at 0.2 power
 
         if (positionChange > 0) {
-            drive(power);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition * .75) {
+
+                if (currentPower >= power) {
+                    currentPower = power;
+                } else {
+                    currentPower = currentPower + ACCELERATION_INCREMENT;
+                    Thread.sleep(3);
+                }
+                drive(currentPower);
+            }
+            //deceleration:
+
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
-                Thread.yield();
+
+                drive(Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, .1, 1));
+
             }
 
             driveStop();
@@ -534,25 +550,58 @@ public class HardwareSimpleBot {
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition + positionChange;
 
-        if (positionChange > 0) {
-            drive(power);
-            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
 
+        if (positionChange > 0) {
+            double currentPower = 0.2; //Always start at 0.2 power
+            drive(currentPower);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition * .8) {
+
+                if (currentPower >= power) {
+                    currentPower = power;
+                } else {
+                    currentPower += ACCELERATION_INCREMENT;
+
+                }
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
-                drive((power + correction), (power - correction));
-                Thread.yield();
+                drive((currentPower + correction), (currentPower - correction));
+//                Thread.yield();
+            }
+
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
+                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, .1, power));
+                System.out.println(decelerationSpeed);
+                drive((decelerationSpeed + correction), (decelerationSpeed - correction));
+
             }
 
             driveStop();
+
         } else if (positionChange < 0) {
-            drive(-power);
-            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+            double currentPower = -0.2; //Always start at 0.2 power
+            drive(currentPower);
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition * 1.2) {
+
+                if (currentPower >= -power) {
+                    currentPower = -power;
+                } else {
+                    currentPower -= ACCELERATION_INCREMENT;
+
+                }
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
-                drive(-(power - correction), -(power + correction));
+                drive((currentPower + correction), (currentPower - correction));
                 Thread.yield();
             }
+
+            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, power, -.1));
+                System.out.println(decelerationSpeed);
+
+                drive((decelerationSpeed + correction), (decelerationSpeed - correction));
+
+            }
+
             driveStop();
         }
 
@@ -631,6 +680,7 @@ public class HardwareSimpleBot {
 
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition - positionChange;
+        double currentPower = 0.2; //Always start at 0.2 power
 
         if (positionChange > 0) {
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
@@ -646,7 +696,7 @@ public class HardwareSimpleBot {
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
-                driveSouthWestAuto((power - correction), (power + correction));
+                driveSouthWestAuto((power + correction), (power - correction));
                 Thread.yield();
             }
             driveStop();
@@ -722,7 +772,7 @@ public class HardwareSimpleBot {
      * @param power          0 - 1, positive values only
      */
 
-    public void strafeRightByEncoderWithIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+    public void strafeRightByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
 
         power = Math.abs(power);
 
@@ -735,13 +785,20 @@ public class HardwareSimpleBot {
         //new target = 300
 
         if (positionChange > 0) {
-            System.out.println("Position Change > 0... Running...");
-            strafe(power);
+            double currentPower = 0.2; //Always start at 0.2 power
+            strafe(currentPower);
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
+
+                if (currentPower >= power) {
+                    currentPower = power;
+                } else {
+                    currentPower += ACCELERATION_INCREMENT;
+
+                }
 
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
-                strafe((power - correction), (power + correction));
+                strafe((currentPower - correction), (currentPower + correction));
                 Thread.yield();
             }
             driveStop();
@@ -749,11 +806,20 @@ public class HardwareSimpleBot {
 
 
         } else if (positionChange < 0) {
-            strafe(-power);
+            double currentPower = -0.2; //Always start at 0.2 power
+            strafe(currentPower);
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
+
+                if (currentPower >= -power) {
+                    currentPower = -power;
+                } else {
+                    currentPower -= ACCELERATION_INCREMENT;
+
+                }
+
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
-                strafe(-(power + correction), -(power - correction));
+                strafe((currentPower - correction), (currentPower + correction));
 
                 Thread.yield();
             }

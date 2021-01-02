@@ -23,6 +23,9 @@ import org.firstinspires.ftc.teamcode.simpleBotCode.HardwareSimpleBot;
 import java.util.List;
 import java.util.Locale;
 
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
+
 //Import Constants:
 
 
@@ -214,25 +217,27 @@ public class remoteAuto extends LinearOpMode {
             telemetry.update();
 
             rb.driveForwardByEncoderAndIMU(2550, rb.FL, .75, .06); //Drive to A Zone
-//            rb.driveStop(); //Brake
-            rb.setLifter(false); //Drop Wobble Goal
-            Thread.sleep(750); //Wait a little bit for Servo to drop
+
+            Thread.sleep(1000);
+            rb.lifter.setPosition(LIFTER_MID);
+            Thread.sleep(600); //Wait a little bit for Servo to drop
+            rb.lifter.setPosition(LIFTER_DOWN);
+            Thread.sleep(650);
+
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifter(true);
             rb.flywheel.setPower(.4); //replace this with real function lol
 
-            telemetry.addData(">", "Strafing...");
-            telemetry.update();
 
-            rb.strafeRightByEncoderWithIMU(1100, rb.FL, .5, .05);
+            rb.strafeRightByEncoderAndIMU(1250, rb.FL, .5, .05);
             rb.driveStop();
-            telemetry.addData(">", "Done Strafing");
-            telemetry.update();
+
             Thread.sleep(100);
             rb.driveForwardByEncoderAndIMU(710, rb.FL, .3, .06);
-            Thread.sleep(500);
+            Thread.sleep(100);
 
-            //rb.rotateToGlobalAngle(90, .2);
+            rb.rotate(-8.3, .2);
+            Thread.sleep(500);
 
 
             //rb.rotate(20, .3);
@@ -254,7 +259,8 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            //rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse
+            rb.rotate(8.3, .2);
+            rb.driveForwardByEncoderAndIMU(350, rb.FL, .5, .06); //Drive up to park on white line
 
 
         } else if (numberOfRingsDetected == 1) {
@@ -263,21 +269,28 @@ public class remoteAuto extends LinearOpMode {
             telemetry.update();
             rb.driveForwardByEncoderAndIMU(2800, rb.FL, .75, .06);
             Thread.sleep(750);
-            rb.strafeRightByEncoderWithIMU(1220, rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU(1220, rb.FL, .4, .05);
             Thread.sleep(500);
             rb.driveForwardByEncoderAndIMU(900, rb.FL, .4, .06);
-            Thread.sleep(200);
-            rb.setLifter(false);
+
+            Thread.sleep(1000);
+            rb.lifter.setPosition(LIFTER_MID);
+            Thread.sleep(600); //Wait a little bit for Servo to drop
+            rb.lifter.setPosition(LIFTER_DOWN);
             Thread.sleep(650);
+
             rb.driveForwardByEncoderAndIMU(-200, rb.FL, .5, .06);
             rb.flywheel.setPower(.4); //replace this with real function lol
             rb.setLifter(true);
             rb.driveForwardByEncoderAndIMU(-600, rb.FL, .5, .06);
             Thread.sleep(150);
-            rb.strafeRightByEncoderWithIMU(-180, rb.FL, .3, .05);
+            rb.strafeRightByEncoderAndIMU(-180, rb.FL, .3, .05);
 
-            rb.rotateToGlobalAngle(0, .2);
-            Thread.sleep(600);
+            Thread.sleep(100);
+
+            rb.rotate(-8.3, .2);
+            Thread.sleep(500);
+
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
@@ -295,24 +308,39 @@ public class remoteAuto extends LinearOpMode {
             rb.moveShooter(true); //Shot 4 just to make sure
             Thread.sleep(200);
             rb.moveShooter(false);
+
+            rb.rotate(8.3, .2);
+            rb.driveForwardByEncoderAndIMU(425, rb.FL, .5, .06); //Drive up to park on white line
 
         } else if (numberOfRingsDetected == 4) {
             //4 Ring Code, Go to C (furthest)
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU(4650, rb.FL, .75, .08); //Drive to A Zone
-            //rb.driveStop(); //Brake
-            rb.setLifter(false); //Drop Wobble Goal
+            rb.driveForwardByEncoderAndIMU(4900, rb.FL, .75, .08); //Drive to A Zone
+
+            Thread.sleep(1000);
+            rb.lifter.setPosition(LIFTER_MID);
+            Thread.sleep(600); //Wait a little bit for Servo to drop
+            rb.lifter.setPosition(LIFTER_DOWN);
+            Thread.sleep(650);
             Thread.sleep(750); //Wait a little bit for Servo to drop
+
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifter(true);
             rb.flywheel.setPower(.4); //replace this with real function lol
-            rb.autoDriveSouthWestWithEncoderAndIMU(1850, rb.FL, .6, .05);
-            rb.driveForwardByEncoderAndIMU(-500, rb.FL, .5, .06);
+            rb.autoDriveSouthWestWithEncoderAndIMU(1925, rb.FL, .6, .05);
+            telemetry.addData(">", "Done with south west");
+            telemetry.update();
+            rb.driveForwardByEncoderAndIMU(-820, rb.FL, .5, .05);
+            telemetry.addData(">", "Done with approach behind line");
+            telemetry.update();
 
-            rb.rotateToGlobalAngle(0, .2);
-            Thread.sleep(600);
+            Thread.sleep(100);
+
+            rb.rotate(-8.3, .2);
+            Thread.sleep(500);
+
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
@@ -330,6 +358,10 @@ public class remoteAuto extends LinearOpMode {
             rb.moveShooter(true); //Shot 4 just to make sure
             Thread.sleep(200);
             rb.moveShooter(false);
+
+            rb.rotate(8.3, .2);
+
+            rb.driveForwardByEncoderAndIMU(380, rb.FL, .5, .06); //Drive up to park on white line
 
         } else {
             telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");

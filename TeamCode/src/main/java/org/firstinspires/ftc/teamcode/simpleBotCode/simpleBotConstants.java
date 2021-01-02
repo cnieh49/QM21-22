@@ -4,14 +4,15 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 public final class simpleBotConstants {
 
     //Speeds:
-    public static final double FLYWHEEL_SPEED = .9;
+    public static double FLYWHEEL_SPEED = .77;  //Volkswagen Mode = .7
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
     //.65 = 13.12ft @ 31 degrees
     //.73 = 16.60 ft @ 31 degrees
     //.71 = 16.21 @ 31 degrees
-
     public static final double INTAKE_SPEED = 1;
+    public static final double ACCELERATION_INCREMENT = 0.01;
+
 
     //Sticks:
     public static final float DRIVE_STICK_THRESHOLD = .0f;
@@ -22,8 +23,9 @@ public final class simpleBotConstants {
     public static final double SHOOTER_OUT = .69;
     public static final double SHOOTER_IN = .55;
     public static final double LIFTER_MAXIMUM = .58;
-    public static final double LIFTER_UP = .60;
-    public static final double LIFTER_DOWN = .88;
+    public static final double LIFTER_UP = .61; //.60 before
+    public static final double LIFTER_MID = .79;
+    public static final double LIFTER_DOWN = 1; //.88 before
     public static final double LIFTER_MINIMUM = .99;
 
     //Color Sensor:
