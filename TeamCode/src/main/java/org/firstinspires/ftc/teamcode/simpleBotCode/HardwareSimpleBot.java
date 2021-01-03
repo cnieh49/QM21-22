@@ -150,7 +150,7 @@ public class HardwareSimpleBot {
 
 
         // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
+
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
