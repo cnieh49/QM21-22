@@ -1,37 +1,3 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
-About this File:
-This just sets up the devices connected to the hubs on the robot and also has helpful functions for
-movement and other things.
- */
 package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -213,7 +179,11 @@ public class HardwareSimpleBot {
         BL.setPower(backleftPower);
     }
 
-
+    /**
+     * Strafes Mecanum Drivetrain
+     *
+     * @param speed
+     */
     public void strafe(double speed) {
         FR.setPower(speed);
         FL.setPower(-speed);
@@ -244,6 +214,12 @@ public class HardwareSimpleBot {
         BL.setPower(speed);
     }
 
+    /**
+     * Drives robot southwest assuming North is tower side of field
+     *
+     * @param FLspeed
+     * @param BRspeed
+     */
     //This would be NorthEast if front of robot is intake side
     public void driveSouthWestAuto(double FLspeed, double BRspeed) {
         FL.setPower(FLspeed);
@@ -302,11 +278,11 @@ public class HardwareSimpleBot {
     }
 
     /**
-     * Rotate relative to a global heading from IMU sensor
-     *
-     *
-     * **/
-
+     * Rotates to a global heading using IMU
+     * @param degrees
+     * @param power
+     * @throws InterruptedException
+     */
     public void rotateToGlobalAngle(int degrees, double power) throws InterruptedException {
 
         // restart imu movement tracking.
@@ -571,6 +547,7 @@ public class HardwareSimpleBot {
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
                 double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, .1, power));
                 System.out.println(decelerationSpeed);
+                correction = checkCorrection(correctionGain);
                 drive((decelerationSpeed + correction), (decelerationSpeed - correction));
 
             }
@@ -597,7 +574,7 @@ public class HardwareSimpleBot {
             while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
                 double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, power, -.1));
                 System.out.println(decelerationSpeed);
-
+                correction = checkCorrection(correctionGain);
                 drive((decelerationSpeed + correction), (decelerationSpeed - correction));
 
             }
