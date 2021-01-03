@@ -13,6 +13,8 @@ public final class simpleBotConstants {
     public static final double INTAKE_SPEED = 1;
     public static final double ACCELERATION_INCREMENT = 0.01;
 
+    //Motors:
+    public static final double NUMBER_OF_DRIVE_MOTORS = 4;
 
     //Sticks:
     public static final float DRIVE_STICK_THRESHOLD = .0f;

@@ -545,17 +545,35 @@ public class HardwareSimpleBot {
      * @param power          Always positive, direction controlled by positionChange
      */
     public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+//For Reference:
+//        FR.setDirection(DcMotor.Direction.REVERSE);
+//        FL.setDirection(DcMotor.Direction.FORWARD);
+//        BR.setDirection(DcMotor.Direction.REVERSE);
+//        BL.setDirection(DcMotor.Direction.FORWARD);
 
         power = Math.abs(power);
 
-        int oldPosition = motor.getCurrentPosition();
-        int targetPosition = oldPosition + positionChange;
+        int FLoldPosition = FL.getCurrentPosition();
+        int FRoldPosition = FR.getCurrentPosition();
+        int BLoldPosition = BL.getCurrentPosition();
+        int BRoldPosition = BR.getCurrentPosition();
 
+        int FLtargetPosition = FLoldPosition + positionChange; //old = 500, pos change = 200, target = 700
+        int FRtargetPosition = FRoldPosition - positionChange; //old = -500, pos change = 200, target = -700
+        int BLtargetPosition = BLoldPosition + positionChange;
+        int BRtargetPosition = BRoldPosition - positionChange;
+
+        int FLdistanceToZero = Math.abs(FLtargetPosition - FLoldPosition);
+        int FRdistanceToZero = Math.abs(FRtargetPosition - FRoldPosition);
+        int BLdistanceToZero = Math.abs(BLtargetPosition - BLoldPosition);
+        int BRdistanceToZero = Math.abs(BRtargetPosition - BRoldPosition);
+
+        int averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4; //Goes from positive number (ex 500 --> 0)
 
         if (positionChange > 0) {
             double currentPower = 0.2; //Always start at 0.2 power
             drive(currentPower);
-            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition * .8) {
+            while (opMode.opModeIsActive() && averageDistancetoTarget > 0.2 * Math.abs(positionChange)) { //run normally until 80% of distance traveled
 
                 if (currentPower >= power) {
                     currentPower = power;
@@ -566,14 +584,31 @@ public class HardwareSimpleBot {
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
                 drive((currentPower + correction), (currentPower - correction));
-//                Thread.yield();
+
+                //Update Current Distance to 0 for each motor with current encoder readings
+                FLdistanceToZero = Math.abs(FLtargetPosition - FL.getCurrentPosition());
+                FRdistanceToZero = Math.abs(FRtargetPosition - FR.getCurrentPosition());
+                BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
+                BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
+                //and average it
+                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
+
             }
 
-            while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
-                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, .1, power));
-                System.out.println(decelerationSpeed);
-                drive((decelerationSpeed + correction), (decelerationSpeed - correction));
+            while (opMode.opModeIsActive() && averageDistancetoTarget > 0) {
+                //TODO: Rewrite deceleration stuff, right now it just drives at 50% speed for the last 20% of the route, not the best option but it works
+//                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, .1, power));
+//                System.out.println(decelerationSpeed);
 
+                correction = checkCorrection(correctionGain);
+                drive((currentPower / 2 + correction), (currentPower / 2 - correction));
+                //Update Current Distance to 0 for each motor with current encoder readings
+                FLdistanceToZero = Math.abs(FLtargetPosition - FL.getCurrentPosition());
+                FRdistanceToZero = Math.abs(FRtargetPosition - FR.getCurrentPosition());
+                BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
+                BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
+                //and average it
+                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
             }
 
             driveStop();
@@ -581,7 +616,7 @@ public class HardwareSimpleBot {
         } else if (positionChange < 0) {
             double currentPower = -0.2; //Always start at 0.2 power
             drive(currentPower);
-            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition * 1.2) {
+            while (opMode.opModeIsActive() && averageDistancetoTarget > 0.2 * Math.abs(positionChange)) {
 
                 if (currentPower >= -power) {
                     currentPower = -power;
@@ -592,14 +627,29 @@ public class HardwareSimpleBot {
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
                 drive((currentPower + correction), (currentPower - correction));
-                Thread.yield();
+
+                FLdistanceToZero = Math.abs(FLtargetPosition - FL.getCurrentPosition());
+                FRdistanceToZero = Math.abs(FRtargetPosition - FR.getCurrentPosition());
+                BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
+                BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
+                //and average it
+                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
             }
 
-            while (opMode.opModeIsActive() && motor.getCurrentPosition() > targetPosition) {
-                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, power, -.1));
-                System.out.println(decelerationSpeed);
+            while (opMode.opModeIsActive() && averageDistancetoTarget > 0) {
+//                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, power, -.1));
+//                System.out.println(decelerationSpeed);
 
-                drive((decelerationSpeed + correction), (decelerationSpeed - correction));
+                correction = checkCorrection(correctionGain);
+                drive((currentPower / 2 + correction), (currentPower / 2 - correction));
+
+                //Update Current Distance to 0 for each motor with current encoder readings
+                FLdistanceToZero = Math.abs(FLtargetPosition - FL.getCurrentPosition());
+                FRdistanceToZero = Math.abs(FRtargetPosition - FR.getCurrentPosition());
+                BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
+                BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
+                //and average it
+                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
 
             }
 
