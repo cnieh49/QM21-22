@@ -17,6 +17,7 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DR
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
 
 
 @TeleOp(name = "!QM TeleOP", group = "Sensor")
@@ -87,7 +88,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             intake();//Turns intake on and off
             lifter();//Moves lifter up and down
             captureAngle(); //TESTING ONLY: Captures angle
-            driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
+            rotateToAngle(); //TESTING ONLY (for now): Rotates to captured angle
             volkswagenMode();
 
 
@@ -251,11 +252,11 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
-    private void driveToAngle() throws InterruptedException {
+    private void rotateToAngle() throws InterruptedException {
         if (gamepad1.right_stick_button) {
             telemetry.addData("log:", "Driving to angle...");
             telemetry.update();
-            rb.rotateToGlobalAngle(45, .5);
+            rb.rotate(SHOOTER_DEFAULT_ROTATION, .25); //-8.6
             telemetry.addData("log:", "Done driving to angle!");
             telemetry.update();
 
