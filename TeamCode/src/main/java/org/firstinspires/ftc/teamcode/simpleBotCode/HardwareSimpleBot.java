@@ -53,6 +53,7 @@ import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.NUMBER_OF_DRIVE_MOTORS;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
 
 public class HardwareSimpleBot {
@@ -538,11 +539,12 @@ public class HardwareSimpleBot {
     }
 
     /**
-     * Drives forward using 1 encoder
+     * Drives forward using encoders and IMU to maintain heading
      *
      * @param positionChange This should be positive or negative based on direction
-     * @param motor          rb.FL
-     * @param power          Always positive, direction controlled by positionChange
+     * @param motor          rb.FL, but irrelevent for this because we use all motor encoders now
+     * @param power          Always positive 0-1, direction controlled by positionChange
+     * @param correctionGain Controls how much correction is applied to maintain heading, values below 0.10 work well most of the time.
      */
     public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
 //For Reference:
@@ -551,15 +553,16 @@ public class HardwareSimpleBot {
 //        BR.setDirection(DcMotor.Direction.REVERSE);
 //        BL.setDirection(DcMotor.Direction.FORWARD);
 
+        //Make sure that power is positive
         power = Math.abs(power);
-
+        //Store Initial Positions for all Motors
         int FLoldPosition = FL.getCurrentPosition();
         int FRoldPosition = FR.getCurrentPosition();
         int BLoldPosition = BL.getCurrentPosition();
         int BRoldPosition = BR.getCurrentPosition();
 
-        int FLtargetPosition = FLoldPosition + positionChange; //old = 500, pos change = 200, target = 700
-        int FRtargetPosition = FRoldPosition - positionChange; //old = -500, pos change = 200, target = -700
+        int FLtargetPosition = FLoldPosition + positionChange; //example: old = 500, pos change = 200, target = 700
+        int FRtargetPosition = FRoldPosition - positionChange; // example: old = -500, pos change = 200, target = -700
         int BLtargetPosition = BLoldPosition + positionChange;
         int BRtargetPosition = BRoldPosition - positionChange;
 
@@ -568,12 +571,12 @@ public class HardwareSimpleBot {
         int BLdistanceToZero = Math.abs(BLtargetPosition - BLoldPosition);
         int BRdistanceToZero = Math.abs(BRtargetPosition - BRoldPosition);
 
-        int averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4; //Goes from positive number (ex 500 --> 0)
+        double averageDistancetoTargetPosition = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / NUMBER_OF_DRIVE_MOTORS; //Goes from positive number (ex 500 --> 0)
 
         if (positionChange > 0) {
             double currentPower = 0.2; //Always start at 0.2 power
             drive(currentPower);
-            while (opMode.opModeIsActive() && averageDistancetoTarget > 0.2 * Math.abs(positionChange)) { //run normally until 80% of distance traveled
+            while (opMode.opModeIsActive() && averageDistancetoTargetPosition > 0.2 * Math.abs(positionChange)) { //run normally until 80% of distance traveled
 
                 if (currentPower >= power) {
                     currentPower = power;
@@ -591,12 +594,12 @@ public class HardwareSimpleBot {
                 BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
                 BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
                 //and average it
-                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
+                averageDistancetoTargetPosition = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / NUMBER_OF_DRIVE_MOTORS;
 
             }
 
-            while (opMode.opModeIsActive() && averageDistancetoTarget > 0) {
-                //TODO: Rewrite deceleration stuff, right now it just drives at 50% speed for the last 20% of the route, not the best option but it works
+            while (opMode.opModeIsActive() && averageDistancetoTargetPosition > 0) {
+                //TODO: Rewrite deceleration stuff, right now it just drives at 50% speed for the last 20% of the route, not the best way to do it but it works
 //                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, .1, power));
 //                System.out.println(decelerationSpeed);
 
@@ -608,7 +611,7 @@ public class HardwareSimpleBot {
                 BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
                 BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
                 //and average it
-                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
+                averageDistancetoTargetPosition = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
             }
 
             driveStop();
@@ -616,7 +619,7 @@ public class HardwareSimpleBot {
         } else if (positionChange < 0) {
             double currentPower = -0.2; //Always start at 0.2 power
             drive(currentPower);
-            while (opMode.opModeIsActive() && averageDistancetoTarget > 0.2 * Math.abs(positionChange)) {
+            while (opMode.opModeIsActive() && averageDistancetoTargetPosition > 0.2 * Math.abs(positionChange)) {
 
                 if (currentPower >= -power) {
                     currentPower = -power;
@@ -633,10 +636,10 @@ public class HardwareSimpleBot {
                 BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
                 BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
                 //and average it
-                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
+                averageDistancetoTargetPosition = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
             }
 
-            while (opMode.opModeIsActive() && averageDistancetoTarget > 0) {
+            while (opMode.opModeIsActive() && averageDistancetoTargetPosition > 0) {
 //                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, power, -.1));
 //                System.out.println(decelerationSpeed);
 
@@ -649,7 +652,7 @@ public class HardwareSimpleBot {
                 BLdistanceToZero = Math.abs(BLtargetPosition - BL.getCurrentPosition());
                 BRdistanceToZero = Math.abs(BRtargetPosition - BR.getCurrentPosition());
                 //and average it
-                averageDistancetoTarget = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
+                averageDistancetoTargetPosition = (FLdistanceToZero + FRdistanceToZero + BLdistanceToZero + BRdistanceToZero) / 4;
 
             }
 
