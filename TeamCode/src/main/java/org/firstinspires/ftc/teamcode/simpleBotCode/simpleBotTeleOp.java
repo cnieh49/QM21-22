@@ -17,11 +17,13 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DR
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
 
 
 @TeleOp(name = "!QM TeleOP", group = "Sensor")
 public class simpleBotTeleOp extends LinearOpMode {
 
+    //private final FtcDashboard dashboard = FtcDashboard.getInstance(); //Comment this out when not using dashboard
     private final HardwareSimpleBot rb = new HardwareSimpleBot();
     // Declare OpMode members.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -41,6 +43,8 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
@@ -84,10 +88,10 @@ public class simpleBotTeleOp extends LinearOpMode {
             intake();//Turns intake on and off
             lifter();//Moves lifter up and down
             captureAngle(); //TESTING ONLY: Captures angle
-            driveToAngle(); //TESTING ONLY (for now): Rotates to captured angle
+            rotateToAngle(); //TESTING ONLY (for now): Rotates to captured angle
             volkswagenMode();
 
-            telemetry.addData("Trigger Value: ", gamepad1.right_trigger * 1);
+
             telemetry.update(); //for imu display
 
             //  Show the elapsed game time and wheel power.
@@ -157,18 +161,24 @@ public class simpleBotTeleOp extends LinearOpMode {
     //TODO: Setup teleop for 2 driver control w/ gamepad2
     //TODO: Configure delay variable in simpleBotConstants.java
     private void shooter() throws InterruptedException {
+
         if (gamepad1.a) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
             telemetry.addData(">", "Shooter Out!");
             telemetry.update();
 
             rb.moveShooter(true); //Shoot
             //Make screen red to indicate wait
+            Thread.sleep(8); //8ms = time for ring to leave shooter
+            rb.flywheel.setPower(.92);
+            Thread.sleep(117);
+            rb.flywheel.setPower(FLYWHEEL_SPEED);
 
-            Thread.sleep(200); //Wait a tiny bit before going back
+            Thread.sleep(67); //Wait a tiny bit before going back (originally 200)
             rb.moveShooter(false);
-            Thread.sleep(550); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
 
         } else if (gamepad1.a && !flywheelOn) {
+            //TODO: Make it so that is impossible to shoot if the flywheel is not on
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
@@ -242,11 +252,11 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
-    private void driveToAngle() throws InterruptedException {
+    private void rotateToAngle() throws InterruptedException {
         if (gamepad1.right_stick_button) {
             telemetry.addData("log:", "Driving to angle...");
             telemetry.update();
-            rb.rotateToGlobalAngle(45, .5);
+            rb.rotate(SHOOTER_DEFAULT_ROTATION, .25); //-8.6
             telemetry.addData("log:", "Done driving to angle!");
             telemetry.update();
 

@@ -1,9 +1,3 @@
-/*
-About this File:
-This file is run to test the built-in encoders on the motors. Nothing happens except motor
-positions are logged to the telemetry.
- */
-
 package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,6 +14,8 @@ public class EncoderOdometryTest extends LinearOpMode {
         odometry.init(hardwareMap);
         telemetry.addData("FR Encoder", rb.FR.getCurrentPosition());
         telemetry.addData("FL Encoder", rb.FL.getCurrentPosition());
+        telemetry.addData("BR Encoder", rb.BR.getCurrentPosition());
+        telemetry.addData("BL Encoder", rb.BL.getCurrentPosition());
         telemetry.addData("Flywheel Encoder", rb.flywheel.getCurrentPosition());
         telemetry.update();
         odometry.start(rb.FR.getCurrentPosition(), rb.FL.getCurrentPosition(), rb.BL.getCurrentPosition());
@@ -28,6 +24,8 @@ public class EncoderOdometryTest extends LinearOpMode {
             odometry.update(rb.FR.getCurrentPosition(), rb.FL.getCurrentPosition(), rb.BL.getCurrentPosition());
             telemetry.addData("FR Encoder", rb.FR.getCurrentPosition());
             telemetry.addData("FL Encoder", rb.FL.getCurrentPosition());
+            telemetry.addData("BR Encoder", rb.BR.getCurrentPosition());
+            telemetry.addData("BL Encoder", rb.BL.getCurrentPosition());
             telemetry.addData("Flywheel Encoder", rb.flywheel.getCurrentPosition());
             telemetry.update();
         }

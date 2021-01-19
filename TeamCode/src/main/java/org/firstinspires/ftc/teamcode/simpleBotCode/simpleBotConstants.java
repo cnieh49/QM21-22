@@ -15,6 +15,8 @@ public final class simpleBotConstants {
 
     //Motors:
     public static final double NUMBER_OF_DRIVE_MOTORS = 4;
+    //ROTATIONS
+    public static final double SHOOTER_DEFAULT_ROTATION = -8.6; //The angle that the robot needs to be at for the shooter to shoots straight (recorded at FLYWHEEL_SPEED = .77)
 
     //Sticks:
     public static final float DRIVE_STICK_THRESHOLD = .0f;
