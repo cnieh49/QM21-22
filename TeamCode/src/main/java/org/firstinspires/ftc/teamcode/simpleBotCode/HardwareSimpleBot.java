@@ -545,10 +545,12 @@ public class HardwareSimpleBot {
             }
 
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
-                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - targetPosition) / motor.getCurrentPosition() + oldPosition, .1, power));
-                System.out.println(decelerationSpeed);
+                //TODO: Rewrite deceleration stuff, right now it just drives at 50% speed for the last 20% of the route, not the best way to do it but it works
+//                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, .1, power));
+//                System.out.println(decelerationSpeed);
+
                 correction = checkCorrection(correctionGain);
-                drive((decelerationSpeed + correction), (decelerationSpeed - correction));
+                drive((currentPower / 2 + correction), (currentPower / 2 - correction));
 
             }
 
