@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ACCELERATION_INCREMENT;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
@@ -39,10 +39,6 @@ public class HardwareSimpleBot {
     Orientation angles;
     Orientation lastAngles = new Orientation();
     public double globalAngle, power = .30, correction;
-
-    //Leds: for future use
-//    RevBlinkinLedDriver blinkinLedDriver ;
-//    RevBlinkinLedDriver.BlinkinPattern pattern ;
 
 
     /* local OpMode members. */
@@ -117,10 +113,10 @@ public class HardwareSimpleBot {
 
         // Set all motors to run without encoders.
 
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -434,7 +430,6 @@ public class HardwareSimpleBot {
      * @return Angle in degrees. + = left, - = right.
      */
     public double getAngle() {
-        // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
@@ -470,6 +465,7 @@ public class HardwareSimpleBot {
 
     /**
      * Drives forward using 1 encoder
+     * IMPORTANT: this is replaced by driveForwardByEncoderAndIMU which uses the imu to maintain heading
      *
      * @param positionChange This should be positive or negative based on direction
      * @param motor          rb.FL
@@ -488,8 +484,7 @@ public class HardwareSimpleBot {
                 if (currentPower >= power) {
                     currentPower = power;
                 } else {
-                    currentPower = currentPower + ACCELERATION_INCREMENT;
-                    Thread.sleep(3);
+                    currentPower = currentPower + DEFAULT_ACCELERATION_INCREMENT;
                 }
                 drive(currentPower);
             }
@@ -515,29 +510,31 @@ public class HardwareSimpleBot {
     /**
      * Drives forward using 1 encoder
      *
-     * @param positionChange This should be positive or negative based on direction
-     * @param motor          rb.FL
-     * @param power          Always positive, direction controlled by positionChange
+     * @param positionChange        This should be positive or negative based on direction
+     * @param motor                 rb.FL
+     * @param power                 Always positive, direction controlled by positionChange
+     * @param correctionGain        Controls how much corrections is applied to the motors if the angle is off, default is .06 i think
+     * @param accelerationIncrement Positive Linear increment that is used to increase acceleration, default is DEFAULT_ACCELERATION_INCREMENT. To get no acceleration, just make this 1
      */
-    public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+    public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain, double accelerationIncrement) {
 
         power = Math.abs(power);
 
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition + positionChange;
-
+        if (positionChange < 0) { //Make acceleration increment positive or negative based on power
+            accelerationIncrement = -accelerationIncrement;
+        }
 
         if (positionChange > 0) {
             double currentPower = 0.2; //Always start at 0.2 power
             drive(currentPower);
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition * .8) {
-
-                if (currentPower >= power) {
-                    currentPower = power;
-                } else {
-                    currentPower += ACCELERATION_INCREMENT;
-
+                currentPower += accelerationIncrement;
+                if (currentPower > power) {
+                    currentPower = power; //if .2 + accelerationIncrement is bigger than the target power (over max power)
                 }
+
                 // Use IMU to drive in a straight line.
                 correction = checkCorrection(correctionGain);
                 drive((currentPower + correction), (currentPower - correction));
@@ -548,10 +545,13 @@ public class HardwareSimpleBot {
                 //TODO: Rewrite deceleration stuff, right now it just drives at 50% speed for the last 20% of the route, not the best way to do it but it works
 //                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, .1, power));
 //                System.out.println(decelerationSpeed);
-
-                correction = checkCorrection(correctionGain);
-                drive((currentPower / 2 + correction), (currentPower / 2 - correction));
-
+                if (currentPower > .35) { //If we're driving slower than .35, i don't think we need to rly worry about decceleration
+                    correction = checkCorrection(correctionGain);
+                    drive((currentPower / 2 + correction), (currentPower / 2 - correction));
+                } else {
+                    correction = checkCorrection(correctionGain);
+                    drive((currentPower + correction), (currentPower - correction));
+                }
             }
 
             driveStop();
@@ -564,7 +564,7 @@ public class HardwareSimpleBot {
                 if (currentPower >= -power) {
                     currentPower = -power;
                 } else {
-                    currentPower -= ACCELERATION_INCREMENT;
+                    currentPower -= DEFAULT_ACCELERATION_INCREMENT;
 
                 }
                 // Use IMU to drive in a straight line.
@@ -771,7 +771,7 @@ public class HardwareSimpleBot {
                 if (currentPower >= power) {
                     currentPower = power;
                 } else {
-                    currentPower += ACCELERATION_INCREMENT;
+                    currentPower += DEFAULT_ACCELERATION_INCREMENT;
 
                 }
 
@@ -792,7 +792,7 @@ public class HardwareSimpleBot {
                 if (currentPower >= -power) {
                     currentPower = -power;
                 } else {
-                    currentPower -= ACCELERATION_INCREMENT;
+                    currentPower -= DEFAULT_ACCELERATION_INCREMENT;
 
                 }
 
@@ -926,13 +926,13 @@ public class HardwareSimpleBot {
     /**
      * Turns intake on and off
      *
-     * @param isOn    True = intake on, False = intake off
-     * @param reverse True = runs in reverse to unstuck rings, False = Runs normally
+     * @param isOn  True = intake on, False = intake off
+     * @param eject True = runs in reverse to unstuck rings, False = Runs normally
      */
-    public void runIntake(boolean isOn, boolean reverse) {
+    public void runIntake(boolean isOn, boolean eject) {
 
         if (isOn) {
-            if (reverse)
+            if (eject)
                 intake.setPower(-INTAKE_SPEED);
             else {
                 intake.setPower(INTAKE_SPEED);

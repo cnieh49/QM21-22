@@ -8,6 +8,7 @@ public class EncoderOdometryTest extends LinearOpMode {
     private final HardwareSimpleBot rb = new HardwareSimpleBot();
 
     private final MecanumOdometry odometry = new MecanumOdometry();
+
     @Override
     public void runOpMode() throws InterruptedException {
         rb.init(hardwareMap, this);

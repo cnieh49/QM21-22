@@ -23,12 +23,13 @@ import org.firstinspires.ftc.teamcode.simpleBotCode.HardwareSimpleBot;
 import java.util.List;
 import java.util.Locale;
 
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
 
 //Import Constants:
-
-
+//WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but make sure its just not facing downwards.
 @Autonomous(name = "Remote Auto", group = "Autonomous")
 public class remoteAuto extends LinearOpMode {
 
@@ -160,7 +161,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.addData("Angle Captured=", angleFacingForward);
         telemetry.update();
 
-        Thread.sleep(2000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk)
+        Thread.sleep(2000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
         telemetry.addData(">", "One second has passsed... Counting Rings...");
         //Get Number of Rings from Camera (which is already on)
 
@@ -216,40 +217,37 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting A Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU(2550, rb.FL, .75, .06); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU(3500, rb.FL, .95, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
-            Thread.sleep(1000);
+            Thread.sleep(300);
             rb.lifter.setPosition(LIFTER_MID);
             Thread.sleep(600); //Wait a little bit for Servo to drop
             rb.lifter.setPosition(LIFTER_DOWN);
             Thread.sleep(650);
 
-            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
+            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifter(true);
-            rb.flywheel.setPower(.4); //replace this with real function lol
+            rb.flywheel.setPower(FLYWHEEL_SPEED);
 
-
-            rb.strafeRightByEncoderAndIMU(1250, rb.FL, .5, .05);
+            rb.strafeRightByEncoderAndIMU(1250, rb.FL, .7, .06);
             rb.driveStop();
 
+            Thread.sleep(80);
+            rb.driveForwardByEncoderAndIMU(675, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(100);
-            rb.driveForwardByEncoderAndIMU(710, rb.FL, .3, .06);
-            Thread.sleep(100);
 
-            rb.rotate(-8.3, .2);
-            Thread.sleep(500);
+            rb.rotate(-7.5, .3);
+            Thread.sleep(350);
 
-
-            //rb.rotate(20, .3);
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
-            //rb.rotate(20, .3);
+
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 2
             Thread.sleep(200);
             rb.moveShooter(false);
-            // rb.rotate(20, .3);
+
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 3
             Thread.sleep(200);
@@ -259,19 +257,19 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(8.3, .2);
-            rb.driveForwardByEncoderAndIMU(350, rb.FL, .5, .06); //Drive up to park on white line
+            rb.rotate(7.5, .5);
+            rb.driveForwardByEncoderAndIMU(720, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
 
         } else if (numberOfRingsDetected == 1) {
             //1 Ring Code, Go to B (middle)
             telemetry.addData(">", "Starting B Code...");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(2800, rb.FL, .75, .06);
+            rb.driveForwardByEncoderAndIMU(2000, rb.FL, .75, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
             Thread.sleep(750);
             rb.strafeRightByEncoderAndIMU(1220, rb.FL, .4, .05);
             Thread.sleep(500);
-            rb.driveForwardByEncoderAndIMU(900, rb.FL, .4, .06);
+            rb.driveForwardByEncoderAndIMU(900, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
 
             Thread.sleep(1000);
             rb.lifter.setPosition(LIFTER_MID);
@@ -279,10 +277,10 @@ public class remoteAuto extends LinearOpMode {
             rb.lifter.setPosition(LIFTER_DOWN);
             Thread.sleep(650);
 
-            rb.driveForwardByEncoderAndIMU(-200, rb.FL, .5, .06);
+            rb.driveForwardByEncoderAndIMU(-200, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.flywheel.setPower(.4); //replace this with real function lol
             rb.setLifter(true);
-            rb.driveForwardByEncoderAndIMU(-600, rb.FL, .5, .06);
+            rb.driveForwardByEncoderAndIMU(-600, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(150);
             rb.strafeRightByEncoderAndIMU(-180, rb.FL, .3, .05);
 
@@ -310,14 +308,14 @@ public class remoteAuto extends LinearOpMode {
             rb.moveShooter(false);
 
             rb.rotate(8.3, .2);
-            rb.driveForwardByEncoderAndIMU(425, rb.FL, .5, .06); //Drive up to park on white line
+            rb.driveForwardByEncoderAndIMU(425, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
         } else if (numberOfRingsDetected == 4) {
             //4 Ring Code, Go to C (furthest)
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU(4900, rb.FL, .75, .08); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU(4900, rb.FL, .75, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(1000);
             rb.lifter.setPosition(LIFTER_MID);
@@ -326,13 +324,13 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(650);
             Thread.sleep(750); //Wait a little bit for Servo to drop
 
-            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06); //Reverse to get wobble goal out of lifter and to shooting spot on line
+            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifter(true);
             rb.flywheel.setPower(.4); //replace this with real function lol
             rb.autoDriveSouthWestWithEncoderAndIMU(1925, rb.FL, .6, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(-820, rb.FL, .5, .05);
+            rb.driveForwardByEncoderAndIMU(-820, rb.FL, .5, .05, DEFAULT_ACCELERATION_INCREMENT);
             telemetry.addData(">", "Done with approach behind line");
             telemetry.update();
 
@@ -361,7 +359,7 @@ public class remoteAuto extends LinearOpMode {
 
             rb.rotate(8.3, .2);
 
-            rb.driveForwardByEncoderAndIMU(380, rb.FL, .5, .06); //Drive up to park on white line
+            rb.driveForwardByEncoderAndIMU(380, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
         } else {
             telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");

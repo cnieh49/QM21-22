@@ -55,6 +55,7 @@ public class MecanumOdometry {
     /**
      * Should be called when the OpMode is started
      * Once again
+     *
      * @param a The current front-right encoder value
      * @param b The current front-left encoder value
      * @param c The current back-left encoder value
