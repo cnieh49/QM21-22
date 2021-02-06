@@ -25,8 +25,6 @@ import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
 
 //Import Constants:
 //WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but make sure its just not facing downwards.
@@ -142,7 +140,6 @@ public class remoteAuto extends LinearOpMode {
 
         //composeTelemetry();
 
-        rb.setLifter(true);
         rb.moveShooter(false);
 
         telemetry.addData("Status", "Initialized");
@@ -220,13 +217,11 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(3500, rb.FL, .95, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(300);
-            rb.lifter.setPosition(LIFTER_MID);
-            Thread.sleep(600); //Wait a little bit for Servo to drop
-            rb.lifter.setPosition(LIFTER_DOWN);
+            rb.setLifterMotor(false, .5);
             Thread.sleep(650);
 
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
-            rb.setLifter(true);
+            rb.setLifterMotor(true, -1);
             rb.flywheel.setPower(FLYWHEEL_SPEED);
 
             rb.strafeRightByEncoderAndIMU(1250, rb.FL, .7, .06);
@@ -272,14 +267,12 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(900, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
 
             Thread.sleep(1000);
-            rb.lifter.setPosition(LIFTER_MID);
-            Thread.sleep(600); //Wait a little bit for Servo to drop
-            rb.lifter.setPosition(LIFTER_DOWN);
+            rb.setLifterMotor(false, .5);
             Thread.sleep(650);
 
             rb.driveForwardByEncoderAndIMU(-200, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.flywheel.setPower(.4); //replace this with real function lol
-            rb.setLifter(true);
+            rb.setLifterMotor(true, -1);
             rb.driveForwardByEncoderAndIMU(-600, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(150);
             rb.strafeRightByEncoderAndIMU(-180, rb.FL, .3, .05);
@@ -318,14 +311,12 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(4900, rb.FL, .75, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(1000);
-            rb.lifter.setPosition(LIFTER_MID);
-            Thread.sleep(600); //Wait a little bit for Servo to drop
-            rb.lifter.setPosition(LIFTER_DOWN);
+            rb.setLifterMotor(false, .5);
             Thread.sleep(650);
             Thread.sleep(750); //Wait a little bit for Servo to drop
 
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
-            rb.setLifter(true);
+            rb.setLifterMotor(true, -1);
             rb.flywheel.setPower(.4); //replace this with real function lol
             rb.autoDriveSouthWestWithEncoderAndIMU(1925, rb.FL, .6, .05);
             telemetry.addData(">", "Done with south west");

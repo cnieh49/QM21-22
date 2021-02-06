@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -17,8 +18,6 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BU
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_DOWN;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MID;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
 
 
@@ -35,7 +34,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private final boolean shooterOut = false;
     private boolean intakeOn = false;
     private boolean intakeIsEjecting = false;
-    private boolean lifterUp = true; //Default is true becausae needs to start up to stay in 18in
+    private boolean lifterUp = true; //Default is true because needs to start up to stay in 18in
 
     // State used for updating telemetry
     Orientation angles;
@@ -52,6 +51,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initializing Hardware...");
         telemetry.update();
         rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
+        rb.lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         telemetry.addData("Status", "Hardware Map Initialized");
         telemetry.update();
 
@@ -72,6 +72,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initialized, Ready to Start");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
+        rb.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
 
@@ -162,11 +163,11 @@ public class simpleBotTeleOp extends LinearOpMode {
     //TODO: Configure delay variable in simpleBotConstants.java
     private void shooter() throws InterruptedException {
 
-        if (gamepad1.a && !flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
+        if (gamepad1.right_trigger > .2 && !flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
-        } else if (gamepad1.a) {
+        } else if (gamepad1.right_trigger > .2) {
 
             rb.moveShooter(true); //Shoot
             //TODO:Make screen red to indicate wait
@@ -250,22 +251,23 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     private void lifter() throws InterruptedException {
         if (gamepad1.x && lifterUp) {
+
             telemetry.addData(">", "Lifter DOWN");
             telemetry.update();
-            rb.lifter.setPosition(LIFTER_MID);
-            Thread.sleep(1000);
-            rb.lifter.setPosition(LIFTER_DOWN);
+            rb.setLifterMotor(false, .5);
             lifterUp = false;
             Thread.sleep(BUTTON_DELAY);
+
         } else if (gamepad1.x) {
+
             telemetry.addData(">", "Lifter UP");
             telemetry.update();
-            rb.setLifter(true);
+            rb.setLifterMotor(true, -1);
             lifterUp = true;
             Thread.sleep(BUTTON_DELAY);
+
         }
     }
-
 
     private void captureAngle() {
         if (gamepad1.dpad_down) {

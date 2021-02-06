@@ -22,9 +22,14 @@ public final class simpleBotConstants {
     public static final float TRIGGER_THRESHOLD = .5f;
     public static final int BUTTON_DELAY = 250; //Delay after any toggle button is pressed before button is checked again. idk
 
+    //Motor:
+    public static final int LIFTER_MOTOR_UP = 10;
+    public static final int LIFTER_MOTOR_DOWN = 370;
+
+
     //Servo:
-    public static final double SHOOTER_OUT = .69;
-    public static final double SHOOTER_IN = .55;
+    public static final double SHOOTER_OUT = .41;
+    public static final double SHOOTER_IN = .29;
     public static final double LIFTER_MAXIMUM = .58;
     public static final double LIFTER_UP = .61; //.60 before
     public static final double LIFTER_MID = .79;

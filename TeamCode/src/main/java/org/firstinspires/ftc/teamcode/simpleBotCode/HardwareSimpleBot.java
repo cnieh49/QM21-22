@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_DOWN;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_UP;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
 
 public class HardwareSimpleBot {
@@ -30,8 +32,9 @@ public class HardwareSimpleBot {
     public DcMotor BL = null;
     public DcMotor flywheel = null;
     public DcMotor intake = null;
+    public DcMotor lifterMotor = null;
     //servos
-    public Servo lifter = null;
+    //public Servo lifter = null;
     public Servo shooter = null;
     //imu:
     public BNO055IMU imu;
@@ -73,10 +76,11 @@ public class HardwareSimpleBot {
         BL = hwMap.get(DcMotor.class, "BL");
         flywheel = hwMap.get(DcMotor.class, "flywheel");
         intake = hwMap.get(DcMotor.class, "intake");
+        lifterMotor = hwMap.get(DcMotor.class, "lifterMotor");
 
         // Define and Initialize Servos
         shooter = hwMap.get(Servo.class, "shooter");
-        lifter = hwMap.get(Servo.class, "lifter");
+        //lifter = hwMap.get(Servo.class, "lifter");
 
         //Define and Initalize BNO055IMU
         imu = hwMap.get(BNO055IMU.class, "imu");
@@ -92,6 +96,7 @@ public class HardwareSimpleBot {
         BL.setDirection(DcMotor.Direction.FORWARD);
         flywheel.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        lifterMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Set rb behavior when power is zero (BRAKE = brake, FLOAT = no brake)
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -100,6 +105,7 @@ public class HardwareSimpleBot {
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lifterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         // Set all motors to zero power for initialization
@@ -111,7 +117,8 @@ public class HardwareSimpleBot {
         intake.setPower(0);
 
 
-        // Set all motors to run without encoders.
+        // Set all motor encoder options.
+        lifterMotor.setTargetPosition(0);
 
         FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -119,6 +126,7 @@ public class HardwareSimpleBot {
         BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
     }//End init code
@@ -208,6 +216,24 @@ public class HardwareSimpleBot {
         FL.setPower(speed);
         BR.setPower(-speed);
         BL.setPower(speed);
+    }
+
+    /**
+     * Controls Lifter motor
+     *
+     * @param moveUp Controls whether motor should move up or down
+     * @param speed  Speed motor should travel at, can be either negative or positive
+     */
+
+    public void setLifterMotor(boolean moveUp, double speed) {
+        if (!moveUp) {
+            lifterMotor.setTargetPosition(LIFTER_MOTOR_DOWN);
+            lifterMotor.setPower(Math.abs(speed)); //make sure speed is always positive
+        } else if (moveUp) {
+            speed = -Math.abs(speed); //make sure speed is negative
+            lifterMotor.setTargetPosition(LIFTER_MOTOR_UP);
+
+        }
     }
 
     /**
@@ -488,7 +514,7 @@ public class HardwareSimpleBot {
                 }
                 drive(currentPower);
             }
-            //deceleration:
+            //deceleration code:
 
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
 
@@ -508,7 +534,7 @@ public class HardwareSimpleBot {
     }
 
     /**
-     * Drives forward using 1 encoder
+     * Drives forward using 1 encoders
      *
      * @param positionChange        This should be positive or negative based on direction
      * @param motor                 rb.FL
@@ -517,7 +543,14 @@ public class HardwareSimpleBot {
      * @param accelerationIncrement Positive Linear increment that is used to increase acceleration, default is DEFAULT_ACCELERATION_INCREMENT. To get no acceleration, just make this 1
      */
     public void driveForwardByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain, double accelerationIncrement) {
+        DcMotor oppositeMotor;
+        if (motor == FL) {
+            oppositeMotor = BL;
+        } else if (motor == FR) {
+            oppositeMotor = BR;
+        } else if (motor == BR) {
 
+        }
         power = Math.abs(power);
 
         int oldPosition = motor.getCurrentPosition();
@@ -691,9 +724,9 @@ public class HardwareSimpleBot {
      * @param power          Positive value, 0-1
      * @param correctionGain
      */
-
-    //TODO: Add More Encoders so we can actually use this
+    //We should incorporate this into the code now.
     public void autoDriveNorthEastWithEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
+
         power = Math.abs(power);
 
         int oldPosition = motor.getCurrentPosition();
@@ -915,13 +948,13 @@ public class HardwareSimpleBot {
         }
     }
 
-    public void setLifter(boolean isUp) {
-        if (isUp) {
-            lifter.setPosition(simpleBotConstants.LIFTER_UP);
-        } else {
-            lifter.setPosition(simpleBotConstants.LIFTER_DOWN);
-        }
-    }
+//    public void setLifter(boolean isUp) {
+//        if (isUp) {
+//            lifter.setPosition(simpleBotConstants.LIFTER_UP);
+//        } else {
+//            lifter.setPosition(simpleBotConstants.LIFTER_DOWN);
+//        }
+//    }
 
     /**
      * Turns intake on and off

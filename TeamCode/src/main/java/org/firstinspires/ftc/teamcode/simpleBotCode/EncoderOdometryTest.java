@@ -18,6 +18,8 @@ public class EncoderOdometryTest extends LinearOpMode {
         telemetry.addData("BR Encoder", rb.BR.getCurrentPosition());
         telemetry.addData("BL Encoder", rb.BL.getCurrentPosition());
         telemetry.addData("Flywheel Encoder", rb.flywheel.getCurrentPosition());
+        telemetry.addData("Lifter Encoder", rb.lifterMotor.getCurrentPosition());
+
         telemetry.update();
         odometry.start(rb.FR.getCurrentPosition(), rb.FL.getCurrentPosition(), rb.BL.getCurrentPosition());
         waitForStart();
@@ -28,6 +30,8 @@ public class EncoderOdometryTest extends LinearOpMode {
             telemetry.addData("BR Encoder", rb.BR.getCurrentPosition());
             telemetry.addData("BL Encoder", rb.BL.getCurrentPosition());
             telemetry.addData("Flywheel Encoder", rb.flywheel.getCurrentPosition());
+            telemetry.addData("Lifter Encoder", rb.lifterMotor.getCurrentPosition());
+
             telemetry.update();
         }
     }
