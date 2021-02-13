@@ -17,11 +17,13 @@ import java.util.Locale;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BUTTON_DELAY;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.TRIGGER_THRESHOLD;
 
 
-@TeleOp(name = "!QM TeleOP", group = "Sensor")
+@TeleOp(name = "!QM TeleOP", group = "!Primary")
 public class simpleBotTeleOp extends LinearOpMode {
 
     //private final FtcDashboard dashboard = FtcDashboard.getInstance(); //Comment this out when not using dashboard
@@ -35,6 +37,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean intakeOn = false;
     private boolean intakeIsEjecting = false;
     private boolean lifterUp = true; //Default is true because needs to start up to stay in 18in
+    private boolean powershotSpeedActive = false;
 
     // State used for updating telemetry
     Orientation angles;
@@ -82,8 +85,11 @@ public class simpleBotTeleOp extends LinearOpMode {
             intake();//Turns intake on and off
             intakeEject(); //Runs intake in reverse for emergencies
             lifter();//Moves lifter up and down
+            powershotSpeed();
             //captureAngle(); //TESTING ONLY: Captures angle
             rotateToAngle(); //TESTING ONLY (for now): Rotates
+            rapidRotateLeft(); //TESTING ONLY: Rotates to the left at max speed
+            rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
             volkswagenMode();
 
 
@@ -96,10 +102,14 @@ public class simpleBotTeleOp extends LinearOpMode {
              * Right Stick - Rotation
              * Left Bumper - Intake
              * Right Bumper - Flywheel on/off
-             * A - Shoot servo (only works if flywheel is on)
+             * Right Trigger - Shoot servo (only works if flywheel is on)
+             * Left Trigger - TESTING ONLY: Aligns robot to goal
              * X - Wobble Goal Lifter
              * Right Stick Button - Rotate -8.6 degrees to shoot straight
              * Left Stick Button - Intake Eject for Emergencies
+             * D-Pad Down - Slows down flywheel for powershots
+             * D-Pad Left - Rapid Rotate Left
+             * D-Pad Right - Rapid Rotate Right
              * D-pad Left + Share Button - Volkswagen Mode (do not use)
              * Gunner: (Start + B) //TODO: Add gunner controls
              *
@@ -160,7 +170,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     //TODO: Configure delay variable in simpleBotConstants.java
     private void shooter() throws InterruptedException {
 
-        if (gamepad1.right_trigger > .2 && !flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
+        if (gamepad1.right_trigger > TRIGGER_THRESHOLD && !flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
@@ -283,6 +293,38 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
+    private void powershotSpeed() {
+        if (gamepad1.dpad_down) {
+            if (!powershotSpeedActive) {
+                rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
+                powershotSpeedActive = true;
+            } else {
+                rb.flywheel.setPower(FLYWHEEL_SPEED);
+                powershotSpeedActive = false;
+            }
+
+            while (gamepad1.dpad_down && opModeIsActive()) { //wait until button is released to restart listener
+
+            }
+        }
+    }
+
+    private void rapidRotateLeft() {
+        if (gamepad1.dpad_left) {
+            rb.turn(-1);
+
+        }
+    }
+
+    private void rapidRotateRight() {
+        if (gamepad1.dpad_right) {
+
+            rb.turn(1);
+
+
+        }
+    }
+
 
     private void volkswagenMode() throws InterruptedException {
         if (gamepad1.dpad_left && gamepad1.share && FLYWHEEL_SPEED != .7) {
@@ -295,6 +337,17 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.addData(">", "..0");
             telemetry.update();
             Thread.sleep(BUTTON_DELAY);
+        }
+    }
+
+    private void alignToGoal() throws InterruptedException {
+        if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+            //1. Calculate distance from center of shooter to side wall
+            //2. Assume aproximate constant distance to front wall (or we can use sensors later)
+            //3. do arctan (side wall distance / constant to front wall)
+            //4. using angle from arctan, make rotation positive or negative
+            //5. Subtract shooter offset angle
+            //6. Rotate to angle and set LED status lights
         }
     }
 

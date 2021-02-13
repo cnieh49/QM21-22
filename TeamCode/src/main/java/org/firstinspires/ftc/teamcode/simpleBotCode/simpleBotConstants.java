@@ -5,6 +5,7 @@ public final class simpleBotConstants {
 
     //Speeds:
     public static double FLYWHEEL_SPEED = .77;  //Volkswagen Mode = .7
+    public static double FLYWHEEL_POWERSHOT_SPEED = .68;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
     //.65 = 13.12ft @ 31 degrees
@@ -19,7 +20,7 @@ public final class simpleBotConstants {
     //Controls:
     public static final float DRIVE_STICK_THRESHOLD = .0f;
     public static final float DRIVE_STICK_THRESHOLD_SQUARED = DRIVE_STICK_THRESHOLD * DRIVE_STICK_THRESHOLD;
-    public static final float TRIGGER_THRESHOLD = .5f;
+    public static final float TRIGGER_THRESHOLD = .4f;
     public static final int BUTTON_DELAY = 250; //Delay after any toggle button is pressed before button is checked again. idk
 
     //Motor:

@@ -28,7 +28,7 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FL
 
 //Import Constants:
 //WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but make sure its just not facing downwards.
-@Autonomous(name = "Remote Auto", group = "Autonomous")
+@Autonomous(name = "Remote Auto", group = "!Primary")
 public class remoteAuto extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
