@@ -38,10 +38,8 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     // State used for updating telemetry
     Orientation angles;
-    //Acceleration gravity;
 
     @Override
-    //WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but just make sure it's not facing downwards.
     public void runOpMode() throws InterruptedException {
         //telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
@@ -54,7 +52,6 @@ public class simpleBotTeleOp extends LinearOpMode {
         rb.lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         telemetry.addData("Status", "Hardware Map Initialized");
         telemetry.update();
-
 
         telemetry.addData("Status", "Calibrating IMU...");
         telemetry.update();
