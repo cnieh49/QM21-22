@@ -2,7 +2,7 @@
 About this File:
 I think this is just example code for the built in acceleration/angle sensor in the expansion hubs.
  */
-package org.firstinspires.ftc.teamcode.simpleBotCode;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;

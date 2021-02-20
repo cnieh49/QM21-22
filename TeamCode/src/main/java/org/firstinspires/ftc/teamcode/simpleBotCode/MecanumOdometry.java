@@ -7,6 +7,8 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.IMU;
+
 public class MecanumOdometry {
     // Encoder constants
     public static final double CM_PER_TICK_A = -100.0 / 1673.0;

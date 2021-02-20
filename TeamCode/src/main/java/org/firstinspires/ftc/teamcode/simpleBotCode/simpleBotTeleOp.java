@@ -15,11 +15,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BUTTON_DELAY;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.CENTER_TO_TOWER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_TO_CENTER_DISTANCE;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_WALL_TO_TOWER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.TRIGGER_THRESHOLD;
 
 
@@ -342,8 +345,24 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     private void alignToGoal() throws InterruptedException {
         if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+            telemetry.addData("STATUS:", "Rotating...");
+            telemetry.update();
+            double readingFromSideSensor = 5; //TODO: Change this with actual code and convert to inches: rangeSensor.getDistance(DistanceUnit.INCH))
+            double sideLength = SIDE_WALL_TO_TOWER_DISTANCE - (SIDE_TO_CENTER_DISTANCE + readingFromSideSensor);
+            //- angle values go to the right and + go to the left
+
+            double frontLength = CENTER_TO_TOWER_DISTANCE;
+
+            double angleToRotate = Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION;
+
+            rb.rotate(angleToRotate, .6);
+
+            telemetry.addData("STATUS:", "Done Rotating!!");
+            telemetry.update();
+            //TODO: Change led color + maybe auto shoot if it works well?
+
             //1. Calculate distance from center of shooter to side wall
-            //2. Assume aproximate constant distance to front wall (or we can use sensors later)
+            //2. Assume approximate constant distance to front wall (or we can use sensors later)
             //3. do arctan (side wall distance / constant to front wall)
             //4. using angle from arctan, make rotation positive or negative
             //5. Subtract shooter offset angle
