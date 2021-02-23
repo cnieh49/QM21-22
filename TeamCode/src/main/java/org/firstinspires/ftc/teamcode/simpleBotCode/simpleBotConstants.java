@@ -4,8 +4,8 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 public final class simpleBotConstants {
 
     //Speeds:
-    public static double FLYWHEEL_SPEED = .77;  //Volk5swagen Mode = .7 .77 before
-    public static double FLYWHEEL_POWERSHOT_SPEED = .6;
+    public static double FLYWHEEL_SPEED = .77;  //Volkswagen Mode = .7
+    public static double FLYWHEEL_POWERSHOT_SPEED = .63;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
     //.65 = 13.12ft @ 31 degrees
@@ -28,22 +28,15 @@ public final class simpleBotConstants {
     public static final int LIFTER_MOTOR_MID = 100;
     public static final int LIFTER_MOTOR_DOWN = 465;
 
-    //Wheel Diameter = 100mm
+    //Wheel Diameter = 100m
     //100m * pi = 314.16mm = circumference = 1 wheel rotation
     //767.2 Ticks per 314.16mm distance traveled
     //2 ft (1 tile distance) = 609.6mm
     //609.6/314.16 = 1.940412528647823
     //1.940412528647823 * 767.2 ticks = 1488.684491978609626 ticks per tile?
 
-    //Wheel Diameter = 96mm
-    //96m * pi = 301.5928947446202mm = circumference = 1 wheel rotation
-    //767.2 Ticks per 301.5928947446202mm distance traveled
-    //2 ft (1 tile distance) = 609.6mm
-    //609.6/301.5928947446202mm = 2.02126777726707
-    //2.02126777726707 * 767.2 ticks = 1488.684491978609626 ticks per tile?
-
     public static final double TICKS_PER_ROTATION = 767.2;
-    public static final double ENCODER_DRIVE_ONE_TILE = 2.02126777726707 * TICKS_PER_ROTATION; //Evaluates to 1550.716638719296 right now
+    public static final double ENCODER_DRIVE_ONE_TILE = 1.940412528647823 * TICKS_PER_ROTATION; //Evaluates to 1488.684491978609626 right now
 
 
     //Servo:

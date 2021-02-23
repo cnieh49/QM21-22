@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ENCODER_DRIVE_ONE_TILE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 
 //Import Constants:
@@ -224,21 +225,21 @@ public class remoteAuto extends LinearOpMode {
             rb.setLifterMotor(true, -1);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
 
-            rb.strafeRightByEncoderAndIMU(1200, rb.FL, .7, .06);
+            rb.strafeRightByEncoderAndIMU(1300, rb.FL, .7, .06);
             rb.driveStop();
 
             Thread.sleep(80);
             rb.driveForwardByEncoderAndIMU(648, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(100);
 
-            rb.rotate(-15, .3);
-            Thread.sleep(350);
+            //rb.rotate(-0.5, .3);
+            //Thread.sleep(350);
 
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(-5, .3);
+            rb.rotate(3, .3);
             Thread.sleep(350);
 
             Thread.sleep(800);
@@ -246,7 +247,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(-5, .3);
+            rb.rotate(3, .3);
             Thread.sleep(350);
 
             Thread.sleep(800);
@@ -258,7 +259,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(25, .5);
+            rb.rotate(-6, .5);
             rb.driveForwardByEncoderAndIMU(691, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
 
@@ -314,7 +315,7 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU(4704, rb.FL, .75, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU((int) (4.4*ENCODER_DRIVE_ONE_TILE), rb.FL, .75, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(1000);
             rb.setLifterMotor(false, .5);
@@ -323,28 +324,34 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU(-336, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
-            rb.flywheel.setPower(.4); //replace this with real function lol
-            rb.autoDriveSouthWestWithEncoderAndIMU(1848, rb.FL, .6, .05);
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
+            rb.autoDriveSouthWestWithEncoderAndIMU(2848, rb.FL, .6, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(-795, rb.FL, .5, .05, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-1095, rb.FL, .5, .05, DEFAULT_ACCELERATION_INCREMENT);
             telemetry.addData(">", "Done with approach behind line");
             telemetry.update();
 
             Thread.sleep(100);
 
-            rb.rotate(-8.3, .2);
-            Thread.sleep(500);
+            rb.rotate(-1, .3);
+            Thread.sleep(350);
 
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
-            //rb.rotate(20, .3);
+
+            rb.rotate(4, .3);
+            Thread.sleep(350);
+
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 2
             Thread.sleep(200);
             rb.moveShooter(false);
-            // rb.rotate(20, .3);
+
+            rb.rotate(4, .3);
+            Thread.sleep(350);
+
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 3
             Thread.sleep(200);
@@ -354,9 +361,8 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(8.3, .2);
-
-            rb.driveForwardByEncoderAndIMU(365, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
+            rb.rotate(-9.5, .5);
+            rb.driveForwardByEncoderAndIMU(691, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
         } else {
             telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");
