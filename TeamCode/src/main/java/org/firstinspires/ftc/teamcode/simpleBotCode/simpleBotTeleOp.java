@@ -264,7 +264,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             telemetry.addData(">", "Lifter DOWN");
             telemetry.update();
-            rb.setLifterMotor(false, .5);
+            rb.setLifterMotor(false, .25);
             lifterUp = false;
             Thread.sleep(BUTTON_DELAY);
 
@@ -272,7 +272,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             telemetry.addData(">", "Lifter UP");
             telemetry.update();
-            rb.setLifterMotor(true, -1);
+            rb.setLifterMotor(true, -.75);
             lifterUp = true;
             Thread.sleep(BUTTON_DELAY);
 
