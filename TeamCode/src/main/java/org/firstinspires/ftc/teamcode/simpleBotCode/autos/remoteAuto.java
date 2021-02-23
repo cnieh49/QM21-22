@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 
 //Import Constants:
@@ -222,7 +223,7 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
-            rb.flywheel.setPower(FLYWHEEL_SPEED);
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
 
             rb.strafeRightByEncoderAndIMU(1250, rb.FL, .7, .06);
             rb.driveStop();
@@ -231,17 +232,23 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(675, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(100);
 
-            rb.rotate(-7.5, .3);
+            rb.rotate(-15, .3);
             Thread.sleep(350);
 
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
 
+            rb.rotate(-5, .3);
+            Thread.sleep(350);
+
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 2
             Thread.sleep(200);
             rb.moveShooter(false);
+
+            rb.rotate(-5, .3);
+            Thread.sleep(350);
 
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 3
@@ -252,7 +259,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(7.5, .5);
+            rb.rotate(25, .5);
             rb.driveForwardByEncoderAndIMU(720, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
 
