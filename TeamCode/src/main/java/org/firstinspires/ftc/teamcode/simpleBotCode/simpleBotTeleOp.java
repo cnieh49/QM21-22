@@ -177,7 +177,9 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
-        } else if (gamepad1.right_trigger > .2) {
+        }
+
+        if (gamepad1.right_trigger > .2) {
 
             rb.moveShooter(true); //Shoot
             //TODO:Make screen red to indicate wait
