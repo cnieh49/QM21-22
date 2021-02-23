@@ -4,8 +4,8 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 public final class simpleBotConstants {
 
     //Speeds:
-    public static double FLYWHEEL_SPEED = .6;  //Volk5swagen Mode = .7 .77 before
-    public static double FLYWHEEL_POWERSHOT_SPEED = .5;
+    public static double FLYWHEEL_SPEED = .77;  //Volk5swagen Mode = .7 .77 before
+    public static double FLYWHEEL_POWERSHOT_SPEED = .6;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
     //.65 = 13.12ft @ 31 degrees
