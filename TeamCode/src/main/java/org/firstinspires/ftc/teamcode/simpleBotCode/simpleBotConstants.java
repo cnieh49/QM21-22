@@ -42,15 +42,15 @@ public final class simpleBotConstants {
     //Servo:
     public static final double SHOOTER_OUT = .41;
     public static final double SHOOTER_IN = .29;
-    public static final double LIFTER_MAXIMUM = .58;
-    public static final double LIFTER_UP = .61; //.60 before
-    public static final double LIFTER_MID = .79;
-    public static final double LIFTER_DOWN = 1; //.88 before
-    public static final double LIFTER_MINIMUM = .99;
+//    public static final double LIFTER_MAXIMUM = .58;
+//    public static final double LIFTER_UP = .61;
+//    public static final double LIFTER_MID = .79;
+//    public static final double LIFTER_DOWN = 1;
+//    public static final double LIFTER_MINIMUM = .99;
 
     //Color Sensor:
     //Setting the correct WHITE_ALPHA_THRESHOLD value is key to stopping correctly. This should be set half way between the light and dark values.
-    public static final double WHITE_ALPHA_THRESHOLD = 170; //TODO: Update Color Values on real field
+    public static final double WHITE_ALPHA_THRESHOLD = 170; //
 
     //Distance Sensor: (IN INCHES)
     public static final double SIDE_TO_CENTER_DISTANCE = 7.44; //inches

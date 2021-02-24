@@ -26,6 +26,8 @@ import java.util.Locale;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ENCODER_DRIVE_ONE_TILE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
 
 //Import Constants:
 //WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but make sure its just not facing downwards.
@@ -45,8 +47,9 @@ public class remoteAuto extends LinearOpMode {
      * random data. As an example, here is a example of a fragment of a valid key:
      *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
      * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
+     * and paste it in to your code on the next line, between the double quotes. (already done)
      */
+
     private static final String VUFORIA_KEY =
             "AVEjJ2v/////AAABmdKQOJQzM0o6okKDJrLI2rxkN0GIoH6MQXf5ccupZBuAc9sWIow1gQZPILscyRQsZK9U3XSsREHPJ5AwLABu7qK6kv3ttm4u0xPZNFL9Z6xQeE4J2qNBCthVP/GxLJhgogNv8pJS9TP7IRQj+95TzG1ifxKd2CSIR6RwMr7rNdAZ8wZ1q0HDjG62OXXu5zyWLgbxZ0bEwR0tVyRXEEem6w/V6s3H1TOF8w2s0vCyGzFpJBk1Fuh5l5Rorrv3TCY1Y+E5QIt8PokZJH2NxpBzrSgRF9JldVTwRpNz43UY9HppZF2/PuHAvdF1x8hjgSWL4OgVbA7E/hrFtXSg532zmFaEIzblCHrIwoyOLhLTjvEg";
 
@@ -215,7 +218,7 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting A Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU(3360, rb.FL, .95, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU(3360, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive to A Zone
 
             Thread.sleep(300);
             rb.setLifterMotor(false, .5);
@@ -225,11 +228,11 @@ public class remoteAuto extends LinearOpMode {
             rb.setLifterMotor(true, -1);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
 
-            rb.strafeRightByEncoderAndIMU(1300, rb.FL, .7, .06);
+            rb.strafeRightByEncoderAndIMU(1300, rb.FL, .8, .06);
             rb.driveStop();
 
             Thread.sleep(80);
-            rb.driveForwardByEncoderAndIMU(648, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(648, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(100);
 
             //rb.rotate(-0.5, .3);
@@ -315,7 +318,7 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU((int) (4.4*ENCODER_DRIVE_ONE_TILE), rb.FL, .75, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(1000);
             rb.setLifterMotor(false, .5);
@@ -325,10 +328,10 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(-336, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
-            rb.autoDriveSouthWestWithEncoderAndIMU(2848, rb.FL, .6, .05);
+            rb.autoDriveSouthWestWithEncoderAndIMU(2848, rb.FL, .9, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(-1095, rb.FL, .5, .05, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-1095, rb.FL, .8, .05, DEFAULT_ACCELERATION_INCREMENT);
             telemetry.addData(">", "Done with approach behind line");
             telemetry.update();
 
@@ -361,33 +364,63 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(-9.5, .5);
-            rb.driveForwardByEncoderAndIMU(691, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
+            rb.rotate(-7, .5); //rotate back to 0
+            rb.runIntake(true, false);
+
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, .4, .08, DEFAULT_ACCELERATION_INCREMENT);
+
+            Thread.sleep(1000);
+            rb.driveForwardByEncoderAndIMU(1000, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
+            rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
+            //Start Rapid Firing into high goal:
+            //Shot 1:
+            rb.moveShooter(true); //Shoot
+            Thread.sleep(8); //8ms = time for ring to leave shooter
+            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
+            Thread.sleep(117);
+            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
+            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
+            rb.moveShooter(false);
+            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+            //Shot 2:
+            rb.moveShooter(true); //Shoot
+            Thread.sleep(8); //8ms = time for ring to leave shooter
+            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
+            Thread.sleep(117);
+            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
+            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
+            rb.moveShooter(false);
+            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+            //Shot 3:
+            rb.moveShooter(true); //Shoot
+            Thread.sleep(8); //8ms = time for ring to leave shooter
+            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
+            Thread.sleep(117);
+            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
+            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
+            rb.moveShooter(false);
+            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+            //Shot 4: (Just in case a ring doesn't fire)
+            rb.moveShooter(true); //Shoot
+            Thread.sleep(8); //8ms = time for ring to leave shooter
+            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
+            Thread.sleep(117);
+            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
+            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
+            rb.moveShooter(false);
+            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+
+            rb.driveForwardByEncoderAndIMU(1000, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
+
 
         } else {
             telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");
             telemetry.update();
         }
 
-        //rb.driveForwardByIMUtoLine(.25, "white");
-//            // convert the RGB values to HSV values.
-//            // multiply by the SCALE_FACTOR.
-//            // then cast it back to int (SCALE_FACTOR is a double)
-//            Color.RGBToHSV((int) (groundColorSensor.red() * SCALE_FACTOR),
-//                    (int) (groundColorSensor.green() * SCALE_FACTOR),
-//                    (int) (groundColorSensor.blue() * SCALE_FACTOR),
-//                    hsvValues);
-//            // send the info back to driver station using telemetry function.
-//            telemetry.addData("Alpha", groundColorSensor.alpha());
-//            telemetry.addData("Red  ", groundColorSensor.red());
-//            telemetry.addData("Green", groundColorSensor.green());
-//            telemetry.addData("Blue ", groundColorSensor.blue());
-//            telemetry.addData("Hue", hsvValues[0]);
-//            telemetry.update();
 
         rb.driveStop();
-        telemetry.addData(">", "White Line Detected!");
-        telemetry.update();
 
 
     }
