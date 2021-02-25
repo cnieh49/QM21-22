@@ -18,7 +18,7 @@ import java.util.concurrent.locks.Lock;
 
 public class ConceptI2cAddressChange extends LinearOpMode {
 
-  public static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x70;
+  public static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x28;
   // trigger bytes used to change I2C address on ModernRobotics sensors.
   public static final byte TRIGGER_BYTE_1 = 0x55;
   public static final byte TRIGGER_BYTE_2 = (byte) 0xaa;
@@ -26,7 +26,7 @@ public class ConceptI2cAddressChange extends LinearOpMode {
   // Expected bytes from the Modern Robotics IR Seeker V3 memory map
   public static final byte IR_SEEKER_V3_FIRMWARE_REV = 0x12;
   public static final byte IR_SEEKER_V3_SENSOR_ID = 0x49;
-  public static final I2cAddr IR_SEEKER_V3_ORIGINAL_ADDRESS = I2cAddr.create8bit(0x38);
+  public static final I2cAddr IR_SEEKER_V3_ORIGINAL_ADDRESS = I2cAddr.create8bit(0x36);
 
   // Expected bytes from the Modern Robotics Color Sensor memory map
   public static final byte COLOR_SENSOR_FIRMWARE_REV = 0x10;
@@ -50,7 +50,7 @@ public class ConceptI2cAddressChange extends LinearOpMode {
   public static final int BUFFER_CHANGE_ADDRESS_LENGTH = 0x03;
 
   // The port where your sensor is connected.
-  int port = 5;
+  int port = 3;
 
   byte[] readCache;
   Lock readLock;
