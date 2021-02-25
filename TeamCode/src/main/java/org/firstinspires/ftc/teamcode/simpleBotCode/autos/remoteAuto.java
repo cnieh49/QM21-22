@@ -270,37 +270,37 @@ public class remoteAuto extends LinearOpMode {
             //1 Ring Code, Go to B (middle)
             telemetry.addData(">", "Starting B Code...");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(1920, rb.FL, .75, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
+            rb.driveForwardByEncoderAndIMU(5040, rb.FL, .75, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
             Thread.sleep(750);
-            rb.strafeRightByEncoderAndIMU(1171, rb.FL, .4, .05);
-            Thread.sleep(500);
-            rb.driveForwardByEncoderAndIMU(864, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.strafeRightByEncoderAndIMU((int) (1*ENCODER_DRIVE_ONE_TILE), rb.FL, .4, .05);
+            //Thread.sleep(500);
+            //rb.driveForwardByEncoderAndIMU(864, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
 
             Thread.sleep(1000);
             rb.setLifterMotor(false, .5);
             Thread.sleep(650);
 
             rb.driveForwardByEncoderAndIMU(-192, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
-            rb.flywheel.setPower(.4); //replace this with real function lol
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED); //replace this with real function lol
             rb.setLifterMotor(true, -1);
-            rb.driveForwardByEncoderAndIMU(-576, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-876, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(150);
             rb.strafeRightByEncoderAndIMU(-173, rb.FL, .3, .05);
 
             Thread.sleep(100);
 
-            rb.rotate(-8.3, .2);
-            Thread.sleep(500);
+            //rb.rotate(-8.3, .2);
+            //Thread.sleep(500);
 
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
             rb.moveShooter(false);
-            //rb.rotate(20, .3);
+            rb.rotate(3, .3);
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 2
             Thread.sleep(200);
             rb.moveShooter(false);
-            // rb.rotate(20, .3);
+            rb.rotate(3, .3);
             Thread.sleep(800);
             rb.moveShooter(true); //Shot 3
             Thread.sleep(200);
@@ -310,7 +310,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(8.3, .2);
+            rb.rotate(-6, .2);
             rb.driveForwardByEncoderAndIMU(408, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
 
         } else if (numberOfRingsDetected == 4) {
@@ -321,7 +321,7 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(1000);
-            rb.setLifterMotor(false, .5);
+            rb.setLifterMotor(false, 1);
             Thread.sleep(650);
             Thread.sleep(750); //Wait a little bit for Servo to drop
 
@@ -335,10 +335,8 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Done with approach behind line");
             telemetry.update();
 
-            Thread.sleep(100);
+            Thread.sleep(200);
 
-            rb.rotate(-1, .3);
-            Thread.sleep(350);
 
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
@@ -352,7 +350,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(4, .3);
+            rb.rotate(3, .3);
             Thread.sleep(350);
 
             Thread.sleep(800);
@@ -367,11 +365,11 @@ public class remoteAuto extends LinearOpMode {
             rb.rotate(-7, .5); //rotate back to 0
             rb.runIntake(true, false);
 
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT);
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, .4, .08, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT);
 
             Thread.sleep(1000);
-            rb.driveForwardByEncoderAndIMU(1000, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
+            rb.driveForwardByEncoderAndIMU(1200, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
             rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
             //Start Rapid Firing into high goal:
             //Shot 1:

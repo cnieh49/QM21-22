@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.simpleBotCode;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -10,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
@@ -42,6 +45,9 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean lifterUp = true; //Default is true because needs to start up to stay in 18in
     private boolean powershotSpeedActive = false;
 
+    private DistanceSensor sensorRangeSide;
+
+
     // State used for updating telemetry
     Orientation angles;
 
@@ -51,6 +57,12 @@ public class simpleBotTeleOp extends LinearOpMode {
 
         telemetry.addData("Status", "Initializing");
         telemetry.update();
+
+        sensorRangeSide = hardwareMap.get(DistanceSensor.class, "sensor_range_side");
+
+        // you can also cast this to a Rev2mDistanceSensor if you want to use added
+        // methods associated with the Rev2mDistanceSensor class.
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRangeSide;
 
         telemetry.addData("Status", "Initializing Hardware...");
         telemetry.update();
@@ -94,6 +106,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             rapidRotateLeft(); //TESTING ONLY: Rotates to the left at max speed
             rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
             volkswagenMode();
+            alignToGoal();
 
 
             telemetry.update(); //for imu display
@@ -185,7 +198,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             //TODO:Make screen red to indicate wait
             if (powershotSpeedActive = false) {
                 Thread.sleep(8); //8ms = time for ring to leave shooter
-                rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
+                rb.flywheel.setPower(1); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
                 Thread.sleep(117);
                 rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
             } else {
@@ -269,7 +282,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             telemetry.addData(">", "Lifter DOWN");
             telemetry.update();
-            rb.setLifterMotor(false, .25);
+            rb.setLifterMotor(false, 1);
             lifterUp = false;
             Thread.sleep(BUTTON_DELAY);
 
@@ -277,11 +290,13 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             telemetry.addData(">", "Lifter UP");
             telemetry.update();
-            rb.setLifterMotor(true, -.75);
+            rb.setLifterMotor(true, -1);
             lifterUp = true;
             Thread.sleep(BUTTON_DELAY);
 
         }
+
+
     }
 
     private void captureAngle() {
@@ -352,7 +367,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
             telemetry.addData("STATUS:", "Rotating...");
             telemetry.update();
-            double readingFromSideSensor = 5; //TODO: Change this with actual code and convert to inches: rangeSensor.getDistance(DistanceUnit.INCH))
+            double readingFromSideSensor = sensorRangeSide.getDistance(DistanceUnit.INCH);
             double sideLength = SIDE_WALL_TO_TOWER_DISTANCE - (SIDE_TO_CENTER_DISTANCE + readingFromSideSensor);
             //- angle values go to the right and + go to the left
 

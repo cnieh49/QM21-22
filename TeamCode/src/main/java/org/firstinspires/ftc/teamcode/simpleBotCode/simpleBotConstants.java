@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 public final class simpleBotConstants {
 
     //Speeds:
-    public static double FLYWHEEL_SPEED = .77;  //Volkswagen Mode = .7
+    public static double FLYWHEEL_SPEED = .8;  //Volkswagen Mode = .7
     public static double FLYWHEEL_POWERSHOT_SPEED = .63;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
@@ -24,9 +24,9 @@ public final class simpleBotConstants {
     public static final int BUTTON_DELAY = 250; //Delay after any toggle button is pressed before button is checked again. idk
 
     //Motor:
-    public static final int LIFTER_MOTOR_UP = 2;
-    public static final int LIFTER_MOTOR_MID = 100;
-    public static final int LIFTER_MOTOR_DOWN = 465;
+    public static final int LIFTER_MOTOR_UP = (int) (2*2.7);
+    public static final int LIFTER_MOTOR_MID = (int) (100*2.7);
+    public static final int LIFTER_MOTOR_DOWN = (int) (465*2.7);
 
     //Wheel Diameter = 100m
     //100m * pi = 314.16mm = circumference = 1 wheel rotation

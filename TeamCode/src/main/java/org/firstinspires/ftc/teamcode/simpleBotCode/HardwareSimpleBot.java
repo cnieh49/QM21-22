@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -33,6 +34,9 @@ public class HardwareSimpleBot {
     public DcMotor flywheel = null;
     public DcMotor intake = null;
     public DcMotor lifterMotor = null;
+
+    private DistanceSensor sensorRangeSide= null;
+
     //servos
     //public Servo lifter = null;
     public Servo shooter = null;
@@ -85,6 +89,9 @@ public class HardwareSimpleBot {
         //Define and Initalize BNO055IMU
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+
+        sensorRangeSide = hwMap.get(DistanceSensor.class, "sensor_range_side");
 
         // Define and Initialize LED's
         // blinkinLedDriver = hwMap.get(RevBlinkinLedDriver.class, "blinkin");
