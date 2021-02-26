@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.simpleBotCode;
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -23,6 +21,7 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DE
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_MID;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_TO_CENTER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_WALL_TO_TOWER_DISTANCE;
@@ -45,7 +44,6 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean lifterUp = true; //Default is true because needs to start up to stay in 18in
     private boolean powershotSpeedActive = false;
 
-    private DistanceSensor sensorRangeSide;
 
 
     // State used for updating telemetry
@@ -58,11 +56,6 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
-        sensorRangeSide = hardwareMap.get(DistanceSensor.class, "sensor_range_side");
-
-        // you can also cast this to a Rev2mDistanceSensor if you want to use added
-        // methods associated with the Rev2mDistanceSensor class.
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRangeSide;
 
         telemetry.addData("Status", "Initializing Hardware...");
         telemetry.update();
@@ -108,7 +101,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             volkswagenMode();
             alignToGoal();
 
-
+            telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.update(); //for imu display
 
 
@@ -296,6 +289,16 @@ public class simpleBotTeleOp extends LinearOpMode {
 
         }
 
+        if (gamepad1.b && lifterUp) {
+            rb.lifterMotor.setPower(.75);
+            rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
+            lifterUp = false;
+        } else if (gamepad1.b && !lifterUp) {
+            rb.lifterMotor.setPower(-1);
+            rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
+            lifterUp = false;
+        }
+
 
     }
 
@@ -367,13 +370,13 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
             telemetry.addData("STATUS:", "Rotating...");
             telemetry.update();
-            double readingFromSideSensor = sensorRangeSide.getDistance(DistanceUnit.INCH);
+            double readingFromSideSensor = rb.sensorRangeSide.getDistance(DistanceUnit.INCH);
             double sideLength = SIDE_WALL_TO_TOWER_DISTANCE - (SIDE_TO_CENTER_DISTANCE + readingFromSideSensor);
             //- angle values go to the right and + go to the left
 
             double frontLength = CENTER_TO_TOWER_DISTANCE;
 
-            double angleToRotate = Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION;
+            double angleToRotate = -Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION;
 
             rb.rotate(angleToRotate, .6);
 
@@ -457,25 +460,5 @@ public class simpleBotTeleOp extends LinearOpMode {
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-
-
-    //Old Functions: Keeping for reference
-
-//
-//    private void platform(){
-//        boolean dpadUp = gamepad2.dpad_up;
-//        boolean dpadDown = gamepad2.dpad_down;
-////        if(rightTrigger>.15){
-////            rb.setPlatformUp(false);
-////        }else if(leftTrigger>.15){
-////            rb.setPlatformUp(true);
-////        }
-//
-//        if(dpadUp){
-//            rb.setPlatformUp(true);
-//        }else if(dpadDown){
-//            rb.setPlatformUp(false);
-//        }
-//    }
 
 }

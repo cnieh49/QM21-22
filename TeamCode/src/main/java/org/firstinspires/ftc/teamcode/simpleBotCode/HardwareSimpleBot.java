@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -35,7 +36,8 @@ public class HardwareSimpleBot {
     public DcMotor intake = null;
     public DcMotor lifterMotor = null;
 
-    private DistanceSensor sensorRangeSide= null;
+    public DistanceSensor sensorRangeSide = null;
+
 
     //servos
     //public Servo lifter = null;
@@ -56,6 +58,7 @@ public class HardwareSimpleBot {
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap, LinearOpMode opMode) {
+
         this.opMode = opMode;
         //IMU Setup:
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -92,6 +95,8 @@ public class HardwareSimpleBot {
 
 
         sensorRangeSide = hwMap.get(DistanceSensor.class, "sensor_range_side");
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorRangeSide;
+
 
         // Define and Initialize LED's
         // blinkinLedDriver = hwMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -401,7 +406,7 @@ public class HardwareSimpleBot {
 //            InitialPower = -InitialPower; //turn right
 //
 //        } else {
-//            System.out.println("Starting Turning Left..."); //TODO: Delete all of these before competition
+//            System.out.println("Starting Turning Left...");
 //
 //        }
 //
@@ -414,7 +419,7 @@ public class HardwareSimpleBot {
 ////            while (opMode.opModeIsActive() && getGlobalAngle() == 0) {
 ////            }
 //
-//            //TODO: Tried to add deceleration here but idk why it's not working....
+//
 //            while (opMode.opModeIsActive() && getGlobalAngle() > 22.5 + targetAngle) {
 //            }
 //            driveStop();

@@ -221,7 +221,7 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(3360, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive to A Zone
 
             Thread.sleep(300);
-            rb.setLifterMotor(false, .5);
+            rb.setLifterMotor(false, 1);
             Thread.sleep(650);
 
             rb.driveForwardByEncoderAndIMU(-336, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
@@ -270,14 +270,19 @@ public class remoteAuto extends LinearOpMode {
             //1 Ring Code, Go to B (middle)
             telemetry.addData(">", "Starting B Code...");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(5040, rb.FL, .75, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
-            Thread.sleep(750);
-            rb.strafeRightByEncoderAndIMU((int) (1*ENCODER_DRIVE_ONE_TILE), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(3552, rb.FL, .75, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
+
+            rb.autoDriveNorthEastWithEncoderAndIMU(2104, rb.FL, .8, .06);
+
+            //Old Slower Strafe Code:
+//            Thread.sleep(750);
+            //rb.strafeRightByEncoderAndIMU((int) (1*ENCODER_DRIVE_ONE_TILE), rb.FL, .4, .05);
+
             //Thread.sleep(500);
             //rb.driveForwardByEncoderAndIMU(864, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
 
             Thread.sleep(1000);
-            rb.setLifterMotor(false, .5);
+            rb.setLifterMotor(false, 1);
             Thread.sleep(650);
 
             rb.driveForwardByEncoderAndIMU(-192, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
