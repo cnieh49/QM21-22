@@ -47,9 +47,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -62,6 +59,11 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.google.blocks.ftcrobotcontroller.ProgrammingWebHandlers;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
 import com.qualcomm.ftccommon.ClassManagerFactory;
@@ -311,6 +313,7 @@ public class FtcRobotControllerActivity extends Activity
           }
         });
         popupMenu.inflate(R.menu.ftc_robot_controller);
+        FtcDashboard.populateMenu(popupMenu.getMenu());
         popupMenu.show();
       }
     });
@@ -380,9 +383,7 @@ public class FtcRobotControllerActivity extends Activity
     }
 
     FtcAboutActivity.setBuildTimeFromBuildConfig(BuildConfig.BUILD_TIME);
-
-    // check to see if there is a preferred Wi-Fi to use.
-    checkPreferredChannel();
+    FtcDashboard.start();
   }
 
   protected UpdateUI createUpdateUI() {
@@ -403,6 +404,17 @@ public class FtcRobotControllerActivity extends Activity
   protected void onStart() {
     super.onStart();
     RobotLog.vv(TAG, "onStart()");
+
+    // If we're start()ing after a stop(), then shut the old robot down so
+    // we can refresh it with new state (e.g., with new hw configurations)
+    shutdownRobot();
+
+    updateUIAndRequestRobotSetup();
+
+    cfgFileMgr.getActiveConfigAndUpdateUI();
+
+    // check to see if there is a preferred Wi-Fi to use.
+    checkPreferredChannel();
 
     entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -451,6 +463,7 @@ public class FtcRobotControllerActivity extends Activity
     if (preferencesHelper != null) preferencesHelper.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener);
 
     RobotLog.cancelWriteLogcatToDisk();
+    FtcDashboard.stop();
   }
 
   protected void bindToService() {
@@ -516,6 +529,7 @@ public class FtcRobotControllerActivity extends Activity
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
+    FtcDashboard.populateMenu(menu);
     return true;
   }
 
@@ -532,11 +546,7 @@ public class FtcRobotControllerActivity extends Activity
 
     RobotState robotState = robot.eventLoopManager.state;
 
-    if (robotState != RobotState.RUNNING) {
-      return false;
-    } else {
-      return true;
-    }
+    return robotState == RobotState.RUNNING;
   }
 
   @Override
@@ -649,9 +659,7 @@ public class FtcRobotControllerActivity extends Activity
     // was some historical confusion about launch codes here, so we err safely
     if (request == RequestCode.CONFIGURE_ROBOT_CONTROLLER.ordinal() || request == RequestCode.SETTINGS_ROBOT_CONTROLLER.ordinal()) {
       // We always do a refresh, whether it was a cancel or an OK, for robustness
-      shutdownRobot();
       cfgFileMgr.getActiveConfigAndUpdateUI();
-      updateUIAndRequestRobotSetup();
     }
   }
 
@@ -673,6 +681,7 @@ public class FtcRobotControllerActivity extends Activity
         return service.getRobot().eventLoopManager;
       }
     });
+    FtcDashboard.attachWebServer(service.getWebServer());
   }
 
   private void updateUIAndRequestRobotSetup() {
@@ -712,6 +721,7 @@ public class FtcRobotControllerActivity extends Activity
 
     passReceivedUsbAttachmentsToEventLoop();
     AndroidBoard.showErrorIfUnknownControlHub();
+    FtcDashboard.attachEventLoop(eventLoop);
   }
 
   protected OpModeRegister createOpModeRegister() {
@@ -776,11 +786,7 @@ public class FtcRobotControllerActivity extends Activity
       if (key.equals(context.getString(R.string.pref_app_theme))) {
         ThemedActivity.restartForAppThemeChange(getTag(), getString(R.string.appThemeChangeRestartNotifyRC));
       } else if (key.equals(context.getString(R.string.pref_wifi_automute))) {
-        if (preferencesHelper.readBoolean(context.getString(R.string.pref_wifi_automute), false)) {
-          initWifiMute(true);
-        } else {
-          initWifiMute(false);
-        }
+        initWifiMute(preferencesHelper.readBoolean(context.getString(R.string.pref_wifi_automute), false));
       }
     }
   }
