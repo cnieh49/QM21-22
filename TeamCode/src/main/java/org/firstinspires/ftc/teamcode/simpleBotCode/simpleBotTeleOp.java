@@ -56,7 +56,6 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
-
         telemetry.addData("Status", "Initializing Hardware...");
         telemetry.update();
         rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
@@ -77,7 +76,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
         composeTelemetry();
 
-        telemetry.addData("Status", "Initialized, Ready to Start");
+        telemetry.addData("Status", "Initialized, Ready to Start. Make sure lifter is in back position");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         rb.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -176,10 +175,9 @@ public class simpleBotTeleOp extends LinearOpMode {
      * Triggers servo that pushes rings into flywheel
      */
     //TODO: Setup teleop for 2 driver control w/ gamepad2
-    //TODO: Configure delay variable in simpleBotConstants.java
     private void shooter() throws InterruptedException {
 
-        if (gamepad1.right_trigger > TRIGGER_THRESHOLD && !flywheelOn) { //TODO: Figure out why trigger gamepad1.right_trigger > .5f isnt working
+        if (gamepad1.right_trigger > TRIGGER_THRESHOLD && !flywheelOn) {
             telemetry.addData("WARNING:", "flywheel is not running");
             telemetry.update();
 
@@ -188,7 +186,6 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.right_trigger > .2) {
 
             rb.moveShooter(true); //Shoot
-            //TODO:Make screen red to indicate wait
             if (powershotSpeedActive = false) {
                 Thread.sleep(8); //8ms = time for ring to leave shooter
                 rb.flywheel.setPower(1); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
@@ -210,13 +207,13 @@ public class simpleBotTeleOp extends LinearOpMode {
      */
     private void flywheel() throws InterruptedException {
 
-        if (gamepad1.right_bumper && !flywheelOn) {
+        if ((gamepad1.right_bumper || gamepad2.right_bumper) && !flywheelOn) {
             telemetry.addData(">", "Flywheel ON");
             telemetry.update();
             rb.runFlywheel(true);
             flywheelOn = true;
             Thread.sleep(BUTTON_DELAY); //TODO: Make better code than this
-        } else if (gamepad1.right_bumper && flywheelOn) {
+        } else if ((gamepad1.right_bumper || gamepad2.right_bumper) && flywheelOn) {
             telemetry.addData(">", "Flywheel OFF");
             telemetry.update();
             rb.runFlywheel(false);
@@ -232,14 +229,14 @@ public class simpleBotTeleOp extends LinearOpMode {
      */
     private void intake() throws InterruptedException {
 
-        if (gamepad1.left_bumper && !intakeOn) {
+        if ((gamepad1.left_bumper || gamepad2.left_bumper) && !intakeOn) {
             telemetry.addData(">", "Intake ON");
             telemetry.update();
             rb.runIntake(true, false);
             intakeOn = true;
             Thread.sleep(BUTTON_DELAY);
 
-        } else if (gamepad1.left_bumper && intakeOn) {
+        } else if ((gamepad1.left_bumper || gamepad2.left_bumper) && intakeOn) {
             telemetry.addData(">", "Intake OFF");
             telemetry.update();
             rb.runIntake(false, false);
@@ -251,9 +248,10 @@ public class simpleBotTeleOp extends LinearOpMode {
     /**
      * Turns intake on and off
      */
+
     private void intakeEject() throws InterruptedException {
 
-        if (gamepad1.left_stick_button && !intakeOn) {
+        if ((gamepad1.left_stick_button || gamepad2.left_stick_button) && !intakeOn) {
             telemetry.addData(">", "Intake EJECT");
             telemetry.update();
             rb.runIntake(true, true);
@@ -261,7 +259,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             intakeIsEjecting = true;
             Thread.sleep(BUTTON_DELAY);
 
-        } else if (gamepad1.left_stick_button && intakeIsEjecting || gamepad1.left_bumper && intakeIsEjecting) {
+        } else if ((gamepad1.left_stick_button || gamepad2.left_stick_button) && intakeIsEjecting || gamepad1.left_bumper && intakeIsEjecting) {
             telemetry.addData(">", "Intake OFF");
             telemetry.update();
             rb.runIntake(false, false);
@@ -335,17 +333,21 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
-    private void rapidRotateLeft() {
+    private void rapidRotateLeft() throws InterruptedException {
         if (gamepad1.dpad_left) {
-            rb.turn(-1);
-
+            while (gamepad1.dpad_left && opModeIsActive()) {
+                rb.turn(-1);
+            }
+            Thread.sleep(BUTTON_DELAY);
         }
     }
 
-    private void rapidRotateRight() {
+    private void rapidRotateRight() throws InterruptedException {
         if (gamepad1.dpad_right) {
-
-            rb.turn(1);
+            while (gamepad1.dpad_right && opModeIsActive()) {
+                rb.turn(1);
+            }
+            Thread.sleep(BUTTON_DELAY);
 
 
         }
