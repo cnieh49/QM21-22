@@ -28,13 +28,11 @@ public class ServoTester extends LinearOpMode {
 
 //      CRServo servo = hardwareMap.get(CRServo.class, "hand");
         Servo shooter = hardwareMap.get(Servo.class, "shooter");
-        Servo lifter = hardwareMap.get(Servo.class, "lifter");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to scan Servo.");
         telemetry.update();
 
-        position2 = lifter.getPosition();
 
         telemetry.addData(">", "Shooter Position: ");
         telemetry.update();
@@ -71,7 +69,6 @@ public class ServoTester extends LinearOpMode {
 
             // Set the servo to the new position and pause;
             shooter.setPosition(position1);
-            lifter.setPosition(position2);
 
 
             sleep(DELAY);

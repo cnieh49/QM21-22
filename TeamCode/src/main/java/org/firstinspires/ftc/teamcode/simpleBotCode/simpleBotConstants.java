@@ -25,8 +25,8 @@ public final class simpleBotConstants {
 
     //Motor:
     public static final int LIFTER_MOTOR_UP = (int) (2*2.7);
-    public static final int LIFTER_MOTOR_MID = (int) (100*2.7);
-    public static final int LIFTER_MOTOR_DOWN = (int) (1450);
+    public static final int LIFTER_MOTOR_MID = (int) (100 * 2.7);
+    public static final int LIFTER_MOTOR_DOWN = 1275;
 
     //Wheel Diameter = 100m
     //100m * pi = 314.16mm = circumference = 1 wheel rotation
@@ -40,8 +40,8 @@ public final class simpleBotConstants {
 
 
     //Servo:
-    public static final double SHOOTER_OUT = .41;
-    public static final double SHOOTER_IN = .29;
+    public static final double SHOOTER_OUT = .24;
+    public static final double SHOOTER_IN = .09; //Position when servo is just inside of the hopper
 //    public static final double LIFTER_MAXIMUM = .58;
 //    public static final double LIFTER_UP = .61;
 //    public static final double LIFTER_MID = .79;
