@@ -33,7 +33,6 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -55,9 +54,9 @@ public class SensorMRRangeSensor extends LinearOpMode {
     ModernRoboticsI2cRangeSensor rangeSensor;
 
     @Override public void runOpMode() {
-        rangeSensor.setI2cAddress(I2cAddr.create7bit(0x36));
+
         // get a reference to our compass
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor_range_side");
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor_range");
 
         // wait for the start button to be pressed
         waitForStart();
