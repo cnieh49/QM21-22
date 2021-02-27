@@ -376,9 +376,9 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             double frontLength = CENTER_TO_TOWER_DISTANCE;
 
-            double angleToRotate = -Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION;
+            double angleToRotate = -(Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION);
 
-            rb.rotate(angleToRotate, .6);
+            rb.rotate(-angleToRotate, .8);
 
             telemetry.addData("STATUS:", "Done Rotating!!");
             telemetry.update();
