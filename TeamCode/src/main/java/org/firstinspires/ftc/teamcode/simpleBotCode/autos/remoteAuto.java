@@ -355,7 +355,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(4, .3);
+            rb.rotate(3, .3);
             Thread.sleep(350);
 
             Thread.sleep(800);
@@ -375,16 +375,41 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
-            rb.rotate(-7, .5); //rotate back to 0
+            rb.rotate(-6, .5); //rotate back to 0
             rb.runIntake(true, false);
 
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT);
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .06, 0.1);
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .08, 0.1);
 
             Thread.sleep(1000);
-            rb.driveForwardByEncoderAndIMU(1200, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
+
+            rb.driveForwardByEncoderAndIMU(1600, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
             rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
+
             //Start Rapid Firing into high goal:
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
+            Thread.sleep(200);
+
+
+            rb.moveShooter(true); //Shot 1
+            Thread.sleep(200);
+            rb.moveShooter(false);
+
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 2
+            Thread.sleep(200);
+            rb.moveShooter(false);
+
+            Thread.sleep(800);
+            rb.moveShooter(true); //Shot 3
+            Thread.sleep(200);
+            rb.moveShooter(false);
+            Thread.sleep(200);
+            rb.moveShooter(true); //Shot 4 just to make sure
+            Thread.sleep(200);
+            rb.moveShooter(false);
+
+            /*
             //Shot 1:
             rb.moveShooter(true); //Shoot
             Thread.sleep(8); //8ms = time for ring to leave shooter
@@ -421,6 +446,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
             rb.moveShooter(false);
             Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+            */
 
             rb.driveForwardByEncoderAndIMU(1000, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
 

@@ -26,7 +26,7 @@ public final class simpleBotConstants {
     //Motor:
     public static final int LIFTER_MOTOR_UP = (int) (2 * 2.7);
     public static final int LIFTER_MOTOR_MID = (int) (100 * 2.7);
-    public static final int LIFTER_MOTOR_DOWN = 1275;
+    public static final int LIFTER_MOTOR_DOWN = 1275+175;
 
     //Wheel Diameter = 100m
     //100m * pi = 314.16mm = circumference = 1 wheel rotation
