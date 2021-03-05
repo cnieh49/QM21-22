@@ -94,7 +94,7 @@ public class HardwareSimpleBot {
         imu.initialize(parameters);
 
 
-        sensorRangeSide = hwMap.get(DistanceSensor.class, "sensor_range_side");
+        sensorRangeSide = hwMap.get(DistanceSensor.class, "hopper_range_sensor");
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorRangeSide;
 
 

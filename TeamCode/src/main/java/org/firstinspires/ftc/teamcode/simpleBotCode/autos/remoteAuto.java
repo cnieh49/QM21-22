@@ -287,7 +287,7 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU(-192, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED); //replace this with real function lol
-            rb.setLifterMotor(true, -1);
+            //rb.setLifterMotor(true, -1);
             rb.driveForwardByEncoderAndIMU(-626, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(150);
             rb.strafeRightByEncoderAndIMU(-173, rb.FL, .3, .05);
@@ -315,16 +315,31 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
 
+
+            //For top goal shot
             rb.rotate(-7, .2);
             rb.runIntake(true, false);
             rb.driveForwardByEncoderAndIMU(-1808, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
-            Thread.sleep(200);
+            Thread.sleep(300);
+            rb.rotate(-180, .2);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/8), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(808, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.setLifterMotor(true, -1);
+            rb.rotate(-180, .2);
             rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.driveForwardByEncoderAndIMU(1808, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/8), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(808, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(1808, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.rotate(SHOOTER_DEFAULT_ROTATION, .2);
             rb.moveShooter(true); //top goal shot
+            Thread.sleep(200);
+            rb.moveShooter(true); //second just in case
+            Thread.sleep(200);
+            rb.moveShooter(false);
             rb.rotate((-SHOOTER_DEFAULT_ROTATION) + 1, .2);
-            rb.driveForwardByEncoderAndIMU(808, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(1008, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.setLifterMotor(false, -1);
+            rb.driveForwardByEncoderAndIMU(-408, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
 
         } else if (numberOfRingsDetected == 4) {
             //4 Ring Code, Go to C (furthest)
@@ -344,7 +359,7 @@ public class remoteAuto extends LinearOpMode {
             rb.autoDriveSouthWestWithEncoderAndIMU(2848, rb.FL, .9, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(-1095, rb.FL, 1, .05, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-1100, rb.FL, 1, .05, DEFAULT_ACCELERATION_INCREMENT);
             telemetry.addData(">", "Done with approach behind line");
             telemetry.update();
 
@@ -378,16 +393,16 @@ public class remoteAuto extends LinearOpMode {
             rb.rotate(-6, .5); //rotate back to 0
             rb.runIntake(true, false);
 
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .06, 0.1);
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 1, .08, 0.1);
+            rb.driveForwardByEncoderAndIMU(-1200, rb.FL, 1, .08, 0.1);
+            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 0.6, .06, 0.1);
 
             Thread.sleep(1000);
 
-            rb.driveForwardByEncoderAndIMU(1600, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
+            rb.driveForwardByEncoderAndIMU(1800, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
+            rb.flywheel.setPower(FLYWHEEL_SPEED);
             rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
 
             //Start Rapid Firing into high goal:
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
             Thread.sleep(200);
 
 
@@ -448,7 +463,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
             */
 
-            rb.driveForwardByEncoderAndIMU(1000, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
+            rb.driveForwardByEncoderAndIMU(800, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
 
 
         } else {
