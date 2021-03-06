@@ -52,11 +52,19 @@ public final class simpleBotConstants {
     //Setting the correct WHITE_ALPHA_THRESHOLD value is key to stopping correctly. This should be set half way between the light and dark values.
     public static final double WHITE_ALPHA_THRESHOLD = 170; //
 
-    //Distance Sensor: (IN INCHES)
+    //Distance Sensor:
+    //These are in inches:
     public static final double SIDE_TO_CENTER_DISTANCE = 7.44; //inches
     public static final double FRONT_TO_CENTER_DISTANCE = 10.17;
     public static final double CENTER_TO_TOWER_DISTANCE = FRONT_TO_CENTER_DISTANCE + 61;
     public static final double SIDE_WALL_TO_TOWER_DISTANCE = 34.5;
+    //in mm
+
+    public static final int HOPPER_ZERO_RINGS = 115;
+    public static final int HOPPER_ONE_RING = 110;
+    public static final int HOPPER_TWO_RINGS = 95;
+    public static final int HOPPER_THREE_RINGS = 83;
+    public static final int[] ringDistanceArray = {HOPPER_ZERO_RINGS, HOPPER_ONE_RING, HOPPER_TWO_RINGS, HOPPER_THREE_RINGS};
 
 
 }

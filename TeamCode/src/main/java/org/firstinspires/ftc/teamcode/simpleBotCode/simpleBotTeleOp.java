@@ -10,7 +10,6 @@ import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
@@ -99,7 +98,8 @@ public class simpleBotTeleOp extends LinearOpMode {
             volkswagenMode();
             alignToGoal();
 
-            telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
+            //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
+            telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
             telemetry.update(); //for imu display
 
 
@@ -371,14 +371,16 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
             telemetry.addData("STATUS:", "Rotating...");
             telemetry.update();
-            double readingFromSideSensor = rb.sensorRangeSide.getDistance(DistanceUnit.INCH);
+            double readingFromSideSensor = 0; //rb.sensorRangeSide.getDistance(DistanceUnit.INCH);
             double sideLength = SIDE_WALL_TO_TOWER_DISTANCE - (SIDE_TO_CENTER_DISTANCE + readingFromSideSensor);
             //- angle values go to the right and + go to the left
 
             double frontLength = CENTER_TO_TOWER_DISTANCE;
 
             double angleToRotate = -(Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION);
-
+            telemetry.addData("Angle Rotating To = ", angleToRotate);
+            System.out.println("Angle Rotating to = " + angleToRotate);
+            telemetry.update();
             rb.rotate(-angleToRotate, .8);
 
             telemetry.addData("STATUS:", "Done Rotating!!");

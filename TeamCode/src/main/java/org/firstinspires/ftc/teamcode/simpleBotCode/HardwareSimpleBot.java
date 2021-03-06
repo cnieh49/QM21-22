@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 
@@ -24,6 +26,7 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.IN
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_UP;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ringDistanceArray;
 
 public class HardwareSimpleBot {
     /* Public OpMode members. */
@@ -36,9 +39,10 @@ public class HardwareSimpleBot {
     public DcMotor intake = null;
     public DcMotor lifterMotor = null;
 
-    public DistanceSensor sensorRangeSide = null;
+    public DistanceSensor wobbleRangeSensor = null;
+    public DistanceSensor hopperRangeSensor = null;
 
-
+    public ColorSensor wobbleColorSensor = null;
     //servos
     //public Servo lifter = null;
     public Servo shooter = null;
@@ -89,13 +93,17 @@ public class HardwareSimpleBot {
         shooter = hwMap.get(Servo.class, "shooter");
         //lifter = hwMap.get(Servo.class, "lifter");
 
-        //Define and Initalize BNO055IMU
-        imu = hwMap.get(BNO055IMU.class, "imu");
+        //Define and Initialize BNO055IMU
+        imu = hwMap.get(BNO055IMU.class, "imu 1");
         imu.initialize(parameters);
 
 
-        sensorRangeSide = hwMap.get(DistanceSensor.class, "hopper_range_sensor");
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorRangeSide;
+        wobbleRangeSensor = hwMap.get(DistanceSensor.class, "sensor_range_side");
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) wobbleRangeSensor;
+
+        hopperRangeSensor = hwMap.get(DistanceSensor.class, "hopper_range_sensor");
+
+        wobbleColorSensor = hwMap.get(ColorSensor.class, "wobble_color_sensor");
 
 
         // Define and Initialize LED's
@@ -510,7 +518,7 @@ public class HardwareSimpleBot {
      * @param motor          rb.FL
      * @param power          Always positive, direction controlled by positionChange
      */
-    public void driveForwardByEncoder(int positionChange, DcMotor motor, double power) throws InterruptedException {
+    public void driveForwardByEncoder(int positionChange, DcMotor motor, double power) {
         power = Math.abs(power);
 
         int oldPosition = motor.getCurrentPosition();
@@ -986,6 +994,31 @@ public class HardwareSimpleBot {
         } else {
             intake.setPower(0);
         }
+    }
+
+    /**
+     * Returns Number of Rings in the Hopper from the Range sensor
+     *
+     * @return 0-3 Rings
+     */
+
+    public int getNumberOfRingsInHopper() {
+
+        int currentDistance = (int) hopperRangeSensor.getDistance(DistanceUnit.MM);
+
+        int distance = Math.abs(ringDistanceArray[0] - currentDistance);
+        int idx = 0;
+
+        for (int c = 1; c < ringDistanceArray.length; c++) {
+            int cdistance = Math.abs(ringDistanceArray[c] - currentDistance);
+            if (cdistance < distance) {
+                idx = c;
+                distance = cdistance;
+            }
+        }
+
+        return idx;
+
     }
 
 
