@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -46,6 +45,7 @@ public class HardwareSimpleBot {
     //servos
     //public Servo lifter = null;
     public Servo shooter = null;
+    public Servo wobbleServo = null;
     //imu:
     public BNO055IMU imu;
 
@@ -91,6 +91,7 @@ public class HardwareSimpleBot {
 
         // Define and Initialize Servos
         shooter = hwMap.get(Servo.class, "shooter");
+        wobbleServo = hwMap.get(Servo.class, "wobble_servo");
         //lifter = hwMap.get(Servo.class, "lifter");
 
         //Define and Initialize BNO055IMU
@@ -98,8 +99,7 @@ public class HardwareSimpleBot {
         imu.initialize(parameters);
 
 
-        wobbleRangeSensor = hwMap.get(DistanceSensor.class, "sensor_range_side");
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) wobbleRangeSensor;
+        wobbleRangeSensor = hwMap.get(DistanceSensor.class, "wobble_color_sensor");
 
         hopperRangeSensor = hwMap.get(DistanceSensor.class, "hopper_range_sensor");
 

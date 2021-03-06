@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
@@ -25,6 +26,10 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SH
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_TO_CENTER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_WALL_TO_TOWER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.TRIGGER_THRESHOLD;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_ARMED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_CLOSED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_MININUM_DISTANCE;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_OPEN;
 
 
 @TeleOp(name = "!QM TeleOP", group = "!Primary")
@@ -78,8 +83,11 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         rb.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rb.wobbleServo.setPosition(WOBBLE_ARMED);
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
+        rb.wobbleServo.setPosition(WOBBLE_OPEN);
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -89,7 +97,9 @@ public class simpleBotTeleOp extends LinearOpMode {
             flywheel(); // Turns flywheel on and off
             intake();//Turns intake on and off
             intakeEject(); //Runs intake in reverse for emergencies
+            intakeAutoShutOff();
             lifter();//Moves lifter up and down
+            lifterAutoClose();
             powershotSpeed();
             //captureAngle(); //TESTING ONLY: Captures angle
             rotateToAngle(); //TESTING ONLY (for now): Rotates
@@ -244,6 +254,23 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
+
+    private void intakeAutoShutOff() throws InterruptedException {
+        if (rb.getNumberOfRingsInHopper() >= 3) {
+            delay(1250); // wait to see if there are actually 3 rings...
+            if (rb.getNumberOfRingsInHopper() >= 3) { //if there are...
+                rb.runIntake(false, false); //stop intake
+                intakeOn = false; //update variable
+
+                while ((rb.getNumberOfRingsInHopper() <= 0) && opModeIsActive()) { //stay stuck in here until there aren't 3 rings
+                }
+                rb.runIntake(true, false); //when we are no longer stuck in loop, turn intake back on
+                intakeOn = true; // update variable and resume loop
+            }
+        }
+    }
+
+
     /**
      * Turns intake on and off
      */
@@ -274,7 +301,8 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.update();
             rb.setLifterMotor(false, 1);
             lifterUp = false;
-            Thread.sleep(BUTTON_DELAY);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
+            delay(BUTTON_DELAY);
 
         } else if (gamepad1.x) {
 
@@ -282,21 +310,40 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.update();
             rb.setLifterMotor(true, -1);
             lifterUp = true;
-            Thread.sleep(BUTTON_DELAY);
+            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
+            delay(BUTTON_DELAY);
 
         }
+
 
         if (gamepad1.b && lifterUp) {
             rb.lifterMotor.setPower(.75);
             rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
             lifterUp = false;
         } else if (gamepad1.b && !lifterUp) {
             rb.lifterMotor.setPower(-1);
             rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
             lifterUp = false;
         }
 
 
+    }
+
+    private void lifterAutoClose() {
+        if (!lifterUp) {
+            while (!lifterUp) {
+                if (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE) {
+                    telemetry.addData(">", "Lifter UP");
+                    telemetry.update();
+                    rb.setLifterMotor(true, -1);
+                    rb.wobbleServo.setPosition(WOBBLE_CLOSED);
+                    lifterUp = true;
+
+                }
+            }
+        }
     }
 
     private void captureAngle() {
@@ -462,6 +509,14 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    private void delay(double delayTime) {
+
+        double startTime = getRuntime();
+        while ((getRuntime() < startTime + delayTime) && opModeIsActive()) {
+            //wait for delay
+        }
     }
 
 }

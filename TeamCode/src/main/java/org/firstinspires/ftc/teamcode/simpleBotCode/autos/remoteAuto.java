@@ -28,6 +28,9 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.EN
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_ARMED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_CLOSED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_OPEN;
 
 //Import Constants:
 //WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but make sure its just not facing downwards.
@@ -117,7 +120,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.addData("Status", "Initializing Ground Color Sensor...");
         telemetry.update();
         // get a reference to the color sensor.
-        groundColorSensor = hardwareMap.get(ColorSensor.class, "groundcolorsensor");
+        //groundColorSensor = hardwareMap.get(ColorSensor.class, "groundcolorsensor");
         // hsvValues is an array that will hold the hue, saturation, and value information.
         float[] hsvValues = {0F, 0F, 0F};
 
@@ -150,11 +153,13 @@ public class remoteAuto extends LinearOpMode {
         telemetry.update();
 
 
+        rb.wobbleServo.setPosition(WOBBLE_ARMED);
         // Wait for the game to start (driver presses PLAY)
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
+        rb.wobbleServo.setPosition(WOBBLE_CLOSED);
         // run until the end of the match (driver presses STOP)
-        //Create global variables here... //TODO: Someone who is better at coding tell me if this is actually where these should go...
+        //Create global variables here
         int numberOfRingsDetected = 0; //Stores number of rings detected by webcam at start of auto
         int angleFacingForward; //Stores heading at beginning of match so we can reference it later
         angles = rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -162,7 +167,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.addData("Angle Captured=", angleFacingForward);
         telemetry.update();
 
-        Thread.sleep(2000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
+        Thread.sleep(1000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
         telemetry.addData(">", "One second has passsed... Counting Rings...");
         //Get Number of Rings from Camera (which is already on)
 
@@ -220,9 +225,9 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU(3360, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive to A Zone
 
-            Thread.sleep(300);
             rb.setLifterMotor(false, 1);
-            Thread.sleep(650);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
+            Thread.sleep(600);
 
             rb.driveForwardByEncoderAndIMU(-336, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
@@ -281,9 +286,10 @@ public class remoteAuto extends LinearOpMode {
             //Thread.sleep(500);
             //rb.driveForwardByEncoderAndIMU(864, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
 
-            Thread.sleep(1000);
+            Thread.sleep(200);
             rb.setLifterMotor(false, 1);
-            Thread.sleep(650);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
+            Thread.sleep(600);
 
             rb.driveForwardByEncoderAndIMU(-192, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED); //replace this with real function lol
@@ -348,10 +354,10 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
-            Thread.sleep(1000);
+            Thread.sleep(200);
             rb.setLifterMotor(false, 1);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
             Thread.sleep(650);
-            Thread.sleep(750); //Wait a little bit for Servo to drop
 
             rb.driveForwardByEncoderAndIMU(-336, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);

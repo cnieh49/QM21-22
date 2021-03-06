@@ -42,6 +42,12 @@ public final class simpleBotConstants {
     //Servo:
     public static final double SHOOTER_OUT = .24;
     public static final double SHOOTER_IN = .09; //Position when servo is just inside of the hopper
+
+    public static final double WOBBLE_ARMED = 1;
+    public static final double WOBBLE_OPEN = .51;
+    public static final double WOBBLE_CLOSED = .30;
+
+
 //    public static final double LIFTER_MAXIMUM = .58;
 //    public static final double LIFTER_UP = .61;
 //    public static final double LIFTER_MID = .79;
@@ -60,7 +66,9 @@ public final class simpleBotConstants {
     public static final double SIDE_WALL_TO_TOWER_DISTANCE = 34.5;
     //in mm
 
-    public static final int HOPPER_ZERO_RINGS = 115;
+    public static final double WOBBLE_MININUM_DISTANCE = 11; // in mm TODO: Update This with actual value
+
+    public static final int HOPPER_ZERO_RINGS = 126;
     public static final int HOPPER_ONE_RING = 110;
     public static final int HOPPER_TWO_RINGS = 95;
     public static final int HOPPER_THREE_RINGS = 83;
