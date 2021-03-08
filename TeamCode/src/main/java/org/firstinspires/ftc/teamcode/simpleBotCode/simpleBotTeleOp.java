@@ -97,9 +97,9 @@ public class simpleBotTeleOp extends LinearOpMode {
             flywheel(); // Turns flywheel on and off
             intake();//Turns intake on and off
             intakeEject(); //Runs intake in reverse for emergencies
-            intakeAutoShutOff();
+
             lifter();//Moves lifter up and down
-            lifterAutoClose();
+            //lifterAutoClose();
             powershotSpeed();
             //captureAngle(); //TESTING ONLY: Captures angle
             rotateToAngle(); //TESTING ONLY (for now): Rotates
@@ -243,6 +243,9 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.update();
             rb.runIntake(true, false);
             intakeOn = true;
+            System.out.println("iASO");
+            //intakeAutoShutOff();
+
             Thread.sleep(BUTTON_DELAY);
 
         } else if ((gamepad1.left_bumper || gamepad2.left_bumper) && intakeOn) {
@@ -257,15 +260,22 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     private void intakeAutoShutOff() throws InterruptedException {
         if (rb.getNumberOfRingsInHopper() >= 3) {
-            delay(1250); // wait to see if there are actually 3 rings...
+            Thread.sleep(1000);
+            System.out.println("stop1");
             if (rb.getNumberOfRingsInHopper() >= 3) { //if there are...
                 rb.runIntake(false, false); //stop intake
                 intakeOn = false; //update variable
+                System.out.println("stop2");
 
-                while ((rb.getNumberOfRingsInHopper() <= 0) && opModeIsActive()) { //stay stuck in here until there aren't 3 rings
+                while ((rb.getNumberOfRingsInHopper() <= 3) && opModeIsActive()) { //stay stuck in here until there aren't 3 rings
+                    System.out.println("waiting for less than 3...");
+
+                    if (rb.getNumberOfRingsInHopper() < 3) {
+                        System.out.println("less than 3 detected");
+                        rb.runIntake(true, false); //when we are no longer stuck in loop, turn intake back on
+                        intakeOn = true; // update variable and resume loop
+                    }
                 }
-                rb.runIntake(true, false); //when we are no longer stuck in loop, turn intake back on
-                intakeOn = true; // update variable and resume loop
             }
         }
     }
@@ -302,7 +312,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             rb.setLifterMotor(false, 1);
             lifterUp = false;
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
-            delay(BUTTON_DELAY);
+            Thread.sleep(BUTTON_DELAY);
 
         } else if (gamepad1.x) {
 
@@ -311,7 +321,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             rb.setLifterMotor(true, -1);
             lifterUp = true;
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-            delay(BUTTON_DELAY);
+            Thread.sleep(BUTTON_DELAY);
 
         }
 

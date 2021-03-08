@@ -66,7 +66,7 @@ public final class simpleBotConstants {
     public static final double SIDE_WALL_TO_TOWER_DISTANCE = 34.5;
     //in mm
 
-    public static final double WOBBLE_MININUM_DISTANCE = 11; // in mm TODO: Update This with actual value
+    public static final double WOBBLE_MININUM_DISTANCE = 150; // in mm 
 
     public static final int HOPPER_ZERO_RINGS = 126;
     public static final int HOPPER_ONE_RING = 110;
