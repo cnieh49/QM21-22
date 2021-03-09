@@ -45,7 +45,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private final boolean shooterOut = false;
     private boolean intakeOn = false;
     private boolean intakeIsEjecting = false;
-    private boolean lifterUp = true; //Default is true because needs to start up to stay in 18in
+    private int lifterPosition = 2; // 0= down, 1 = mid, 2 = up Default is true because needs to start up to stay in 18in
     private boolean powershotSpeedActive = false;
 
 
@@ -54,8 +54,9 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry.setAutoClear(false);
         //telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-
+        telemetry.addData(">", "REMEMBER TO CHECK WOBBLE MOTOR AND SERVO POSITIONS!");
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
@@ -87,7 +88,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
         rb.wobbleServo.setPosition(WOBBLE_OPEN);
-
+        telemetry.setAutoClear(true);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -103,8 +104,8 @@ public class simpleBotTeleOp extends LinearOpMode {
             powershotSpeed();
             //captureAngle(); //TESTING ONLY: Captures angle
             rotateToAngle(); //TESTING ONLY (for now): Rotates
-            rapidRotateLeft(); //TESTING ONLY: Rotates to the left at max speed
-            rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
+//            rapidRotateLeft(); //TESTING ONLY: Rotates to the left at max speed
+//            rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
             volkswagenMode();
             alignToGoal();
 
@@ -169,11 +170,11 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             rb.drive(-frontRightPower, -frontLeftPower, -rearRightPower, -rearLeftPower); //Uses each of the motor values calculated above
 
-            telemetry.addData("Front-right motor", "%5.2f", frontRightPower);
-            telemetry.addData("Back-right motor", "%5.2f", rearRightPower);
-            telemetry.addData("Front-left motor", "%5.2f", frontLeftPower);
-            telemetry.addData("Back-left motor", "%5.2f", rearLeftPower);
-            telemetry.update();
+//            telemetry.addData("Front-right motor", "%5.2f", frontRightPower);
+//            telemetry.addData("Back-right motor", "%5.2f", rearRightPower);
+//            telemetry.addData("Front-left motor", "%5.2f", frontLeftPower);
+//            telemetry.addData("Back-left motor", "%5.2f", rearLeftPower);
+//            telemetry.update();
         } else {
             rb.driveStop(); //Stop robot if no stick value (delete this if u want to drift lol)
         }
@@ -198,14 +199,14 @@ public class simpleBotTeleOp extends LinearOpMode {
             if (powershotSpeedActive = false) {
                 Thread.sleep(8); //8ms = time for ring to leave shooter
                 rb.flywheel.setPower(1); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
-                Thread.sleep(117);
+                Thread.sleep(100);
                 rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
             } else {
-                Thread.sleep(117 + 8);
+                Thread.sleep(100 + 8);
             }
             Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
             rb.moveShooter(false);
-            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(200); //Wait for flywheel to get back to 100 percent speed
 
         }
 
@@ -305,12 +306,13 @@ public class simpleBotTeleOp extends LinearOpMode {
     }
 
     private void lifter() throws InterruptedException {
-        if (gamepad1.x && lifterUp) {
+
+        if (gamepad1.x && lifterPosition == 2) {
 
             telemetry.addData(">", "Lifter DOWN");
             telemetry.update();
             rb.setLifterMotor(false, 1);
-            lifterUp = false;
+            lifterPosition = 0;
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
             Thread.sleep(BUTTON_DELAY);
 
@@ -319,37 +321,35 @@ public class simpleBotTeleOp extends LinearOpMode {
             telemetry.addData(">", "Lifter UP");
             telemetry.update();
             rb.setLifterMotor(true, -1);
-            lifterUp = true;
+            lifterPosition = 2;
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
             Thread.sleep(BUTTON_DELAY);
-
         }
 
-
-        if (gamepad1.b && lifterUp) {
+        if (gamepad1.b && lifterPosition == 2) {
             rb.lifterMotor.setPower(.75);
             rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
-            lifterUp = false;
-        } else if (gamepad1.b && !lifterUp) {
+            lifterPosition = 1;
+        } else if (gamepad1.b && lifterPosition == 0) {
             rb.lifterMotor.setPower(-1);
             rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
-            lifterUp = false;
+            lifterPosition = 1;
         }
 
 
     }
 
     private void lifterAutoClose() {
-        if (!lifterUp) {
-            while (!lifterUp) {
+        if (lifterPosition == 0) {
+            while (lifterPosition == 0) {
                 if (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE) {
                     telemetry.addData(">", "Lifter UP");
                     telemetry.update();
                     rb.setLifterMotor(true, -1);
                     rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-                    lifterUp = true;
+                    lifterPosition = 2;
 
                 }
             }

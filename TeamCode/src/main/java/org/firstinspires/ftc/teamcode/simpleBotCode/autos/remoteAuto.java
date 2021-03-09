@@ -89,6 +89,7 @@ public class remoteAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.setAutoClear(false);
+        telemetry.addData(">", "REMEMBER TO CHECK WOBBLE MOTOR AND SERVO POSITIONS!");
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
