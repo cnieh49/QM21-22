@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 public final class simpleBotConstants {
 
     //Speeds:
-    public static double FLYWHEEL_SPEED = .8;  //Volkswagen Mode = .7
+    public static double FLYWHEEL_SPEED = .77;  //Volkswagen Mode = .7
     public static double FLYWHEEL_POWERSHOT_SPEED = .63;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
@@ -66,7 +66,8 @@ public final class simpleBotConstants {
     public static final double SIDE_WALL_TO_TOWER_DISTANCE = 34.5;
     //in mm
 
-    public static final double WOBBLE_MININUM_DISTANCE = 150; // in mm 
+    public static final double WOBBLE_MININUM_DISTANCE = 13; // in mm
+    public static final double WOBBLE_MOVE_DOWN_DELAY = 1500; //in ms
 
     public static final int HOPPER_ZERO_RINGS = 126;
     public static final int HOPPER_ONE_RING = 110;

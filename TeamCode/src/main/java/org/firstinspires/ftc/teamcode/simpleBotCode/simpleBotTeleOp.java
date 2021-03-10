@@ -29,6 +29,7 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.TR
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_ARMED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_CLOSED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_MININUM_DISTANCE;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_MOVE_DOWN_DELAY;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_OPEN;
 
 
@@ -47,6 +48,9 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean intakeIsEjecting = false;
     private int lifterPosition = 2; // 0= down, 1 = mid, 2 = up Default is true because needs to start up to stay in 18in
     private boolean powershotSpeedActive = false;
+    private boolean intakeAutoStopped = false;
+    private double timeSinceActivatingWobbleDown = 0;
+    private double slowModeMultiplier = 1;
 
 
     // State used for updating telemetry
@@ -90,7 +94,8 @@ public class simpleBotTeleOp extends LinearOpMode {
         rb.wobbleServo.setPosition(WOBBLE_OPEN);
         telemetry.setAutoClear(true);
 
-        // run until the end of the match (driver presses STOP)
+        //rb.runIntake(true, false); //Start with intake running TODO: Turn this on for real comp
+        // run this until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
             drive(); //Drive robot with sticks
@@ -108,6 +113,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 //            rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
             volkswagenMode();
             alignToGoal();
+            slowMode();
 
             //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
@@ -157,9 +163,9 @@ public class simpleBotTeleOp extends LinearOpMode {
         //DRIVE_STICK_THRESHOLD = deadzone
         if (rightX < -DRIVE_STICK_THRESHOLD || rightX > DRIVE_STICK_THRESHOLD || leftY < -DRIVE_STICK_THRESHOLD || leftY > DRIVE_STICK_THRESHOLD || leftX < -DRIVE_STICK_THRESHOLD || leftX > DRIVE_STICK_THRESHOLD) {
             //Get stick values and apply modifiers:
-            double drive = -gamepad1.left_stick_y * 1.10;
-            double turn = gamepad1.right_stick_x * 1.25;
-            double strafe = gamepad1.left_stick_x;
+            double drive = (-gamepad1.left_stick_y * 1.10) * slowModeMultiplier;
+            double turn = (gamepad1.right_stick_x * 1.25) * slowModeMultiplier;
+            double strafe = (gamepad1.left_stick_x) * slowModeMultiplier;
 
             //Calculate each individual motor speed using the stick values:
             //range.clip calculates a value between min and max, change those values to reduce overall speed
@@ -256,30 +262,50 @@ public class simpleBotTeleOp extends LinearOpMode {
             intakeOn = false;
             Thread.sleep(BUTTON_DELAY);
         }
-    }
 
-
-    private void intakeAutoShutOff() throws InterruptedException {
-        if (rb.getNumberOfRingsInHopper() >= 3) {
-            Thread.sleep(1000);
-            System.out.println("stop1");
-            if (rb.getNumberOfRingsInHopper() >= 3) { //if there are...
-                rb.runIntake(false, false); //stop intake
-                intakeOn = false; //update variable
-                System.out.println("stop2");
-
-                while ((rb.getNumberOfRingsInHopper() <= 3) && opModeIsActive()) { //stay stuck in here until there aren't 3 rings
-                    System.out.println("waiting for less than 3...");
-
-                    if (rb.getNumberOfRingsInHopper() < 3) {
-                        System.out.println("less than 3 detected");
-                        rb.runIntake(true, false); //when we are no longer stuck in loop, turn intake back on
-                        intakeOn = true; // update variable and resume loop
-                    }
-                }
+        //Intake Auto Stop Code:
+        if (intakeAutoStopped == true) {
+            if (rb.getNumberOfRingsInHopper() < 3) {
+                rb.runIntake(true, false);
+                intakeAutoStopped = false;
+                System.out.println("Intake Auto Resumed");
             }
         }
+        if (rb.getNumberOfRingsInHopper() >= 3 && intakeAutoStopped == false) {
+            Thread.sleep(700);
+
+            if (rb.getNumberOfRingsInHopper() >= 3) {
+                rb.runIntake(false, false);
+                intakeAutoStopped = true;
+                System.out.println("Intake Auto Stopped");
+            }
+
+        }
+
     }
+
+
+//    private void intakeAutoShutOff() throws InterruptedException {
+//        if (rb.getNumberOfRingsInHopper() >= 3) {
+//            Thread.sleep(1000);
+//            System.out.println("stop1");
+//            if (rb.getNumberOfRingsInHopper() >= 3) { //if there are...
+//                rb.runIntake(false, false); //stop intake
+//                intakeOn = false; //update variable
+//                System.out.println("stop2");
+//
+//                while ((rb.getNumberOfRingsInHopper() <= 3) && opModeIsActive()) { //stay stuck in here until there aren't 3 rings
+//                    System.out.println("waiting for less than 3...");
+//
+//                    if (rb.getNumberOfRingsInHopper() < 3) {
+//                        System.out.println("less than 3 detected");
+//                        rb.runIntake(true, false); //when we are no longer stuck in loop, turn intake back on
+//                        intakeOn = true; // update variable and resume loop
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 
     /**
@@ -314,6 +340,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             rb.setLifterMotor(false, 1);
             lifterPosition = 0;
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
+            timeSinceActivatingWobbleDown = runtime.milliseconds();
             Thread.sleep(BUTTON_DELAY);
 
         } else if (gamepad1.x) {
@@ -336,6 +363,15 @@ public class simpleBotTeleOp extends LinearOpMode {
             rb.lifterMotor.setTargetPosition(LIFTER_MOTOR_MID);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
             lifterPosition = 1;
+        }
+
+        if (lifterPosition == 0 && (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) < WOBBLE_MININUM_DISTANCE) && (timeSinceActivatingWobbleDown + WOBBLE_MOVE_DOWN_DELAY < runtime.milliseconds())) {
+            telemetry.addData(">", "Auto Closing: Lifter UP");
+            telemetry.update();
+            rb.setLifterMotor(true, -1);
+            lifterPosition = 2;
+            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
+            Thread.sleep(BUTTON_DELAY);
         }
 
 
@@ -425,7 +461,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     }
 
     private void alignToGoal() throws InterruptedException {
-        if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+        if (gamepad1.a) {
             telemetry.addData("STATUS:", "Rotating...");
             telemetry.update();
             double readingFromSideSensor = 0; //rb.sensorRangeSide.getDistance(DistanceUnit.INCH);
@@ -450,6 +486,14 @@ public class simpleBotTeleOp extends LinearOpMode {
             //4. using angle from arctan, make rotation positive or negative
             //5. Subtract shooter offset angle
             //6. Rotate to angle and set LED status lights
+        }
+    }
+
+    private void slowMode() {
+        if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+            slowModeMultiplier = .25;
+        } else {
+            slowModeMultiplier = 1;
         }
     }
 

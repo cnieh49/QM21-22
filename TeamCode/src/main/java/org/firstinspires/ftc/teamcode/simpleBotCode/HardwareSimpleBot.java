@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -40,6 +41,9 @@ public class HardwareSimpleBot {
 
     public DistanceSensor wobbleRangeSensor = null;
     public DistanceSensor hopperRangeSensor = null;
+    public DistanceSensor sideRangeSensor = null;
+    Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sideRangeSensor;
+
 
     public ColorSensor wobbleColorSensor = null;
     //servos
@@ -98,6 +102,7 @@ public class HardwareSimpleBot {
         imu = hwMap.get(BNO055IMU.class, "imu 1");
         imu.initialize(parameters);
 
+        sideRangeSensor = hwMap.get(DistanceSensor.class, "side_range_sensor");
 
         wobbleRangeSensor = hwMap.get(DistanceSensor.class, "wobble_color_sensor");
 
@@ -252,6 +257,8 @@ public class HardwareSimpleBot {
         } else if (moveUp) {
             speed = -Math.abs(speed); //make sure speed is negative
             lifterMotor.setTargetPosition(LIFTER_MOTOR_UP);
+            lifterMotor.setPower(speed); //make sure speed is always positive
+
 
         }
     }
