@@ -4,13 +4,12 @@ import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -74,23 +73,23 @@ public class remoteAuto extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     //Setup variables:
-    private final boolean flywheelOn = false;
-    private final boolean shooterOut = false;
-    private final boolean intakeOn = false;
+//    private final boolean flywheelOn = false;
+//    private final boolean shooterOut = false;
+//    private final boolean intakeOn = false;
 
     // State used for updating telemetry
     Orientation angles;
-    Acceleration gravity;
+//    Acceleration gravity;
 
 
-    public static ColorSensor groundColorSensor;
+    //public static ColorSensor groundColorSensor;
 
     @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.setAutoClear(false);
         telemetry.addData(">", "REMEMBER TO CHECK WOBBLE MOTOR AND SERVO POSITIONS!");
-        telemetry.addData("Status", "Initializing");
+        telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
         rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
@@ -118,23 +117,8 @@ public class remoteAuto extends LinearOpMode {
             tfod.setZoom(3.25, 1.78);
         }
 
-        telemetry.addData("Status", "Initializing Ground Color Sensor...");
-        telemetry.update();
-        // get a reference to the color sensor.
-        //groundColorSensor = hardwareMap.get(ColorSensor.class, "groundcolorsensor");
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float[] hsvValues = {0F, 0F, 0F};
 
-        // values is a reference to the hsvValues array.
-        final float[] values = hsvValues;
-
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-        telemetry.addData("Status", "Ground Color Sensor Initialized");
-        telemetry.update();
-
-        telemetry.addData("Mode", "calibrating IMU...");
+        telemetry.addData("Mode", "Calibrating IMU...");
         telemetry.update();
 
         // make sure the imu gyro is calibrated before continuing.
@@ -143,19 +127,33 @@ public class remoteAuto extends LinearOpMode {
             idle();
         }
 
-        telemetry.addData("Mode", "waiting for start");
         telemetry.addData("imu calib status: ", rb.imu.getCalibrationStatus().toString());
 
         //composeTelemetry();
 
         rb.moveShooter(false);
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Mode", "Resetting Encoders...");
+        telemetry.update();
+        //Reset Encoders
+        rb.FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rb.FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rb.BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rb.BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Thread.sleep(500);
+        rb.FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rb.FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rb.BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rb.BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        telemetry.addData("Mode", "Done Resetting Encoders...");
         telemetry.update();
 
 
         rb.wobbleServo.setPosition(WOBBLE_ARMED);
+
         // Wait for the game to start (driver presses PLAY)
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
         rb.wobbleServo.setPosition(WOBBLE_CLOSED);
@@ -168,7 +166,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.addData("Angle Captured=", angleFacingForward);
         telemetry.update();
 
-        Thread.sleep(1000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
+        Thread.sleep(750); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
         telemetry.addData(">", "One second has passsed... Counting Rings...");
         //Get Number of Rings from Camera (which is already on)
 
@@ -192,13 +190,13 @@ public class remoteAuto extends LinearOpMode {
 
                 if (updatedRecognitions.isEmpty()) {
                     numberOfRingsDetected = 0;
-                } else if (updatedRecognitions.get(0).getLabel().equals("Single")) {
-                    numberOfRingsDetected = 1;
                 } else if (updatedRecognitions.get(0).getLabel().equals("Quad")) {
                     numberOfRingsDetected = 4;
+                } else if (updatedRecognitions.get(0).getLabel().equals("Single")) {
+                    numberOfRingsDetected = 1;
                 } else {
-                    telemetry.addData("ERROR:", "Couldn't find any rings :( defaulting to 0?");
-                    numberOfRingsDetected = 0;
+                    telemetry.addData("ERROR:", "Couldn't find any rings :( defaulting to 1");
+                    numberOfRingsDetected = 1;
                 }
 
             } else {
@@ -213,6 +211,7 @@ public class remoteAuto extends LinearOpMode {
             telemetry.update();
 
             tfod.shutdown();
+            Thread.sleep(250);
 
             telemetry.addData(">", "tfod Shutdown");
             telemetry.update();
@@ -269,7 +268,6 @@ public class remoteAuto extends LinearOpMode {
             rb.moveShooter(false);
 
             rb.flywheel.setPower(0);
-            //rb.runIntake(true, false);
             //rb.driveForwardByEncoderAndIMU(-1008, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
             //Thread.sleep(300);
             rb.rotate(167, .4);

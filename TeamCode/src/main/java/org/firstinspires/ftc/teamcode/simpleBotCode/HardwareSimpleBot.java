@@ -18,14 +18,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.simpleBotCode.autos.remoteAuto;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_UP;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WHITE_ALPHA_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ringDistanceArray;
 
 public class HardwareSimpleBot {
@@ -653,36 +651,36 @@ public class HardwareSimpleBot {
      * @param power     NEGATIVE OR POSITIVE POWER CONTROLS DIRECTION
      * @param lineColor Linecolor to detect (white, blue)
      */
-    public void driveForwardByIMUtoLine(double power, String lineColor) {
-
-
-        if (lineColor.equals("white")) {
-            if (power > 0) {
-                drive(power);
-                while (opMode.opModeIsActive() && remoteAuto.groundColorSensor.alpha() < WHITE_ALPHA_THRESHOLD) {
-
-                    int currentAngle; //Stores heading at beginning of function
-                    // Use IMU to drive in a straight line.
-                    correction = checkCorrection(.1);
-                    drive((power + correction), (power - correction));
-                    Thread.yield();
-                }
-
-                driveStop();
-            } else if (power < 0) {
-                drive(-power);
-                while (opMode.opModeIsActive() && remoteAuto.groundColorSensor.alpha() < WHITE_ALPHA_THRESHOLD) {
-                    // Use IMU to drive in a straight line.
-                    correction = checkCorrection(.1);
-                    drive((power - correction), (power + correction));
-                    Thread.yield();
-                }
-                driveStop();
-            }
-        }
-
-
-    }
+//    public void driveForwardByIMUtoLine(double power, String lineColor) {
+//
+//
+//        if (lineColor.equals("white")) {
+//            if (power > 0) {
+//                drive(power);
+//                while (opMode.opModeIsActive() && remoteAuto.groundColorSensor.alpha() < WHITE_ALPHA_THRESHOLD) {
+//
+//                    int currentAngle; //Stores heading at beginning of function
+//                    // Use IMU to drive in a straight line.
+//                    correction = checkCorrection(.1);
+//                    drive((power + correction), (power - correction));
+//                    Thread.yield();
+//                }
+//
+//                driveStop();
+//            } else if (power < 0) {
+//                drive(-power);
+//                while (opMode.opModeIsActive() && remoteAuto.groundColorSensor.alpha() < WHITE_ALPHA_THRESHOLD) {
+//                    // Use IMU to drive in a straight line.
+//                    correction = checkCorrection(.1);
+//                    drive((power - correction), (power + correction));
+//                    Thread.yield();
+//                }
+//                driveStop();
+//            }
+//        }
+//
+//
+//    }
 
 
     /**

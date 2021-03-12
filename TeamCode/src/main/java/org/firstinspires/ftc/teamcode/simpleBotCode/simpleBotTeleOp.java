@@ -24,7 +24,6 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FL
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_MID;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_TO_CENTER_DISTANCE;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SIDE_WALL_TO_TOWER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.TRIGGER_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_ARMED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_CLOSED;
@@ -50,6 +49,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private boolean powershotSpeedActive = false;
     private boolean intakeAutoStopped = false;
     private double timeSinceActivatingWobbleDown = 0;
+    private double timeSincePossiblyDetecting3Rings = 0;
     private double slowModeMultiplier = 1;
 
 
@@ -264,23 +264,29 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
 
         //Intake Auto Stop Code:
-        if (intakeAutoStopped == true) {
+        if (intakeAutoStopped) {
             if (rb.getNumberOfRingsInHopper() < 3) {
                 rb.runIntake(true, false);
                 intakeAutoStopped = false;
                 System.out.println("Intake Auto Resumed");
             }
         }
-        if (rb.getNumberOfRingsInHopper() >= 3 && intakeAutoStopped == false) {
-            Thread.sleep(700);
 
+        if (rb.getNumberOfRingsInHopper() >= 3 && intakeAutoStopped == false && timeSincePossiblyDetecting3Rings == 0) {
+            timeSincePossiblyDetecting3Rings = runtime.milliseconds();
+        }
+
+        if (rb.getNumberOfRingsInHopper() >= 3 && timeSincePossiblyDetecting3Rings < runtime.milliseconds() + 750 && timeSincePossiblyDetecting3Rings != 0) {
             if (rb.getNumberOfRingsInHopper() >= 3) {
                 rb.runIntake(false, false);
                 intakeAutoStopped = true;
+                timeSincePossiblyDetecting3Rings = 0;
                 System.out.println("Intake Auto Stopped");
+            } else {
+                timeSincePossiblyDetecting3Rings = 0;
             }
-
         }
+
 
     }
 
@@ -464,8 +470,9 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.a) {
             telemetry.addData("STATUS:", "Rotating...");
             telemetry.update();
-            double readingFromSideSensor = 0; //rb.sensorRangeSide.getDistance(DistanceUnit.INCH);
-            double sideLength = SIDE_WALL_TO_TOWER_DISTANCE - (SIDE_TO_CENTER_DISTANCE + readingFromSideSensor);
+            //These are the variables we use for the trig equations:
+            double readingFromSideSensor = rb.sideRangeSensor.getDistance(DistanceUnit.INCH);
+            double sideLength = SIDE_TO_CENTER_DISTANCE + readingFromSideSensor;
             //- angle values go to the right and + go to the left
 
             double frontLength = CENTER_TO_TOWER_DISTANCE;
