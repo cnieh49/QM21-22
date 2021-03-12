@@ -225,8 +225,8 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU(3600, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive to A Zone
 
-            rb.setLifterMotor(false, 1);
-            //Thread.sleep(400);
+            rb.setLifterMotor(false, 0.5);
+            Thread.sleep(400);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
 
             rb.driveForwardByEncoderAndIMU(-336, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT); //Reverse to get wobble goal out of lifter and to shooting spot on line
@@ -272,7 +272,7 @@ public class remoteAuto extends LinearOpMode {
             //Thread.sleep(300);
             rb.rotate(167, .4);
             rb.setLifterMotor(false, -1);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/4.5), rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU((int) ((-ENCODER_DRIVE_ONE_TILE / 4.5) - 250), rb.FL, .4, .05);
             rb.driveForwardByEncoderAndIMU(2158, rb.FL, 0.75, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.driveForwardByEncoderAndIMU(250, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
