@@ -72,10 +72,6 @@ public class remoteAuto extends LinearOpMode {
     // Declare OpMode members.
     private final ElapsedTime runtime = new ElapsedTime();
 
-    //Setup variables:
-//    private final boolean flywheelOn = false;
-//    private final boolean shooterOut = false;
-//    private final boolean intakeOn = false;
 
     // State used for updating telemetry
     Orientation angles;
@@ -112,7 +108,7 @@ public class remoteAuto extends LinearOpMode {
             // (typically 1.78 or 16/9).
 
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-            tfod.setZoom(3.25, 1.78);
+            tfod.setZoom(3, 1.78);
         }
 
 
@@ -164,7 +160,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.addData("Angle Captured=", angleFacingForward);
         telemetry.update();
 
-        Thread.sleep(750); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
+        Thread.sleep(1000); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
         telemetry.addData(">", "One second has passsed... Counting Rings...");
         //Get Number of Rings from Camera (which is already on)
 
@@ -188,9 +184,9 @@ public class remoteAuto extends LinearOpMode {
 
                 if (updatedRecognitions.isEmpty()) {
                     numberOfRingsDetected = 0;
-                } else if (updatedRecognitions.get(0).getLabel().equals("Quad")) {
+                } else if (updatedRecognitions.size() == 4) {
                     numberOfRingsDetected = 4;
-                } else if (updatedRecognitions.get(0).getLabel().equals("Single")) {
+                } else if (updatedRecognitions.size() == 1) {
                     numberOfRingsDetected = 1;
                 } else {
                     telemetry.addData("ERROR:", "Couldn't find any rings :( defaulting to 1");
@@ -261,9 +257,11 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
             Thread.sleep(200);
-            rb.moveShooter(true); //Shot 4 just to make sure
-            Thread.sleep(200);
-            rb.moveShooter(false);
+            if (rb.getNumberOfRingsInHopper() != 0) {
+                rb.moveShooter(true); //Shot 4 just to make sure
+                Thread.sleep(200);
+                rb.moveShooter(false);
+            }
 
             rb.flywheel.setPower(0);
             //rb.driveForwardByEncoderAndIMU(-1008, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
@@ -302,7 +300,7 @@ public class remoteAuto extends LinearOpMode {
             //1 Ring Code, Go to B (middle)
             telemetry.addData(">", "Starting B Code...");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(4352, rb.FL, .75, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
+            rb.driveForwardByEncoderAndIMU(4352 + 600, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT); //2000 before?
 
             //rb.autoDriveSouthWestWithEncoderAndIMU(2104, rb.FL, .8, .06);
 
@@ -315,15 +313,16 @@ public class remoteAuto extends LinearOpMode {
 
             Thread.sleep(200);
             rb.setLifterMotor(false, 1);
-            Thread.sleep(100);
+            Thread.sleep(340);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
 
-            rb.driveForwardByEncoderAndIMU(-192, rb.FL, .5, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-192, rb.FL, .6, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED); //replace this with real function lol
             //rb.setLifterMotor(true, -1);
-            rb.driveForwardByEncoderAndIMU(-626, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-626 - 300, rb.FL, .8, .06, DEFAULT_ACCELERATION_INCREMENT);
             Thread.sleep(150);
             rb.strafeRightByEncoderAndIMU(-173, rb.FL, .3, .05);
+            rb.setLifterMotor(true, 1);
 
             Thread.sleep(100);
 
@@ -344,33 +343,48 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
             Thread.sleep(200);
-            rb.moveShooter(true); //Shot 4 just to make sure
-            Thread.sleep(200);
-            rb.moveShooter(false);
 
+            if (rb.getNumberOfRingsInHopper() != 0) {
+                rb.moveShooter(true); //Shot 4 just to make sure
+                Thread.sleep(200);
+                rb.moveShooter(false);
+            }
+
+            rb.setLifterMotor(false, 1);
 
             //For top goal shot
             rb.rotate(-7, .8);
+
             rb.runIntake(true, false);
-            rb.driveForwardByEncoderAndIMU(-1208, rb.FL, 0.75, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
+            rb.strafeRightByEncoderAndIMU(-100, rb.FL, .7, .04);
+            rb.driveForwardByEncoderAndIMU(-1358, rb.FL, 0.75, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to park on white line
             Thread.sleep(300);
-            rb.rotate(180, .2);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/8), rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU(100, rb.FL, .7, .04);
+            rb.rotate(180, .6);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 8), rb.FL, .4, .05);
             rb.driveForwardByEncoderAndIMU(808, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-            rb.setLifterMotor(true, -1);
-            rb.rotate(-180, .2);
+            rb.driveStop();
+            Thread.sleep(250);
+            rb.setLifterMotor(true, -.75);
+            rb.rotate(-180, .5);
             rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/8), rb.FL, .4, .05);
+            rb.runIntake(false, false);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 8), rb.FL, .4, .05);
             rb.driveForwardByEncoderAndIMU(808, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
-            rb.driveForwardByEncoderAndIMU(1808, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
-            rb.rotate(SHOOTER_DEFAULT_ROTATION, .2);
+            rb.driveForwardByEncoderAndIMU(1380, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.rotate(SHOOTER_DEFAULT_ROTATION, .6);
+
             rb.moveShooter(true); //top goal shot
             Thread.sleep(200);
-            rb.moveShooter(true); //second just in case
-            Thread.sleep(200);
             rb.moveShooter(false);
-            rb.rotate((-SHOOTER_DEFAULT_ROTATION) + 1, .2);
+            if (rb.getNumberOfRingsInHopper() != 0) {
+                rb.moveShooter(true); //second just in case
+                Thread.sleep(200);
+                rb.moveShooter(false); //second just in case
+            }
+
+            rb.rotate((-SHOOTER_DEFAULT_ROTATION) + 1, .4);
             rb.driveForwardByEncoderAndIMU(1008, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
             rb.setLifterMotor(false, -1);
@@ -436,15 +450,15 @@ public class remoteAuto extends LinearOpMode {
 
             Thread.sleep(1000);
             rb.rotate(180, .5);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/12), rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 12), rb.FL, .4, .05);
             rb.driveForwardByEncoderAndIMU(600, rb.FL, 1, .08, 0.1);
             rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.5, .08, 0.1);
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-            //Thread.sleep(200);
-            rb.setLifterMotor(true, 1);
-            rb.rotate(-180, .4);
+            Thread.sleep(200);
+            rb.setLifterMotor(true, .75);
+            rb.rotate(-180, .6);
             rb.driveForwardByEncoderAndIMU((int) (3.45 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/1.2), rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 1.2), rb.FL, .4, .05);
             rb.setLifterMotor(false, 0.4);
             Thread.sleep(100);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
@@ -472,9 +486,12 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(200);
             rb.moveShooter(false);
             Thread.sleep(200);
-            rb.moveShooter(true); //Shot 4 just to make sure
-            Thread.sleep(200);
-            rb.moveShooter(false);
+            if (rb.getNumberOfRingsInHopper() != 0) {
+                rb.moveShooter(true); //Shot 4 just to make sure
+                Thread.sleep(200);
+                rb.moveShooter(false);
+            }
+
 
             /*
             //Shot 1:

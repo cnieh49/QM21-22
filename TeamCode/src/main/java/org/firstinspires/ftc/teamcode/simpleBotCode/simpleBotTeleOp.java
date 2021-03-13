@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -477,7 +476,7 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             double frontLength = CENTER_TO_TOWER_DISTANCE;
 
-            double angleToRotate = -(Math.toDegrees(Math.atan(sideLength / frontLength)) + SHOOTER_DEFAULT_ROTATION);
+            double angleToRotate = -(Math.toDegrees(Math.atan(sideLength / frontLength)) - SHOOTER_DEFAULT_ROTATION);
             telemetry.addData("Angle Rotating To = ", angleToRotate);
             System.out.println("Angle Rotating to = " + angleToRotate);
             telemetry.update();
@@ -485,7 +484,6 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             telemetry.addData("STATUS:", "Done Rotating!!");
             telemetry.update();
-            //TODO: Change led color + maybe auto shoot if it works well?
 
             //1. Calculate distance from center of shooter to side wall
             //2. Assume approximate constant distance to front wall (or we can use sensors later)
