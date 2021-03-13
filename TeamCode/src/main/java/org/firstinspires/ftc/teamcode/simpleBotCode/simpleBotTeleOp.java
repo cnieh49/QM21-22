@@ -45,7 +45,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private final boolean shooterOut = false;
     private boolean intakeOn = false;
     private boolean intakeIsEjecting = false;
-    private int lifterPosition = 2; // 0= down, 1 = mid, 2 = up Default is true because needs to start up to stay in 18in
+    private int lifterPosition = 0; // 0= down, 1 = mid, 2 = up Default is true because needs to start up to stay in 18in
     private boolean powershotSpeedActive = false;
     private boolean intakeAutoStopped = false;
     private double timeSinceActivatingWobbleDown = 0;
@@ -67,7 +67,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initializing Hardware...");
         telemetry.update();
         rb.init(hardwareMap, this); //runs init stuff in HardwareSimpleBot.java
-        rb.lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rb.lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         telemetry.addData("Status", "Hardware Map Initialized");
         telemetry.update();
 
@@ -87,7 +87,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.addData("Status", "Initialized, Ready to Start. Make sure lifter is in back position");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-        rb.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //rb.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rb.wobbleServo.setPosition(WOBBLE_ARMED);
         waitForStart(); //Everything up to here is initialization
         runtime.reset();

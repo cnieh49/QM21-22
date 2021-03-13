@@ -97,7 +97,6 @@ public class remoteAuto extends LinearOpMode {
         // first.
         initVuforia();
         initTfod();
-
         /*
           Activate TensorFlow Object Detection before we wait for the start command.
           Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
@@ -105,7 +104,6 @@ public class remoteAuto extends LinearOpMode {
 
         if (tfod != null) {
             tfod.activate();
-
             // The TensorFlow software will scale the input images from the camera to a lower resolution.
             // This can result in lower detection accuracy at longer distances (> 55cm or 22").
             // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
@@ -185,7 +183,7 @@ public class remoteAuto extends LinearOpMode {
                     telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                             recognition.getRight(), recognition.getBottom());
                 }
-
+                telemetry.addData("HEY!", "Real question tho... does it work??");
                 telemetry.update();
 
                 if (updatedRecognitions.isEmpty()) {
@@ -272,15 +270,15 @@ public class remoteAuto extends LinearOpMode {
             //Thread.sleep(300);
             rb.rotate(167, .4);
             rb.setLifterMotor(false, -1);
-            rb.strafeRightByEncoderAndIMU((int) ((-ENCODER_DRIVE_ONE_TILE / 4.5) - 250), rb.FL, .4, .05);
-            rb.driveForwardByEncoderAndIMU(2158, rb.FL, 0.75, .06, DEFAULT_ACCELERATION_INCREMENT);
+            rb.strafeRightByEncoderAndIMU((int) ((-ENCODER_DRIVE_ONE_TILE / 4.5)), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(2158, rb.FL, 1, .04, DEFAULT_ACCELERATION_INCREMENT);
             rb.driveForwardByEncoderAndIMU(250, rb.FL, 0.5, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
             Thread.sleep(200);
             rb.setLifterMotor(true, -1);
             rb.rotate(-180, .4);
             //rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE), rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE), rb.FL, .6, .05);
             rb.driveForwardByEncoderAndIMU(2008, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT);
             //rb.driveForwardByEncoderAndIMU(1408, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT);
             //rb.rotate(SHOOTER_DEFAULT_ROTATION, .2);
@@ -310,7 +308,7 @@ public class remoteAuto extends LinearOpMode {
 
             //Old Slower Strafe Code:
 //            Thread.sleep(750);
-            rb.strafeRightByEncoderAndIMU((int) (1 * ENCODER_DRIVE_ONE_TILE), rb.FL, .4, .05);
+            rb.strafeRightByEncoderAndIMU((int) (1 * ENCODER_DRIVE_ONE_TILE), rb.FL, .75, .05); //power was .4 before
 
             //Thread.sleep(500);
             //rb.driveForwardByEncoderAndIMU(864, rb.FL, .4, .06, DEFAULT_ACCELERATION_INCREMENT);
@@ -385,8 +383,8 @@ public class remoteAuto extends LinearOpMode {
 
             rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
-            Thread.sleep(200);
-            rb.setLifterMotor(false, 1);
+            //Thread.sleep(200);
+            rb.setLifterMotor(false, 0.4);
             Thread.sleep(100);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
 
@@ -430,14 +428,31 @@ public class remoteAuto extends LinearOpMode {
             rb.rotate(-6, .5); //rotate back to 0
             rb.runIntake(true, false);
 
-            rb.driveForwardByEncoderAndIMU(-1200, rb.FL, 1, .08, 0.1);
-            rb.driveForwardByEncoderAndIMU(-800, rb.FL, 0.6, .06, 0.1);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/10.5), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(-1100, rb.FL, 1, .08, 0.1);
+            //rb.driveForwardByEncoderAndIMU(-400, rb.FL, 1, .08, 0.1);
+            rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.6, .06, 0.1);
+            rb.driveForwardByEncoderAndIMU(-650, rb.FL, 0.6, .06, 0.1);
 
             Thread.sleep(1000);
-
-            rb.driveForwardByEncoderAndIMU(1800, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
+            rb.rotate(180, .5);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/12), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(600, rb.FL, 1, .08, 0.1);
+            rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.5, .08, 0.1);
+            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
+            //Thread.sleep(200);
+            rb.setLifterMotor(true, 1);
+            rb.rotate(-180, .4);
+            rb.driveForwardByEncoderAndIMU((int) (3.45 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/1.2), rb.FL, .4, .05);
+            rb.setLifterMotor(false, 0.4);
+            Thread.sleep(100);
+            rb.wobbleServo.setPosition(WOBBLE_OPEN);
+            //rb.driveForwardByEncoderAndIMU(1800, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
             rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
+            rb.driveForwardByEncoderAndIMU((int) (-1.5 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+
+            //rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
 
             //Start Rapid Firing into high goal:
             Thread.sleep(200);
@@ -500,7 +515,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
             */
 
-            rb.driveForwardByEncoderAndIMU(800, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
+            rb.driveForwardByEncoderAndIMU(400, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
 
 
         } else {
