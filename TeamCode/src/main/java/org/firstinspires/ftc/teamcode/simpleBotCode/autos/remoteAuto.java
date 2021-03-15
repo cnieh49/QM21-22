@@ -171,17 +171,38 @@ public class remoteAuto extends LinearOpMode {
             if (updatedRecognitions != null) {
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
                 // step through the list of recognitions and display boundary info.
+
+                /*if (updatedRecognitions.isEmpty()) {
+                    numberOfRingsDetected = 0;
+                }
+                else {*/
+                //essentially it's either going to recognize something or its going to skip over
+                    //this part and the number of rings will stay at 0
                 int i = 0;
                 for (Recognition recognition : updatedRecognitions) {
                     telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("label length", i), recognition.getLabel().length());
                     telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                             recognition.getLeft(), recognition.getTop());
                     telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                             recognition.getRight(), recognition.getBottom());
+                    if(recognition.getLabel().length() == 4){ //when there are 4 rings
+                        numberOfRingsDetected = 4;
+                    }
+                    else if(recognition.getLabel().length() == 6){ //when there is 1 ring - will print out "Single"
+                        numberOfRingsDetected = 1;
+                    }
+                    else {
+                        telemetry.addData("ERROR:", "Couldn't find any rings or something else went wrong :( defaulting to 1");
+                        numberOfRingsDetected = 1;
+                    }
                 }
                 telemetry.addData("HEY!", "Real question tho... does it work??");
                 telemetry.update();
+                //}
 
+
+                /*
                 if (updatedRecognitions.isEmpty()) {
                     numberOfRingsDetected = 0;
                 } else if (updatedRecognitions.size() == 4) {
@@ -192,6 +213,9 @@ public class remoteAuto extends LinearOpMode {
                     telemetry.addData("ERROR:", "Couldn't find any rings :( defaulting to 1");
                     numberOfRingsDetected = 1;
                 }
+                telemetry.addData("Number of Rings!", updatedRecognitions); //updatedRecognitions.size()
+                telemetry.update();
+                */
 
             } else {
                 numberOfRingsDetected = 0;
@@ -398,7 +422,7 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             //Thread.sleep(200);
-            rb.setLifterMotor(false, 0.4);
+            rb.setLifterMotor(false, 0.7);
             Thread.sleep(100);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
 
@@ -441,31 +465,31 @@ public class remoteAuto extends LinearOpMode {
 
             rb.rotate(-6, .5); //rotate back to 0
             rb.runIntake(true, false);
-
+            rb.setLifterMotor(false, 0.8);
             rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE/10.5), rb.FL, .4, .05);
             rb.driveForwardByEncoderAndIMU(-1100, rb.FL, 1, .08, 0.1);
             //rb.driveForwardByEncoderAndIMU(-400, rb.FL, 1, .08, 0.1);
             rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.6, .06, 0.1);
-            rb.driveForwardByEncoderAndIMU(-650, rb.FL, 0.6, .06, 0.1);
+            rb.driveForwardByEncoderAndIMU(-750, rb.FL, 0.6, .06, 0.1);
 
             Thread.sleep(1000);
             rb.rotate(180, .5);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 12), rb.FL, .4, .05);
-            rb.driveForwardByEncoderAndIMU(600, rb.FL, 1, .08, 0.1);
-            rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.5, .08, 0.1);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE /8.5), rb.FL, .4, .05);
+            rb.driveForwardByEncoderAndIMU(400, rb.FL, 0.75, .08, 0.1);
+            //rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.5, .08, 0.1);
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
             Thread.sleep(200);
             rb.setLifterMotor(true, .75);
             rb.rotate(-180, .6);
             rb.driveForwardByEncoderAndIMU((int) (3.45 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
             rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 1.2), rb.FL, .4, .05);
-            rb.setLifterMotor(false, 0.4);
+            rb.setLifterMotor(false, 0.8);
             Thread.sleep(100);
+            rb.flywheel.setPower(FLYWHEEL_SPEED);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
             //rb.driveForwardByEncoderAndIMU(1800, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
-            rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.driveForwardByEncoderAndIMU((int) (-1.5 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-
+            rb.driveForwardByEncoderAndIMU((int) (-2 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.setLifterMotor(true, 1);
             //rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
 
             //Start Rapid Firing into high goal:
@@ -531,7 +555,7 @@ public class remoteAuto extends LinearOpMode {
             rb.moveShooter(false);
             Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
             */
-
+            rb.setLifterMotor(false, 1);
             rb.driveForwardByEncoderAndIMU(400, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
 
 
