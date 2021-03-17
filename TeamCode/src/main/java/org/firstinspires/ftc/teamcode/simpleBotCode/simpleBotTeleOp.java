@@ -74,10 +74,10 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.update();
         // make sure the imu gyro is calibrated before continuing.
         //IMPORTANT: The gyro will not calibrate unless the robot is not moving, make sure the robot is still during initialization.
-        while (!isStopRequested() && !rb.imu.isGyroCalibrated()) {
+        /*while (!isStopRequested() && !rb.imu.isGyroCalibrated()) {
             sleep(50);
             idle();
-        }
+        }*/
 
         telemetry.addData("imu calib status: ", rb.imu.getCalibrationStatus().toString());
 

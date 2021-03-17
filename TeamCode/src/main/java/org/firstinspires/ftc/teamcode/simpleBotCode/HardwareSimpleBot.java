@@ -250,9 +250,11 @@ public class HardwareSimpleBot {
 
     public void setLifterMotor(boolean moveUp, double speed) {
         if (!moveUp) {
+            //System.out.println(LIFTER_MOTOR_DOWN);
             lifterMotor.setTargetPosition(LIFTER_MOTOR_DOWN);
             lifterMotor.setPower(Math.abs(speed)); //make sure speed is always positive
         } else if (moveUp) {
+            //System.out.println(LIFTER_MOTOR_UP);
             speed = -Math.abs(speed); //make sure speed is negative
             lifterMotor.setTargetPosition(LIFTER_MOTOR_UP);
             lifterMotor.setPower(speed); //make sure speed is always positive
