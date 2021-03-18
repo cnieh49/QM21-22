@@ -75,5 +75,7 @@ public final class simpleBotConstants {
     public static final int HOPPER_THREE_RINGS = 83;
     public static final int[] ringDistanceArray = {HOPPER_ZERO_RINGS, HOPPER_ONE_RING, HOPPER_TWO_RINGS, HOPPER_THREE_RINGS};
 
+    public static final double WOBBLE_2M_THRESHOLD = 250; //in mm
+
 
 }

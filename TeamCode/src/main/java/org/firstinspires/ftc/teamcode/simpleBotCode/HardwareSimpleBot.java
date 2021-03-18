@@ -41,6 +41,8 @@ public class HardwareSimpleBot {
     public DistanceSensor hopperRangeSensor = null;
     public DistanceSensor sideRangeSensor = null;
     Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sideRangeSensor;
+    public DistanceSensor wobble2mRangeSensor = null;
+    Rev2mDistanceSensor sensorTimeOfFlight1 = (Rev2mDistanceSensor) wobble2mRangeSensor;
 
 
     public ColorSensor wobbleColorSensor = null;
@@ -107,6 +109,8 @@ public class HardwareSimpleBot {
         hopperRangeSensor = hwMap.get(DistanceSensor.class, "hopper_range_sensor");
 
         wobbleColorSensor = hwMap.get(ColorSensor.class, "wobble_color_sensor");
+
+        wobble2mRangeSensor = hwMap.get(DistanceSensor.class, "wobble_2m_distance_sensor");
 
 
         // Define and Initialize LED's

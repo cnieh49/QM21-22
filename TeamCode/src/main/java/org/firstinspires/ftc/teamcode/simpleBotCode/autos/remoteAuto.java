@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -27,6 +28,7 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.EN
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SHOOTER_DEFAULT_ROTATION;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_2M_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_ARMED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_CLOSED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_OPEN;
@@ -293,7 +295,10 @@ public class remoteAuto extends LinearOpMode {
             rb.rotate(-6, 1);
             rb.rotate(180, 1);
             rb.setLifterMotor(false, -1);
-            rb.strafeRightByEncoderAndIMU((int) ((-ENCODER_DRIVE_ONE_TILE / 4.3)), rb.FL, .4, .05);
+            while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && opModeIsActive()) { //TODO: Add a failsafe to this while loop based off of time
+                rb.strafeRightByEncoderAndIMU((int) ((-ENCODER_DRIVE_ONE_TILE / 4.3)), rb.FL, .4, .05);
+            }
+            //rb.strafeRightByEncoderAndIMU((int) ((-ENCODER_DRIVE_ONE_TILE / 4.3)), rb.FL, .4, .05); //TODO: Uncomment this and add a tiny value to account for additional distance needed to travel after sensing wobble goal with 2m sensor
             rb.driveForwardByEncoderAndIMU(1758, rb.FL, 1, .04, DEFAULT_ACCELERATION_INCREMENT);
             rb.driveForwardByEncoderAndIMU(650, rb.FL, 0.4, .06, DEFAULT_ACCELERATION_INCREMENT);
             rb.wobbleServo.setPosition(WOBBLE_CLOSED);
