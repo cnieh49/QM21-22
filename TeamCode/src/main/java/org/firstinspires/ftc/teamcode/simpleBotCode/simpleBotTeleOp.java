@@ -50,6 +50,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private double timeSinceActivatingWobbleDown = 0;
     private double timeSincePossiblyDetecting3Rings = 0;
     private double slowModeMultiplier = 1;
+    private double driveReverseModeMultiplier = 1;
 
 
     // State used for updating telemetry
@@ -110,9 +111,10 @@ public class simpleBotTeleOp extends LinearOpMode {
             rotateToAngle(); //TESTING ONLY (for now): Rotates
 //            rapidRotateLeft(); //TESTING ONLY: Rotates to the left at max speed
 //            rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
-            volkswagenMode();
+            //volkswagenMode();
             alignToGoal();
             slowMode();
+            driveReverseMode();
 
             //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
@@ -153,9 +155,9 @@ public class simpleBotTeleOp extends LinearOpMode {
         double rearRightPower;
 
 
-        double leftY = gamepad1.left_stick_y;
-        double leftX = gamepad1.left_stick_x;
-        double rightX = gamepad1.right_stick_x;
+        double leftY = gamepad1.left_stick_y * driveReverseModeMultiplier;
+        double leftX = gamepad1.left_stick_x * driveReverseModeMultiplier;
+        double rightX = gamepad1.right_stick_x * driveReverseModeMultiplier;
 
 //        pattern = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
 //        blinkinLedDriver.setPattern(pattern);
@@ -319,21 +321,20 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     private void intakeEject() throws InterruptedException {
 
-        if ((gamepad1.left_stick_button || gamepad2.left_stick_button) && !intakeOn) {
+        if (gamepad1.dpad_left) {
             telemetry.addData(">", "Intake EJECT");
             telemetry.update();
             rb.runIntake(true, true);
             intakeOn = true;
             intakeIsEjecting = true;
-            Thread.sleep(BUTTON_DELAY);
-
-        } else if ((gamepad1.left_stick_button || gamepad2.left_stick_button) && intakeIsEjecting || gamepad1.left_bumper && intakeIsEjecting) {
-            telemetry.addData(">", "Intake OFF");
-            telemetry.update();
-            rb.runIntake(false, false);
-            intakeOn = false;
-            Thread.sleep(BUTTON_DELAY);
         }
+//        } else if ((gamepad1.left_stick_button || gamepad2.left_stick_button) && intakeIsEjecting || gamepad1.left_bumper && intakeIsEjecting) {
+//            telemetry.addData(">", "Intake OFF");
+//            telemetry.update();
+//            rb.runIntake(false, false);
+//            intakeOn = false;
+//            Thread.sleep(BUTTON_DELAY);
+//        }
     }
 
     private void lifter() throws InterruptedException {
@@ -410,7 +411,6 @@ public class simpleBotTeleOp extends LinearOpMode {
             rb.rotate(SHOOTER_DEFAULT_ROTATION, .8); //-8.6
             telemetry.addData("log:", "Done driving to angle!");
             telemetry.update();
-
         }
     }
 
@@ -499,6 +499,20 @@ public class simpleBotTeleOp extends LinearOpMode {
             slowModeMultiplier = .25;
         } else {
             slowModeMultiplier = 1;
+        }
+    }
+
+    private void driveReverseMode() throws InterruptedException {
+        if (gamepad1.left_stick_button && driveReverseModeMultiplier == 1) {
+            driveReverseModeMultiplier = -1;
+            while (gamepad1.left_stick_button &&opModeIsActive()){
+                Thread.sleep(2);
+            }
+        } else if (gamepad1.left_stick_button && driveReverseModeMultiplier == -1){
+            driveReverseModeMultiplier = -1;
+            while (gamepad1.left_stick_button &&opModeIsActive()){
+                Thread.sleep(2);
+            }
         }
     }
 
