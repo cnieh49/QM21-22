@@ -6,6 +6,7 @@ public final class simpleBotConstants {
     //Speeds:
     public static double FLYWHEEL_SPEED = .75;  //Volkswagen Mode = .7
     public static double FLYWHEEL_POWERSHOT_SPEED = .636;
+    public static double FLYWHEEL_LONGSHOT_SPEED = .688;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
     //.65 = 13.12ft @ 31 degrees
@@ -26,7 +27,7 @@ public final class simpleBotConstants {
     //Motor:
     public static final int LIFTER_MOTOR_UP = 0;
     public static final int LIFTER_MOTOR_MID = (int) (100 * 4.2);
-    public static final int LIFTER_MOTOR_DOWN = 1275;
+    public static final int LIFTER_MOTOR_DOWN = 1325;
 
     //Wheel Diameter = 100m
     //100m * pi = 314.16mm = circumference = 1 wheel rotation
@@ -75,7 +76,7 @@ public final class simpleBotConstants {
     public static final int HOPPER_THREE_RINGS = 83;
     public static final int[] ringDistanceArray = {HOPPER_ZERO_RINGS, HOPPER_ONE_RING, HOPPER_TWO_RINGS, HOPPER_THREE_RINGS};
 
-    public static final double WOBBLE_2M_THRESHOLD = 250; //in mm
+    public static final double WOBBLE_2M_THRESHOLD = 325; //in mm
 
 
 }

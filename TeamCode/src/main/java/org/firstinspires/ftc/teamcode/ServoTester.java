@@ -27,7 +27,7 @@ public class ServoTester extends LinearOpMode {
     public void runOpMode() {
 
 //      CRServo servo = hardwareMap.get(CRServo.class, "hand");
-        Servo shooter = hardwareMap.get(Servo.class, "wobble_servo");
+        Servo shooter = hardwareMap.get(Servo.class, "range_extender");
 
         // Wait for the start button
         telemetry.addData(">", "Press Start to scan Servo.");

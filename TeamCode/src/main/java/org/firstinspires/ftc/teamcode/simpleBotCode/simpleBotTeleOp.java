@@ -93,7 +93,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         rb.wobbleServo.setPosition(WOBBLE_OPEN);
         telemetry.setAutoClear(true);
 
-        //rb.runIntake(true, false); //Start with intake running TODO: Turn this on for real comp
+        rb.runIntake(true, false); //Start with intake running TODO: Turn this on for real comp
         // run this until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
@@ -134,7 +134,7 @@ public class simpleBotTeleOp extends LinearOpMode {
              * D-Pad Left - Rapid Rotate Left
              * D-Pad Right - Rapid Rotate Right
              * D-pad Left + Share Button - Volkswagen Mode (do not use)
-             * Gunner: (Start + B) //TODO: Add gunner controls
+             * Gunner: (Start + B)
              *
              * */
         }
@@ -407,7 +407,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.right_stick_button) {
             telemetry.addData("log:", "Driving to angle...");
             telemetry.update();
-            rb.rotate(SHOOTER_DEFAULT_ROTATION, .4); //-8.6
+            rb.rotate(SHOOTER_DEFAULT_ROTATION, .8); //-8.6
             telemetry.addData("log:", "Done driving to angle!");
             telemetry.update();
 
