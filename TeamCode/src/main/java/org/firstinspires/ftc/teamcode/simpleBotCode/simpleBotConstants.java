@@ -25,9 +25,9 @@ public final class simpleBotConstants {
     public static final int BUTTON_DELAY = 250; //Delay after any toggle button is pressed before button is checked again. idk
 
     //Motor:
-    public static final int LIFTER_MOTOR_UP = 0;
+    public static final int LIFTER_MOTOR_UP = -50;
     public static final int LIFTER_MOTOR_MID = (int) (100 * 4.2);
-    public static final int LIFTER_MOTOR_DOWN = 1325;
+    public static final int LIFTER_MOTOR_DOWN = 1470;
 
     //Wheel Diameter = 100m
     //100m * pi = 314.16mm = circumference = 1 wheel rotation

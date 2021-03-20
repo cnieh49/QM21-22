@@ -213,7 +213,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             }
             Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
             rb.moveShooter(false);
-            Thread.sleep(200); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
 
         }
 
