@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.GEAR_RATIO_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.LIFTER_MOTOR_UP;
@@ -585,6 +586,8 @@ public class HardwareSimpleBot {
         }
         power = Math.abs(power);
 
+        positionChange = (int) (positionChange * GEAR_RATIO_MULTIPLIER); //Used for changing gear ratios without changing all values in code
+
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition + positionChange;
         if (positionChange < 0) { //Make acceleration increment positive or negative based on power
@@ -607,7 +610,6 @@ public class HardwareSimpleBot {
             }
 
             while (opMode.opModeIsActive() && motor.getCurrentPosition() < targetPosition) {
-                //TODO: Rewrite deceleration stuff, right now it just drives at 50% speed for the last 20% of the route, not the best way to do it but it works
 //                double decelerationSpeed = (Range.clip(Math.abs(motor.getCurrentPosition() - FLtargetPosition) / motor.getCurrentPosition() + FLoldPosition, .1, power));
 //                System.out.println(decelerationSpeed);
                 if (currentPower > .35) { //If we're driving slower than .35, i don't think we need to rly worry about decceleration
@@ -721,6 +723,7 @@ public class HardwareSimpleBot {
      */
     public void autoDriveSouthWestWithEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
         power = Math.abs(power);
+        positionChange = (int) (positionChange * GEAR_RATIO_MULTIPLIER); //Used for changing gear ratios without changing all values in code
 
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition - positionChange;
@@ -819,6 +822,7 @@ public class HardwareSimpleBot {
     public void strafeRightByEncoderAndIMU(int positionChange, DcMotor motor, double power, double correctionGain) {
 
         power = Math.abs(power);
+        positionChange = (int) (positionChange * GEAR_RATIO_MULTIPLIER); //Used for changing gear ratios without changing all values in code
 
         int oldPosition = motor.getCurrentPosition();
         int targetPosition = oldPosition - positionChange;

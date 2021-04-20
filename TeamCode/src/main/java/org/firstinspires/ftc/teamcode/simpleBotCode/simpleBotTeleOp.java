@@ -16,7 +16,6 @@ import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BUTTON_DELAY;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.CENTER_TO_TOWER_DISTANCE;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
@@ -353,9 +352,9 @@ public class simpleBotTeleOp extends LinearOpMode {
 
             telemetry.addData(">", "Lifter UP");
             telemetry.update();
+            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
             rb.setLifterMotor(true, -1);
             lifterPosition = 2;
-            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
             Thread.sleep(BUTTON_DELAY);
         }
 
@@ -383,26 +382,26 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     }
 
-    private void lifterAutoClose() {
-        if (lifterPosition == 0) {
-            while (lifterPosition == 0) {
-                if (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE) {
-                    telemetry.addData(">", "Lifter UP");
-                    telemetry.update();
-                    rb.setLifterMotor(true, -1);
-                    rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-                    lifterPosition = 2;
-
-                }
-            }
-        }
-    }
-
-    private void captureAngle() {
-        if (gamepad1.dpad_down) {
-            rb.driveForwardByEncoderAndIMU(200, rb.FL, .25, .10, DEFAULT_ACCELERATION_INCREMENT);
-        }
-    }
+//    private void lifterAutoClose() {
+//        if (lifterPosition == 0) {
+//            while (lifterPosition == 0) {
+//                if (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE) {
+//                    telemetry.addData(">", "Lifter UP");
+//                    telemetry.update();
+//                    rb.setLifterMotor(true, -1);
+//                    rb.wobbleServo.setPosition(WOBBLE_CLOSED);
+//                    lifterPosition = 2;
+//
+//                }
+//            }
+//        }
+//    }
+//
+//    private void captureAngle() {
+//        if (gamepad1.dpad_down) {
+//            rb.driveForwardByEncoderAndIMU(200, rb.FL, .25, .10, DEFAULT_ACCELERATION_INCREMENT);
+//        }
+//    }
 
     private void rotateToAngle() throws InterruptedException {
         if (gamepad1.right_stick_button) {
