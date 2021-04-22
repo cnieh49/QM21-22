@@ -445,16 +445,17 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE) + 250, rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             //Thread.sleep(200);
             rb.setLifterMotor(false, 0.7);
             Thread.sleep(100);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
 
-            rb.driveForwardByEncoderAndIMU(-336, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
+            rb.driveForwardByEncoderAndIMU(-336 - 200, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
+            //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.0285);
             rb.autoDriveSouthWestWithEncoderAndIMU(2840, rb.FL, .9, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
@@ -471,14 +472,13 @@ public class remoteAuto extends LinearOpMode {
 
             rb.rotate(3, .3);
             Thread.sleep(300);
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.025);
 
             //Thread.sleep(350);
             rb.moveShooter(true); //Shot 2
             Thread.sleep(250);
             rb.moveShooter(false);
 
-            rb.rotate(3, .3);
+            rb.rotate(2.85, .3);
             //Thread.sleep(150);
 
             Thread.sleep(300);
@@ -490,7 +490,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(250);
             rb.moveShooter(false);
 
-            rb.rotate(-6.7, .5); //rotate back to 0
+            rb.rotate(-6.55, .5); //rotate back to 0
             rb.runIntake(true, false);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED + 0.02); //added in
 
@@ -608,8 +608,8 @@ public class remoteAuto extends LinearOpMode {
             //Thread.sleep(100);
 
             rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.driveForwardByEncoderAndIMU((int) (1.41 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 1.2), rb.FL, 1, .05);
+            rb.driveForwardByEncoderAndIMU((int) (1.34 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 1.35), rb.FL, 1, .05);
             Thread.sleep(100);
             for(int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--){
                 Thread.sleep(200);

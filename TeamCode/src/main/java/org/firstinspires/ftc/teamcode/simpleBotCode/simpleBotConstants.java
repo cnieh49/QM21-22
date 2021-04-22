@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.simpleBotCode;
 
 
 public final class simpleBotConstants {
-    public static double GEAR_RATIO_MULTIPLIER = 1;
+    public static double GEAR_RATIO_MULTIPLIER = 1-(0.388268398268398);
     //Speeds:
     public static double FLYWHEEL_SPEED = .75;  //Volkswagen Mode = .7
     public static double FLYWHEEL_POWERSHOT_SPEED = .636;
