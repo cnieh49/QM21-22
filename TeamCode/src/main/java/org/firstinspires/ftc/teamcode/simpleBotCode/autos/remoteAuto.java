@@ -31,7 +31,6 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.SH
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_2M_THRESHOLD;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_ARMED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_CLOSED;
-import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_MININUM_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_OPEN;
 
 //Import Constants:
@@ -445,17 +444,18 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
-            rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE) + 250, rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE) + 450, rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
-            //Thread.sleep(200);
+            Thread.sleep(200);
             rb.setLifterMotor(false, 0.7);
-            Thread.sleep(100);
+            Thread.sleep(500);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
+            Thread.sleep(200);
 
             rb.driveForwardByEncoderAndIMU(-336 - 200, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.0285);
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.04);
             rb.autoDriveSouthWestWithEncoderAndIMU(2840, rb.FL, .9, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
@@ -478,10 +478,10 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(250);
             rb.moveShooter(false);
 
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
             rb.rotate(2.85, .3);
-            //Thread.sleep(150);
 
-            Thread.sleep(300);
+            Thread.sleep(330);
             rb.moveShooter(true); //Shot 3
             Thread.sleep(250);
             rb.moveShooter(false);
@@ -495,11 +495,11 @@ public class remoteAuto extends LinearOpMode {
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED + 0.02); //added in
 
             rb.setLifterMotor(false, 0.8);
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 11.75), rb.FL, .9, .05);
+            //rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 18), rb.FL, .6, .05);
             rb.driveForwardByEncoderAndIMU(-1200, rb.FL, 1, .08, 0.1);
             //rb.driveForwardByEncoderAndIMU(-400, rb.FL, 1, .08, 0.1);
             rb.driveForwardByEncoderAndIMU(100, rb.FL, 1, .06, 0.1);
-            rb.driveForwardByEncoderAndIMU(-950, rb.FL, 0.8, .06, 0.1);
+            rb.driveForwardByEncoderAndIMU(-950, rb.FL, 0.4, .06, 0.1);
 
             //New code added in 3/18
             //Thread.sleep(400);
@@ -569,26 +569,38 @@ public class remoteAuto extends LinearOpMode {
 
             Thread.sleep(100);
             rb.driveForwardByEncoderAndIMU(200, rb.FL, 0.8, .06, 0.1);
+            Thread.sleep(100);
 
-            rb.rotate(180, .7);
+            //Go for third ring Code:
+            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, .1);
+            Thread.sleep(200);
+            rb.driveForwardByEncoderAndIMU(350, rb.FL, .8, .06, .1);
+            Thread.sleep(100);
+
+
+            //Start rotating 180 to pick up wobble goal:
+            rb.rotate(175, .5); //idk why it's not rotating full 180 degrees here but im just going to lower it for now
             boolean wobbleDetected = false;
             double timeBeforeWhile = runtime.milliseconds();
-            while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && (runtime.milliseconds()< timeBeforeWhile+2500) && opModeIsActive()) {
+            while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && (runtime.milliseconds() < timeBeforeWhile + 2500) && opModeIsActive()) {
                 rb.strafe(-.3, -.3);
             }
 //            if (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) < WOBBLE_2M_THRESHOLD+80) {
-                telemetry.addData("Update:", "WOBBLE DETCTED");
-                telemetry.update();
+            telemetry.addData("Update:", "WOBBLE DETCTED");
+            telemetry.update();
 
-                wobbleDetected = true;
+            wobbleDetected = true;
 
-                rb.strafeRightByEncoderAndIMU(-75, rb.FL, .3, .05); //TODO: Uncomment this and add a tiny value to account for additional distance needed to travel after sensing wobble goal with 2m sensor
-                rb.driveForwardByEncoderAndIMU(450, rb.FL, 0.4, .06, DEFAULT_ACCELERATION_INCREMENT);
-                rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-                Thread.sleep(200);
-                rb.setLifterMotor(true, -1);
-                rb.rotate(-180, .7);
-          //  }
+            rb.strafeRightByEncoderAndIMU(-60, rb.FL, .3, .05);
+            rb.driveStop(); // just a failsafe to make sure the robot is completley stopped for consistency
+            Thread.sleep(340); //This is too make sure the robot is completley stopped before moving forwards
+            rb.driveForwardByEncoderAndIMU(460, rb.FL, 0.4, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to wobble goal
+            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
+            Thread.sleep(200);
+            rb.setLifterMotor(true, -1);
+            rb.rotate(-175, .7); //TODO Also made this to 180 degrees because it was going too far for some reason
+
+            //  }
 
             //rb.driveForwardByEncoderAndIMU(-200, rb.FL, 0.75, .08, 0.1);
             /*
@@ -617,7 +629,7 @@ public class remoteAuto extends LinearOpMode {
                 Thread.sleep(200);
                 rb.moveShooter(false);
             }
-
+            rb.runIntake(false, false); //Stop intake after shooting
             /* code from 3/16 iteration
             rb.moveShooter(true); //Shot 1
             Thread.sleep(200);
@@ -639,7 +651,8 @@ public class remoteAuto extends LinearOpMode {
                 rb.moveShooter(false);
             }
             */
-            rb.driveForwardByEncoderAndIMU((int) (1.1 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
+            //Start moving up to drop second wobble
+            rb.driveForwardByEncoderAndIMU((int) (1.23 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
             //rb.driveForwardByEncoderAndIMU((int) (3.28 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             rb.setLifterMotor(false, 0.8);
@@ -654,7 +667,7 @@ public class remoteAuto extends LinearOpMode {
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
 
 
-            rb.driveForwardByEncoderAndIMU((int) (-1.6 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .05, 1);
+            rb.driveForwardByEncoderAndIMU((int) (-1.7 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .05, 1);
 
             //rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
             /*
