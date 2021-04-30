@@ -1,3 +1,5 @@
+//DO NOT USE EVER
+
 package org.firstinspires.ftc.teamcode.simpleBotCode.autos;
 
 import android.annotation.SuppressLint;
@@ -25,6 +27,7 @@ import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DEFAULT_ACCELERATION_INCREMENT;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.ENCODER_DRIVE_ONE_TILE;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_LONGPOWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_LONGSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_POWERSHOT_SPEED;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.FLYWHEEL_SPEED;
@@ -37,8 +40,8 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WO
 
 //Import Constants:
 //WARNING!!!!!!!!!!: Before initializing any program, make sure the wobble goal lifter is not facing downwards, if it is the servo will try to do a 360 to get to the right position and it can break itself. There is not position it should be at but make sure its just not facing downwards.
-@Autonomous(name = "Remote Auto", group = "!Primary")
-public class remoteAuto extends LinearOpMode {
+@Autonomous(name = "CalebTestingAuto", group = "!Primary")
+public class CalebTestingAuto extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
@@ -181,7 +184,7 @@ public class remoteAuto extends LinearOpMode {
                 }
                 else {*/
                 //essentially it's either going to recognize something or its going to skip over
-                    //this part and the number of rings will stay at 0
+                //this part and the number of rings will stay at 0
                 int i = 0;
                 for (Recognition recognition : updatedRecognitions) {
                     telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
@@ -447,6 +450,25 @@ public class remoteAuto extends LinearOpMode {
             telemetry.addData(">", "Starting C Code...");
             telemetry.update();
 
+            rb.flywheel.setPower(FLYWHEEL_LONGPOWERSHOT_SPEED);
+            Thread.sleep(800);
+            int numshots = 0;
+            while(rb.getNumberOfRingsInHopper() >= 1 && numshots < 4){
+                int x = rb.getNumberOfRingsInHopper();
+                rb.moveShooter(true);
+                Thread.sleep(200);
+                rb.moveShooter(false);
+                Thread.sleep(400);
+                if(rb.getNumberOfRingsInHopper() > x){
+                    rb.moveShooter(true);
+                    Thread.sleep(200);
+                    rb.moveShooter(false);
+                }
+                if(rb.getNumberOfRingsInHopper() >= 1) {
+                    rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 0.25), rb.FL, 0.8, .05);
+                }
+                numshots++;
+            }
             rb.driveForwardByEncoderAndIMU((int) (4.4 * ENCODER_DRIVE_ONE_TILE) + 450, rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             Thread.sleep(200);
@@ -454,341 +476,6 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(500);
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
             Thread.sleep(200);
-
-            rb.driveForwardByEncoderAndIMU(-336 - 200, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
-            rb.setLifterMotor(true, -1);
-            //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.00);
-            rb.autoDriveSouthWestWithEncoderAndIMU(2840, rb.FL, .9, .05);
-            telemetry.addData(">", "Done with south west");
-            telemetry.update();
-            rb.driveForwardByEncoderAndIMU(-1025, rb.FL, 1, .05, DEFAULT_ACCELERATION_INCREMENT);
-            telemetry.addData(">", "Done with approach behind line");
-            telemetry.update();
-
-            Thread.sleep(200);
-
-
-            rb.moveShooter(true); //Shot 1
-            Thread.sleep(250);
-            rb.moveShooter(false);
-
-            rb.rotate(3, .3);
-            Thread.sleep(300);
-
-            //Thread.sleep(350);
-            rb.moveShooter(true); //Shot 2
-            Thread.sleep(250);
-            rb.moveShooter(false);
-
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
-            rb.rotate(2.45, .3); //Was 2.85 before
-
-            Thread.sleep(330);
-            rb.moveShooter(true); //Shot 3
-            Thread.sleep(250);
-            rb.moveShooter(false);
-            Thread.sleep(120);
-            rb.moveShooter(true); //Shot 4 just to make sure
-            Thread.sleep(250);
-            rb.moveShooter(false);
-
-            rb.rotate(-6.35, .5); //rotate back to 0
-            rb.runIntake(true, false);
-            //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED + 0.02); //added in
-
-            rb.setLifterMotor(false, 0.8); //Put lifter motor down
-            rb.flywheel.setPower(FLYWHEEL_LONGSHOT_SPEED); //Turn on Flywheel for first ring shot
-
-            //rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 18), rb.FL, .6, .05);
-            rb.driveForwardByEncoderAndIMU(-1200, rb.FL, 1, .08, 0.1);
-            //rb.driveForwardByEncoderAndIMU(-400, rb.FL, 1, .08, 0.1);
-            rb.driveForwardByEncoderAndIMU(100, rb.FL, 1, .06, 0.1);
-            rb.driveForwardByEncoderAndIMU(-950, rb.FL, 0.3, .06, 0.1);
-
-
-            //New code added in 3/18
-            //Thread.sleep(400);
-            //rb.rotate(-2, 0.75);
-            /*
-
-            rb.moveShooter(true); //Shot 1
-            Thread.sleep(150);
-            rb.moveShooter(false);
-
-            Thread.sleep(300);
-            rb.moveShooter(true); //Shot 2
-            Thread.sleep(150);
-            rb.moveShooter(false);
-
-            Thread.sleep(300);
-            rb.moveShooter(true); //Shot 3
-            Thread.sleep(150);
-            rb.moveShooter(false);
-
-
-            //Thread.sleep(150);
-            if (rb.getNumberOfRingsInHopper() != 0) {
-                Thread.sleep(150);
-                rb.moveShooter(true); //Shot 4 just to make sure
-                Thread.sleep(150);
-                rb.moveShooter(false);
-            }
-            */
-            /*
-            for(int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--){
-                Thread.sleep(200);
-                rb.moveShooter(true); //Shot 4 just to make sure
-                Thread.sleep(200);
-                rb.moveShooter(false);
-            }
-            rb.rotate(2, 1);
-            rb.driveForwardByEncoderAndIMU(-450, rb.FL, 1, .06, 0.1);
-            rb.driveForwardByEncoderAndIMU(450, rb.FL, 1, .06, 0.1);
-            rb.rotate(-2, 1);
-
-             */
-
-            /*Thread.sleep(150);
-            rb.moveShooter(true); //Shot 1
-            Thread.sleep(200);
-            rb.moveShooter(false);
-
-            Thread.sleep(200);
-            rb.moveShooter(true); //Shot 2
-            Thread.sleep(200);
-            rb.moveShooter(false);
-
-             */
-            /*
-            for(int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--){
-
-                Thread.sleep(200);
-                rb.moveShooter(true); //Shot 4 just to make sure
-                Thread.sleep(200);
-                rb.moveShooter(false);
-            }
-
-             */
-
-            //End of said code
-            rb.rotate(-2, 1);
-            rb.moveShooter(true); //Do longshot from 3
-            Thread.sleep(250);
-            rb.moveShooter(false);
-            Thread.sleep(250);
-            rb.moveShooter(true); //Do longshot from 3
-            Thread.sleep(250);
-            rb.moveShooter(false);
-            rb.rotate(2, 1);
-
-            Thread.sleep(100);
-            rb.driveForwardByEncoderAndIMU(200, rb.FL, 0.7, .06, 0.1);
-            Thread.sleep(100);
-
-            //Go for third ring Code:
-            rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, .1);
-            Thread.sleep(200);
-            rb.driveForwardByEncoderAndIMU(350, rb.FL, .7, .06, .1);
-            Thread.sleep(100);
-
-//            rb.moveShooter(true); //Do longshot from 3
-//            Thread.sleep(250);
-//            rb.moveShooter(false);
-//
-//            rb.driveForwardByEncoderAndIMU(-450, rb.FL, .5, .06, .1);
-//            Thread.sleep(200);
-//            rb.driveForwardByEncoderAndIMU(450, rb.FL, .7, .06, .1);
-//            Thread.sleep(100);
-
-
-            //Start rotating 180 to pick up wobble goal:
-            rb.rotate(175, .5); //idk why it's not rotating full 180 degrees here but im just going to lower it for now
-            boolean wobbleDetected = false;
-            double timeBeforeWhile = runtime.milliseconds();
-            while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && (runtime.milliseconds() < timeBeforeWhile + 2500) && opModeIsActive()) {
-                rb.strafe(-.35, -.35);
-            }
-//            if (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) < WOBBLE_2M_THRESHOLD+80) {
-            telemetry.addData("Update:", "WOBBLE DETECTED");
-            telemetry.update();
-
-            wobbleDetected = true;
-
-            rb.strafeRightByEncoderAndIMU(-60, rb.FL, .3, .05);
-            rb.driveStop(); // just a failsafe to make sure the robot is completley stopped for consistency
-            Thread.sleep(340); //This is too make sure the robot is completley stopped before moving forwards
-
-            double timeBeforeWhile2 = runtime.milliseconds();
-            while (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE && (runtime.milliseconds() < timeBeforeWhile2 + 2500) && opModeIsActive()) {
-                rb.driveForwardByEncoderAndIMU(10, rb.FL, 0.25, .03, 1); //Drive up to wobble goal
-            }
-
-//            rb.driveForwardByEncoderAndIMU(460, rb.FL, 0.4, .06, DEFAULT_ACCELERATION_INCREMENT); //Drive up to wobble goal
-
-            telemetry.addData("Update:", "WOBBLE DETECTED AGAIN");
-            telemetry.update();
-            Thread.sleep(500); //Sleep to make sure wobble isn't going to bounce out or anything
-            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-            Thread.sleep(200);
-            rb.setLifterMotor(true, -1);
-            rb.rotate(-175, .7); //TODO Also made this to 180 degrees because it was going too far for some reason
-
-            //  }
-
-            //rb.driveForwardByEncoderAndIMU(-200, rb.FL, 0.75, .08, 0.1);
-            /*
-            rb.strafeRightByEncoderAndIMU((int) (-390), rb.FL, .9, .05);
-            rb.driveForwardByEncoderAndIMU(400, rb.FL, 0.75, .08, 0.1);
-            //rb.driveForwardByEncoderAndIMU(100, rb.FL, 0.5, .08, 0.1);
-            rb.wobbleServo.setPosition(WOBBLE_CLOSED);
-            Thread.sleep(200);
-            //rb.flywheel.setPower(FLYWHEEL_SPEED); //this was from 3/16
-            rb.setLifterMotor(true, .75);
-            rb.rotate(-180, .6);
-            */
-
-            //new code for auto 3/16
-            //rb.driveForwardByEncoderAndIMU((int) (1.45 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            //rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 1.2), rb.FL, 1, .05);
-            //Thread.sleep(100);
-
-            rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.driveForwardByEncoderAndIMU((int) (1.10 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 1.0), rb.FL, 1, .05);
-            Thread.sleep(100);
-            for (int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--) {
-                Thread.sleep(200);
-                rb.moveShooter(true); //Shot 4 just to make sure
-                Thread.sleep(200);
-                rb.moveShooter(false);
-            }
-            rb.runIntake(false, false); //Stop intake after shooting
-            /* code from 3/16 iteration
-            rb.moveShooter(true); //Shot 1
-            Thread.sleep(200);
-            rb.moveShooter(false);
-
-            Thread.sleep(800);
-            rb.moveShooter(true); //Shot 2
-            Thread.sleep(200);
-            rb.moveShooter(false);
-
-            Thread.sleep(800);
-            rb.moveShooter(true); //Shot 3
-            Thread.sleep(200);
-            rb.moveShooter(false);
-            Thread.sleep(200);
-            if (rb.getNumberOfRingsInHopper() != 0) {
-                rb.moveShooter(true); //Shot 4 just to make sure
-                Thread.sleep(200);
-                rb.moveShooter(false);
-            }
-            */
-            //Start moving up to drop second wobble
-            rb.driveForwardByEncoderAndIMU((int) (1.23 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
-            //rb.driveForwardByEncoderAndIMU((int) (3.28 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-
-            rb.setLifterMotor(false, 0.8);
-            //rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 1.35), rb.FL, 1, .05);
-            rb.driveForwardByEncoderAndIMU((int) (0.8 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
-
-            //rb.driveForwardByEncoderAndIMU((int) (0.3 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
-
-            //rb.driveForwardByEncoderAndIMU((int) (.8 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
-            //Thread.sleep(100);
-            //rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.wobbleServo.setPosition(WOBBLE_OPEN);
-
-            Thread.sleep(200); //Delay for wobble after opening goal
-
-            rb.driveForwardByEncoderAndIMU((int) (-1.65 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .05, 1);
-
-            //rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
-            /*
-            rb.driveForwardByEncoderAndIMU((int) (3.45 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE / 1.2), rb.FL, .4, .05);
-
-
-            rb.setLifterMotor(false, 0.6);
-            Thread.sleep(100);
-            rb.flywheel.setPower(FLYWHEEL_SPEED);
-            rb.wobbleServo.setPosition(WOBBLE_OPEN);
-            //rb.driveForwardByEncoderAndIMU(1800, rb.FL, .5, .08, DEFAULT_ACCELERATION_INCREMENT); //drive back up to line
-            rb.driveForwardByEncoderAndIMU((int) (-1 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
-            rb.setLifterMotor(true, 1);
-            rb.driveForwardByEncoderAndIMU((int) (-1 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
-            //rb.rotate(SHOOTER_DEFAULT_ROTATION, .5);
-
-            //Start Rapid Firing into high goal:
-            Thread.sleep(100);
-
-
-            rb.moveShooter(true); //Shot 1
-            Thread.sleep(200);
-            rb.moveShooter(false);
-
-            Thread.sleep(800);
-            rb.moveShooter(true); //Shot 2
-            Thread.sleep(200);
-            rb.moveShooter(false);
-
-            Thread.sleep(800);
-            rb.moveShooter(true); //Shot 3
-            Thread.sleep(200);
-            rb.moveShooter(false);
-            Thread.sleep(200);
-            if (rb.getNumberOfRingsInHopper() != 0) {
-                rb.moveShooter(true); //Shot 4 just to make sure
-                Thread.sleep(200);
-                rb.moveShooter(false);
-            }
-
-            rb.setLifterMotor(false, 1);
-            //rb.driveForwardByEncoderAndIMU(400, rb.FL, 1, 0.06, DEFAULT_ACCELERATION_INCREMENT * 2); //Drive up to park line
-
-            */
-
-            /*
-            //Shot 1:
-            rb.moveShooter(true); //Shoot
-            Thread.sleep(8); //8ms = time for ring to leave shooter
-            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
-            Thread.sleep(117);
-            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
-            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
-            rb.moveShooter(false);
-            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
-            //Shot 2:
-            rb.moveShooter(true); //Shoot
-            Thread.sleep(8); //8ms = time for ring to leave shooter
-            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
-            Thread.sleep(117);
-            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
-            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
-            rb.moveShooter(false);
-            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
-            //Shot 3:
-            rb.moveShooter(true); //Shoot
-            Thread.sleep(8); //8ms = time for ring to leave shooter
-            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
-            Thread.sleep(117);
-            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
-            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
-            rb.moveShooter(false);
-            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
-            //Shot 4: (Just in case a ring doesn't fire)
-            rb.moveShooter(true); //Shoot
-            Thread.sleep(8); //8ms = time for ring to leave shooter
-            rb.flywheel.setPower(.98); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
-            Thread.sleep(117);
-            rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
-            Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
-            rb.moveShooter(false);
-            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
-            */
-
-
         } else {
             telemetry.addData("ERROR", "if you are seeing this error, you shouldn't be...");
             telemetry.update();

@@ -7,6 +7,7 @@ public final class simpleBotConstants {
     public static double FLYWHEEL_SPEED = .75;  //Volkswagen Mode = .7
     public static double FLYWHEEL_POWERSHOT_SPEED = .636;
     public static double FLYWHEEL_LONGSHOT_SPEED = .688;
+    public static double FLYWHEEL_LONGPOWERSHOT_SPEED = .635;
     //.95 = 28.45 ft @ 31 degrees
     //.53 = 9.4 ft @ 31 degrees
     //.65 = 13.12ft @ 31 degrees
