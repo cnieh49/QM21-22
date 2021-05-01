@@ -572,12 +572,16 @@ public class remoteAuto extends LinearOpMode {
              */
 
             //End of said code
+
+            //This is the code that was added to get a 4th shot -- need to fix the angle here
+            //second shot is just to make sure the first ring got fired
+            //then below the third ring need to add another to grab the 4th ring
             rb.rotate(-2, 1);
-            rb.moveShooter(true); //Do longshot from 3
+            rb.moveShooter(true);
             Thread.sleep(250);
             rb.moveShooter(false);
             Thread.sleep(250);
-            rb.moveShooter(true); //Do longshot from 3
+            rb.moveShooter(true);
             Thread.sleep(250);
             rb.moveShooter(false);
             rb.rotate(2, 1);
