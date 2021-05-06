@@ -197,8 +197,8 @@ public class remoteAuto extends LinearOpMode {
                         numberOfRingsDetected = 1;
                     }
                     else {
-                        telemetry.addData("ERROR:", "Couldn't find any rings or something else went wrong :( defaulting to 1");
-                        numberOfRingsDetected = 1;
+                        telemetry.addData("ERROR:", "Couldn't find any rings or something else went wrong :( defaulting to 4");
+                        numberOfRingsDetected = 4;
                     }
                 }
                 telemetry.addData("HEY!", "Real question tho... does it work??");
@@ -222,7 +222,7 @@ public class remoteAuto extends LinearOpMode {
                 */
 
             } else {
-                numberOfRingsDetected = 0;
+                numberOfRingsDetected = 4;
                 telemetry.addData("ERROR:", "Couldn't get new data because updatedRecognitions = null :(");
                 telemetry.update();
             }
@@ -493,7 +493,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(250);
             rb.moveShooter(false);
 
-            rb.rotate(-6.35, .5); //rotate back to 0
+            rb.rotate(-6.1, .5); //rotate back to 0
             rb.runIntake(true, false);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED + 0.02); //added in
 
@@ -576,7 +576,7 @@ public class remoteAuto extends LinearOpMode {
             //This is the code that was added to get a 4th shot -- need to fix the angle here
             //second shot is just to make sure the first ring got fired
             //then below the third ring need to add another to grab the 4th ring
-            rb.rotate(-2, 1);
+            rb.rotate(-1, 1);
             rb.moveShooter(true);
             Thread.sleep(250);
             rb.moveShooter(false);
@@ -584,7 +584,7 @@ public class remoteAuto extends LinearOpMode {
             rb.moveShooter(true);
             Thread.sleep(250);
             rb.moveShooter(false);
-            rb.rotate(2, 1);
+            rb.rotate(1, 1);
 
             Thread.sleep(100);
             rb.driveForwardByEncoderAndIMU(200, rb.FL, 0.7, .06, 0.1);
@@ -593,7 +593,12 @@ public class remoteAuto extends LinearOpMode {
             //Go for third ring Code:
             rb.driveForwardByEncoderAndIMU(-350, rb.FL, .5, .06, .1);
             Thread.sleep(200);
-            rb.driveForwardByEncoderAndIMU(350, rb.FL, .7, .06, .1);
+            rb.driveForwardByEncoderAndIMU(100, rb.FL, .7, .06, .1);
+            Thread.sleep(100);
+            //Go for fourth ring Code:
+            rb.driveForwardByEncoderAndIMU(-500, rb.FL, .5, .06, .1);
+            Thread.sleep(200);
+            rb.driveForwardByEncoderAndIMU(650, rb.FL, .7, .06, .1);
             Thread.sleep(100);
 
 //            rb.moveShooter(true); //Do longshot from 3

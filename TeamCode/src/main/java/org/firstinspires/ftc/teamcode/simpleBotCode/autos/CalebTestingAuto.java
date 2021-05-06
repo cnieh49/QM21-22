@@ -200,8 +200,8 @@ public class CalebTestingAuto extends LinearOpMode {
                         numberOfRingsDetected = 1;
                     }
                     else {
-                        telemetry.addData("ERROR:", "Couldn't find any rings or something else went wrong :( defaulting to 1");
-                        numberOfRingsDetected = 1;
+                        telemetry.addData("ERROR:", "Couldn't find any rings or something else went wrong :( defaulting to 4");
+                        numberOfRingsDetected = 4;
                     }
                 }
                 telemetry.addData("HEY!", "Real question tho... does it work??");
