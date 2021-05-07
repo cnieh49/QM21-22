@@ -1030,7 +1030,11 @@ public class HardwareSimpleBot {
                 idx = c;
                 distance = cdistance;
             }
-        }
+        }//i don't think this works...? could be mistaken between distances, could have two of them
+        //and then it will just take the latter. Ex: when you run the robot right now, 0 rings
+        //will sometimes read 1 ring - need to work on this - wait nvm, this example doesn't check
+        //out with the issue, but it seems to be off
+
 
         return idx;
 

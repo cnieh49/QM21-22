@@ -114,6 +114,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             alignToGoal();
             slowMode();
             driveReverseMode();
+            powershotEndgame();
 
             //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
@@ -515,7 +516,53 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
     }
 
+    /*enum PowershotState{
+        MOVING_SHOOTER_FORWARD,
+        MOVING_SHOOTER_BACK,
+        STRAFING,
+    }*/
+    private void powershotEndgame() throws InterruptedException {
+        //PowershotState powershotState = PowershotState.MOVING_SHOOTER_FORWARD;
+        if (gamepad1.y){
+            telemetry.addData("STATUS:", "Endgame Powershots...");
+            telemetry.update();
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
+            double powerstarttime = runtime.time();
+            while(runtime.time() < powerstarttime + 0.45){
 
+            }
+
+            for (int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--) {
+                /*res
+                switch (powershotState){
+                    case MOVING_SHOOTER_FORWARD:
+                        rb.moveShooter(true); //Shot 4 just to make sure
+                        if (r)
+                    case MOVING_SHOOTER_BACK:
+                    case STRAFING:
+                }*/
+                rb.moveShooter(true);
+                Thread.sleep(200);
+                rb.moveShooter(false);
+                if(x != 1) {
+                    double strafestarttime = runtime.time();
+                    rb.strafeRightByEncoderAndIMU(340, rb.FL, .4, .06);
+                    while(runtime.time() < strafestarttime + 0.45){
+
+                    }
+                }
+            }
+            /* When the code for the getNumberOfRingsInHopper is fixed
+            while(rb.getNumberOfRingsInHopper() >= 1) {
+                Thread.sleep(200);
+                rb.moveShooter(true); //Shot 4 just to make sure
+                Thread.sleep(200);
+                rb.moveShooter(false);
+                rb.strafeRightByEncoderAndIMU(350, rb.FL, .4, .06);
+            }
+             */
+        }
+    }
     /**
      * Logs IMU data to telemetry
      */

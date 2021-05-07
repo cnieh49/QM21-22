@@ -615,7 +615,7 @@ public class remoteAuto extends LinearOpMode {
             rb.rotate(175, .5); //idk why it's not rotating full 180 degrees here but im just going to lower it for now
             boolean wobbleDetected = false;
             double timeBeforeWhile = runtime.milliseconds();
-            while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && (runtime.milliseconds() < timeBeforeWhile + 2500) && opModeIsActive()) {
+            while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && (runtime.milliseconds() < timeBeforeWhile + 2000) && opModeIsActive()) { //time decreased from 2000
                 rb.strafe(-.35, -.35);
             }
 //            if (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) < WOBBLE_2M_THRESHOLD+80) {
@@ -629,7 +629,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(340); //This is too make sure the robot is completley stopped before moving forwards
 
             double timeBeforeWhile2 = runtime.milliseconds();
-            while (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE && (runtime.milliseconds() < timeBeforeWhile2 + 2500) && opModeIsActive()) {
+            while (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE && (runtime.milliseconds() < timeBeforeWhile2 + 1750) && opModeIsActive()) { //time decreased from 2500
                 rb.driveForwardByEncoderAndIMU(10, rb.FL, 0.25, .03, 1); //Drive up to wobble goal
             }
 
@@ -664,7 +664,7 @@ public class remoteAuto extends LinearOpMode {
 
             rb.flywheel.setPower(FLYWHEEL_SPEED);
             rb.driveForwardByEncoderAndIMU((int) (1.10 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 1.0), rb.FL, 1, .05);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 1.05), rb.FL, 1, .05);
             Thread.sleep(100);
             for (int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--) {
                 Thread.sleep(200);

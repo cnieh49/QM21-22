@@ -17,7 +17,7 @@ public final class simpleBotConstants {
     public static final double DEFAULT_ACCELERATION_INCREMENT = 0.02;
 
     //ROTATIONS
-    public static final double SHOOTER_DEFAULT_ROTATION = -8.6; //The angle that the robot needs to be at for the shooter to shoots straight (recorded at FLYWHEEL_SPEED = .77)
+    public static final double SHOOTER_DEFAULT_ROTATION = -3.6; //The angle that the robot needs to be at for the shooter to shoots straight (recorded at FLYWHEEL_SPEED = .77)
 
     //Controls:
     public static final float DRIVE_STICK_THRESHOLD = .0f;
