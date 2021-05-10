@@ -526,7 +526,7 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.y){
             telemetry.addData("STATUS:", "Endgame Powershots...");
             telemetry.update();
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
             double powerstarttime = runtime.time();
             while(runtime.time() < powerstarttime + 0.45){
 
@@ -541,12 +541,15 @@ public class simpleBotTeleOp extends LinearOpMode {
                     case MOVING_SHOOTER_BACK:
                     case STRAFING:
                 }*/
+
                 rb.moveShooter(true);
-                Thread.sleep(200);
+                double strafestarttime = runtime.time();
+                while(runtime.time() < strafestarttime + 0.2) {
+                }
                 rb.moveShooter(false);
                 if(x != 1) {
-                    double strafestarttime = runtime.time();
-                    rb.strafeRightByEncoderAndIMU(340, rb.FL, .4, .06);
+                    strafestarttime = runtime.time();
+                    rb.strafeRightByEncoderAndIMU(345, rb.FL, .4, .06);
                     while(runtime.time() < strafestarttime + 0.45){
 
                     }
