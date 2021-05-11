@@ -83,6 +83,7 @@ public class remoteAuto extends LinearOpMode {
 
 
     //public static ColorSensor groundColorSensor;
+    double initialAngle = currentAngle(); //Get starting angle to snap back to automatically
 
     @SuppressLint("DefaultLocale")
     @Override
@@ -165,7 +166,7 @@ public class remoteAuto extends LinearOpMode {
         telemetry.update();
 
         Thread.sleep(150); //Wait 1000ms for camera to detect ring after pressing Start (2000 for testing bc idk) TODO: LOWER THIS IF WE NEED MORE TIME FOR AUTO
-        telemetry.addData(">", "One second has passsed... Counting Rings...");
+        telemetry.addData(">", "One second has passed... Counting Rings...");
         //Get Number of Rings from Camera (which is already on)
 
         if (tfod != null) {
@@ -185,7 +186,7 @@ public class remoteAuto extends LinearOpMode {
                 int i = 0;
                 for (Recognition recognition : updatedRecognitions) {
                     telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                    telemetry.addData(String.format("label length", i), recognition.getLabel().length());
+                    telemetry.addData(String.format("label length (%d)", i), recognition.getLabel().length());
                     telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                             recognition.getLeft(), recognition.getTop());
                     telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
@@ -301,7 +302,7 @@ public class remoteAuto extends LinearOpMode {
             while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && opModeIsActive()) { //TODO: Add a failsafe to this while loop based off of time
                 rb.strafe(-.3, -.3);
             }
-            telemetry.addData("Update:", "WOBBLE DETCTED");
+            telemetry.addData("Update:", "WOBBLE DETECTED");
             telemetry.update();
             rb.strafeRightByEncoderAndIMU(-60, rb.FL, .3, .05); //TODO: Uncomment this and add a tiny value to account for additional distance needed to travel after sensing wobble goal with 2m sensor
             rb.driveForwardByEncoderAndIMU(650, rb.FL, 0.4, .06, DEFAULT_ACCELERATION_INCREMENT);
@@ -401,7 +402,7 @@ public class remoteAuto extends LinearOpMode {
             while (rb.wobble2mRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_2M_THRESHOLD && opModeIsActive()) { //TODO: Add a failsafe to this while loop based off of time
                 rb.strafe(-.3, -.3);
             }
-            telemetry.addData("Update:", "WOBBLE DETCTED");
+            telemetry.addData("Update:", "WOBBLE DETECTED");
             telemetry.update();
             rb.strafeRightByEncoderAndIMU(-100, rb.FL, .3, .05); //TODO: Uncomment this and add a tiny value to account for additional distance needed to travel after sensing wobble goal with 2m sensor
             rb.driveForwardByEncoderAndIMU(450, rb.FL, 0.4, .06, DEFAULT_ACCELERATION_INCREMENT);
@@ -625,8 +626,8 @@ public class remoteAuto extends LinearOpMode {
             wobbleDetected = true;
 
             rb.strafeRightByEncoderAndIMU(-60, rb.FL, .3, .05);
-            rb.driveStop(); // just a failsafe to make sure the robot is completley stopped for consistency
-            Thread.sleep(340); //This is too make sure the robot is completley stopped before moving forwards
+            rb.driveStop(); // just a failsafe to make sure the robot is completely stopped for consistency
+            Thread.sleep(340); //This is to make sure the robot is completely stopped before moving forwards
 
             double timeBeforeWhile2 = runtime.milliseconds();
             while (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE && (runtime.milliseconds() < timeBeforeWhile2 + 1750) && opModeIsActive()) { //time decreased from 2500
@@ -854,7 +855,7 @@ public class remoteAuto extends LinearOpMode {
                 // to do that in each of the three items that need that info, as that's
                 // three times the necessary expense.
                 angles = rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-//               gravity = rb.imu.getGravity(); dont need gravity?
+//               gravity = rb.imu.getGravity(); don't need gravity?
             }
         });
 
@@ -905,6 +906,10 @@ public class remoteAuto extends LinearOpMode {
 
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public double currentAngle() {
+        return rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     }
 
 
