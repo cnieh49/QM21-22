@@ -55,9 +55,6 @@ public class simpleBotTeleOp extends LinearOpMode {
     // State used for updating telemetry
     Orientation angles;
 
-    double initialAngle; //Get starting angle to snap back to automaticaly
-
-
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.setAutoClear(false);
@@ -95,11 +92,9 @@ public class simpleBotTeleOp extends LinearOpMode {
         runtime.reset();
         rb.wobbleServo.setPosition(WOBBLE_OPEN);
         telemetry.setAutoClear(true);
-        initialAngle = currentAngle();
 
         rb.runIntake(true, false); //Start with intake running TODO: Turn this on for real comp
         // run this until the end of the match (driver presses STOP)
-
         while (opModeIsActive()) {
 
             drive(); //Drive robot with sticks
@@ -112,7 +107,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             //lifterAutoClose();
             powershotSpeed();
             //captureAngle(); //TESTING ONLY: Captures angle
-            //rotateToAngle(); //TESTING ONLY (for now): Rotates
+            rotateToAngle(); //TESTING ONLY (for now): Rotates
 //            rapidRotateLeft(); //TESTING ONLY: Rotates to the left at max speed
 //            rapidRotateRight(); //TESTING ONLY: Rotates to the right at max speed
             //volkswagenMode();
@@ -120,7 +115,6 @@ public class simpleBotTeleOp extends LinearOpMode {
             slowMode();
             driveReverseMode();
             powershotEndgame();
-            snapBot();
 
             //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
@@ -245,18 +239,6 @@ public class simpleBotTeleOp extends LinearOpMode {
         }
 
 
-    }
-
-    public void snapBot() {
-        if (gamepad1.right_stick_button) {
-            while (Math.abs(currentAngle() - initialAngle) >= 5) {
-                if (currentAngle() - initialAngle > 0) {
-                    rb.turn(.3);
-                } else {
-                    rb.turn(-.3);
-                }
-            }
-        }
     }
 
     /**
@@ -422,15 +404,15 @@ public class simpleBotTeleOp extends LinearOpMode {
 //        }
 //    }
 
-//    private void rotateToAngle() throws InterruptedException {
-//        if (gamepad1.right_stick_button) {
-//            telemetry.addData("log:", "Driving to angle...");
-//            telemetry.update();
-//            rb.rotate(SHOOTER_DEFAULT_ROTATION, .8); //-8.6
-//            telemetry.addData("log:", "Done driving to angle!");
-//            telemetry.update();
-//        }
-//    }
+    private void rotateToAngle() throws InterruptedException {
+        if (gamepad1.right_stick_button) {
+            telemetry.addData("log:", "Driving to angle...");
+            telemetry.update();
+            rb.rotate(SHOOTER_DEFAULT_ROTATION, .8); //-8.6
+            telemetry.addData("log:", "Done driving to angle!");
+            telemetry.update();
+        }
+    }
 
     private void powershotSpeed() {
         if (gamepad1.dpad_down) {
@@ -649,10 +631,6 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }
-
-    public double currentAngle() {
-        return rb.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle + 180;
     }
 
     private void delay(double delayTime) {
