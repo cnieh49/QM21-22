@@ -130,6 +130,7 @@ public class simpleBotTeleOp extends LinearOpMode {
              * Right Trigger - Shoot servo (only works if flywheel is on)
              * Left Trigger - TESTING ONLY: Aligns robot to goal
              * X - Wobble Goal Lifter
+             * Y - Endgame powershot automated function (doesn't really work right now)
              * Right Stick Button - Rotate -8.6 degrees to shoot straight
              * Left Stick Button - Intake Eject for Emergencies
              * D-Pad Down - Slows down flywheel for powershots
@@ -472,6 +473,8 @@ public class simpleBotTeleOp extends LinearOpMode {
             //These are the variables we use for the trig equations:
             double readingFromSideSensor = rb.sideRangeSensor.getDistance(DistanceUnit.INCH);
             double sideLength = SIDE_TO_CENTER_DISTANCE + readingFromSideSensor;
+            //probably look at this, does this still work?
+            System.out.println("reading from side sensor = " + readingFromSideSensor);
             //- angle values go to the right and + go to the left
 
             double frontLength = CENTER_TO_TOWER_DISTANCE;
@@ -526,7 +529,8 @@ public class simpleBotTeleOp extends LinearOpMode {
         if (gamepad1.y){
             telemetry.addData("STATUS:", "Endgame Powershots...");
             telemetry.update();
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
+            double speedthing = FLYWHEEL_POWERSHOT_SPEED;
+            rb.flywheel.setPower(speedthing);
             double powerstarttime = runtime.time();
             while(runtime.time() < powerstarttime + 0.45){
 
@@ -549,7 +553,10 @@ public class simpleBotTeleOp extends LinearOpMode {
                 rb.moveShooter(false);
                 if(x != 1) {
                     strafestarttime = runtime.time();
-                    rb.strafeRightByEncoderAndIMU(345, rb.FL, .4, .06);
+                    //rb.strafeRightByEncoderAndIMU(345, rb.FL, .4, .06);
+                    rb.rotate(2.45, .3);
+                    speedthing = speedthing - 0.035;
+                    rb.flywheel.setPower(speedthing);
                     while(runtime.time() < strafestarttime + 0.45){
 
                     }

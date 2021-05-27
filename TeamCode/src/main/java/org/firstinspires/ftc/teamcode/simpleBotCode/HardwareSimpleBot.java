@@ -1036,6 +1036,14 @@ public class HardwareSimpleBot {
         //out with the issue, but it seems to be off
 
 
+        /* Numbers from 5/27/2021
+        - 3 rings ~ 75-87 mm
+        - 2 rings ~ 90 - 110
+        - 1 ring  ~ 115 - 126
+        - 0 rings ~ 126 - 135
+
+         */
+
         return idx;
 
     }
