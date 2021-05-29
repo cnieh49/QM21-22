@@ -587,35 +587,36 @@ public class simpleBotTeleOp extends LinearOpMode {
             double readingFromSideSensor2 = rb.sideRangeSensor.getDistance(DistanceUnit.MM);
             //TODO: change SideSensor names accordingly once they are installed
             // sidesensor1 should be the one that is closer to the tower
-            if(readingFromSideSensor1 < readingFromSideSensor2){
-                rotatenegative = false;
-                rotatedirection = 1;
-            }
-
-            //simpler code, maybe not as accurate?
-            if(rotatenegative){
-                while (readingFromSideSensor1 > readingFromSideSensor2){
-                    rb.rotate(-3, .7);
-                }
-            }
-            else{
-                while (readingFromSideSensor1 < readingFromSideSensor2){
-                    rb.rotate(3, .7);
-                }
-            }
-            //other code, i think will be more accurate?
             double distancedifference = java.lang.Math.abs(readingFromSideSensor1 - readingFromSideSensor2);
-            double degreestorotate = 180 * (Math.atan2(distancedifference, lengthbetween))/ Math.PI;
-            rb.rotate(rotatedirection * (degreestorotate/1.05), .7);
+            //TODO: add a failsafe to make sure we are reading from the image
+            if(distancedifference < 250) { //fix value here
+                if (readingFromSideSensor1 < readingFromSideSensor2) {
+                    rotatenegative = false;
+                    rotatedirection = 1;
+                }
 
-            //back to code that is needed for everything
-            while (rb.sideRangeSensor.getDistance(DistanceUnit.MM) > 340){
-                rb.strafe(-.6, -.6);
-            }
-            while (rb.sideRangeSensor.getDistance(DistanceUnit.MM) < 20){
-                rb.strafe(.6, .6);
-            }
+                //simpler code, maybe not as accurate? - NEED TO CHOSE ONE OR THE OTHER
+                if (rotatenegative) {
+                    while (readingFromSideSensor1 > readingFromSideSensor2) {
+                        rb.rotate(-3, .7);
+                    }
+                } else {
+                    while (readingFromSideSensor1 < readingFromSideSensor2) {
+                        rb.rotate(3, .7);
+                    }
+                }
+                //other code, i think will be more accurate?
+                double degreestorotate = 180 * (Math.atan2(distancedifference, lengthbetween)) / Math.PI;
+                rb.rotate(rotatedirection * (degreestorotate / 1.05), .7);
 
+                //back to code that is needed for everything
+                while (rb.sideRangeSensor.getDistance(DistanceUnit.MM) > 340) {
+                    rb.strafe(-.6, -.6);
+                }
+                while (rb.sideRangeSensor.getDistance(DistanceUnit.MM) < 20) {
+                    rb.strafe(.6, .6);
+                }
+            }
 
 
         }
