@@ -115,6 +115,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             slowMode();
             driveReverseMode();
             powershotEndgame();
+            AligntoTower();
 
             //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
@@ -526,7 +527,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     }*/
     private void powershotEndgame() throws InterruptedException {
         //PowershotState powershotState = PowershotState.MOVING_SHOOTER_FORWARD;
-        if (gamepad1.y){
+        if (gamepad1.dpad_up){
             telemetry.addData("STATUS:", "Endgame Powershots...");
             telemetry.update();
             double speedthing = FLYWHEEL_POWERSHOT_SPEED;
@@ -571,6 +572,52 @@ public class simpleBotTeleOp extends LinearOpMode {
                 rb.strafeRightByEncoderAndIMU(350, rb.FL, .4, .06);
             }
              */
+        }
+    }
+    private void AligntoTower() throws InterruptedException {
+        if(gamepad1.y){
+            telemetry.addData("STATUS:", "aligning to goal");
+            telemetry.update();
+            double lengthbetween = 50; //done in mm not inches -
+            // this is the length between the two distance sensors
+            //TODO: fix this value once the sensors are installed
+            boolean rotatenegative = true;
+            int rotatedirection = -1;
+            double readingFromSideSensor1 = rb.sideRangeSensor.getDistance(DistanceUnit.MM);
+            double readingFromSideSensor2 = rb.sideRangeSensor.getDistance(DistanceUnit.MM);
+            //TODO: change SideSensor names accordingly once they are installed
+            // sidesensor1 should be the one that is closer to the tower
+            if(readingFromSideSensor1 < readingFromSideSensor2){
+                rotatenegative = false;
+                rotatedirection = 1;
+            }
+
+            //simpler code, maybe not as accurate?
+            if(rotatenegative){
+                while (readingFromSideSensor1 > readingFromSideSensor2){
+                    rb.rotate(-3, .7);
+                }
+            }
+            else{
+                while (readingFromSideSensor1 < readingFromSideSensor2){
+                    rb.rotate(3, .7);
+                }
+            }
+            //other code, i think will be more accurate?
+            double distancedifference = java.lang.Math.abs(readingFromSideSensor1 - readingFromSideSensor2);
+            double degreestorotate = 180 * (Math.atan2(distancedifference, lengthbetween))/ Math.PI;
+            rb.rotate(rotatedirection * (degreestorotate/1.05), .7);
+
+            //back to code that is needed for everything
+            while (rb.sideRangeSensor.getDistance(DistanceUnit.MM) > 340){
+                rb.strafe(-.6, -.6);
+            }
+            while (rb.sideRangeSensor.getDistance(DistanceUnit.MM) < 20){
+                rb.strafe(.6, .6);
+            }
+
+
+
         }
     }
     /**
