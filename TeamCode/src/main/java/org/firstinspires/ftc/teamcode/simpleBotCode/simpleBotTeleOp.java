@@ -14,6 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_LEFT_DOWN;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_LEFT_START;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_LEFT_UP;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BUTTON_DELAY;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.CENTER_TO_TOWER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
@@ -87,7 +90,10 @@ public class simpleBotTeleOp extends LinearOpMode {
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         //rb.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //Set Servo Start positions
         rb.wobbleServo.setPosition(WOBBLE_ARMED);
+        rb.leftBlocker.setPosition(BLOCKER_LEFT_START);
+
         waitForStart(); //Everything up to here is initialization
         runtime.reset();
         rb.wobbleServo.setPosition(WOBBLE_OPEN);
@@ -116,6 +122,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             driveReverseMode();
             powershotEndgame();
             AligntoTower();
+            ringBlocker();
 
             //telemetry.addData("Side Distance in Inches:", String.valueOf(rb.sensorRangeSide.getDistance(DistanceUnit.INCH)));
             telemetry.addData("RINGS IN HOPPER:", rb.getNumberOfRingsInHopper());
@@ -621,6 +628,19 @@ public class simpleBotTeleOp extends LinearOpMode {
 
         }
     }
+
+    private void ringBlocker() throws InterruptedException {
+
+        if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+            rb.leftBlocker.setPosition(BLOCKER_LEFT_DOWN);
+        }
+
+        else {
+            rb.leftBlocker.setPosition(BLOCKER_LEFT_UP);
+        }
+
+    }
+
     /**
      * Logs IMU data to telemetry
      */

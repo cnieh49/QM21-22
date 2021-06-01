@@ -51,6 +51,7 @@ public class HardwareSimpleBot {
     //public Servo lifter = null;
     public Servo shooter = null;
     public Servo wobbleServo = null;
+    public Servo leftBlocker = null;
     //imu:
     public BNO055IMU imu;
 
@@ -97,7 +98,7 @@ public class HardwareSimpleBot {
         // Define and Initialize Servos
         shooter = hwMap.get(Servo.class, "shooter");
         wobbleServo = hwMap.get(Servo.class, "wobble_servo");
-        //lifter = hwMap.get(Servo.class, "lifter");
+        leftBlocker = hwMap.get(Servo.class, "left_blocker");
 
         //Define and Initialize BNO055IMU
         imu = hwMap.get(BNO055IMU.class, "imu 1");
