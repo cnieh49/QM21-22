@@ -286,7 +286,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             timeSincePossiblyDetecting3Rings = runtime.milliseconds();
         }
 
-        if (rb.getNumberOfRingsInHopper() >= 3 && timeSincePossiblyDetecting3Rings < runtime.milliseconds() + 750 && timeSincePossiblyDetecting3Rings != 0) {
+        if (rb.getNumberOfRingsInHopper() >= 3 && timeSincePossiblyDetecting3Rings < runtime.milliseconds() - 600 && timeSincePossiblyDetecting3Rings != 0) {
             if (rb.getNumberOfRingsInHopper() >= 3) {
                 rb.runIntake(false, false);
                 intakeAutoStopped = true;

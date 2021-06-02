@@ -629,7 +629,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(340); //This is too make sure the robot is completley stopped before moving forwards
 
             double timeBeforeWhile2 = runtime.milliseconds();
-            while (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE && (runtime.milliseconds() < timeBeforeWhile2 + 1750) && opModeIsActive()) { //time decreased from 2500
+            while (rb.wobbleRangeSensor.getDistance(DistanceUnit.MM) > WOBBLE_MININUM_DISTANCE && (runtime.milliseconds() < timeBeforeWhile2 + 2750) && opModeIsActive()) { //time decreased from 2500
                 rb.driveForwardByEncoderAndIMU(10, rb.FL, 0.25, .03, 1); //Drive up to wobble goal
             }
 
