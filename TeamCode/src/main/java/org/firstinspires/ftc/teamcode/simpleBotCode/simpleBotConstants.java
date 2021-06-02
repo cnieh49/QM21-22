@@ -49,8 +49,8 @@ public final class simpleBotConstants {
     public static final double WOBBLE_OPEN = .51;
     public static final double WOBBLE_CLOSED = .30;
 
-    public static final double BLOCKER_LEFT_START = 0;
-    public static final double BLOCKER_LEFT_UP = .63;
+    public static final double BLOCKER_LEFT_START = .16;
+    public static final double BLOCKER_LEFT_UP = .43;
     public static final double BLOCKER_LEFT_DOWN = .84;
 
     public static final double BLOCKER_RIGHT_START = 1;

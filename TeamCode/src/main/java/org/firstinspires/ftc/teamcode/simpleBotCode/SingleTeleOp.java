@@ -33,8 +33,8 @@ import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WO
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.WOBBLE_OPEN;
 
 
-@TeleOp(name = "!QM TeleOP", group = "!Primary")
-public class simpleBotTeleOp extends LinearOpMode {
+@TeleOp(name = "!QM Single TeleOP", group = "!Primary")
+public class SingleTeleOp extends LinearOpMode {
 
     //private final FtcDashboard dashboard = FtcDashboard.getInstance(); //Comment this out when not using dashboard
     private final HardwareSimpleBot rb = new HardwareSimpleBot();
@@ -49,6 +49,7 @@ public class simpleBotTeleOp extends LinearOpMode {
     private int lifterPosition = 0; // 0= down, 1 = mid, 2 = up Default is true because needs to start up to stay in 18in
     private boolean powershotSpeedActive = false;
     private boolean intakeAutoStopped = false;
+    private boolean blockerswitch = false;
     private double timeSinceActivatingWobbleDown = 0;
     private double timeSincePossiblyDetecting3Rings = 0;
     private double slowModeMultiplier = 1;
@@ -286,7 +287,7 @@ public class simpleBotTeleOp extends LinearOpMode {
             timeSincePossiblyDetecting3Rings = runtime.milliseconds();
         }
 
-        if (rb.getNumberOfRingsInHopper() >= 3 && timeSincePossiblyDetecting3Rings < runtime.milliseconds() + 750 && timeSincePossiblyDetecting3Rings != 0) {
+        if (rb.getNumberOfRingsInHopper() >= 3 && timeSincePossiblyDetecting3Rings < runtime.milliseconds() - 600 && timeSincePossiblyDetecting3Rings != 0) {
             if (rb.getNumberOfRingsInHopper() >= 3) {
                 rb.runIntake(false, false);
                 intakeAutoStopped = true;
@@ -633,13 +634,23 @@ public class simpleBotTeleOp extends LinearOpMode {
 
     private void ringBlocker() throws InterruptedException {
 
-        if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
+        if(!intakeAutoStopped){ //logic may be flawed here
+            if(!blockerswitch){
+                rb.leftBlocker.setPosition(BLOCKER_LEFT_DOWN);
+                blockerswitch = true;
+            }
+        }
+        else{
+            rb.leftBlocker.setPosition(BLOCKER_LEFT_UP);
+            blockerswitch = false;
+        }
+        /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {
             rb.leftBlocker.setPosition(BLOCKER_LEFT_DOWN);
         }
 
         else {
             rb.leftBlocker.setPosition(BLOCKER_LEFT_UP);
-        }
+        }*/
 
     }
 

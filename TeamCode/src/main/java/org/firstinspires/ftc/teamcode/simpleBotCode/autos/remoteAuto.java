@@ -455,7 +455,7 @@ public class remoteAuto extends LinearOpMode {
             rb.wobbleServo.setPosition(WOBBLE_OPEN);
             Thread.sleep(200);
 
-            rb.driveForwardByEncoderAndIMU(-536 - 200, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
+            rb.driveForwardByEncoderAndIMU(-536 - 125, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.00);
