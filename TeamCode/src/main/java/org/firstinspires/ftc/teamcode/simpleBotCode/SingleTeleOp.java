@@ -17,6 +17,8 @@ import java.util.Locale;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_LEFT_DOWN;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_LEFT_START;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_LEFT_UP;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_RIGHT_DOWN;
+import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BLOCKER_RIGHT_UP;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.BUTTON_DELAY;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.CENTER_TO_TOWER_DISTANCE;
 import static org.firstinspires.ftc.teamcode.simpleBotCode.simpleBotConstants.DRIVE_STICK_THRESHOLD;
@@ -583,17 +585,21 @@ public class SingleTeleOp extends LinearOpMode {
         }
     }
     private void AligntoTower() throws InterruptedException {
+        /*if(gamepad1.a){
+            rb.rotate(-30, .7);
+            rb.rotate(30, .7);
+        }*/
         if(gamepad1.y){
-            if((rb.sideRangeSensor.getDistance(DistanceUnit.MM) < 1000) && (rb.sideRangeSensor.getDistance(DistanceUnit.MM) < 1000)) {
+            if((rb.angleRangeSensor1.getDistance(DistanceUnit.MM) < 1000) && (rb.angleRangeSensor2.getDistance(DistanceUnit.MM) < 1000)) {
                 telemetry.addData("STATUS:", "aligning to goal");
                 telemetry.update();
-                double lengthbetween = 50; //done in mm not inches -
+                double lengthbetween = 77.9; //done in mm not inches -
                 // this is the length between the two distance sensors
                 //TODO: fix this value once the sensors are installed
                 boolean rotatenegative = true;
                 int rotatedirection = -1;
-                double readingFromSideSensor1 = rb.sideRangeSensor.getDistance(DistanceUnit.MM);
-                double readingFromSideSensor2 = rb.sideRangeSensor.getDistance(DistanceUnit.MM);
+                double readingFromSideSensor1 = rb.angleRangeSensor1.getDistance(DistanceUnit.MM);
+                double readingFromSideSensor2 = rb.angleRangeSensor2.getDistance(DistanceUnit.MM);
                 //TODO: change SideSensor names accordingly once they are installed
                 // sidesensor1 should be the one that is closer to the tower
                 double distancedifference = java.lang.Math.abs(readingFromSideSensor1 - readingFromSideSensor2);
@@ -605,6 +611,7 @@ public class SingleTeleOp extends LinearOpMode {
                     }
 
                     //simpler code, maybe not as accurate? - NEED TO CHOSE ONE OR THE OTHER
+                    /*
                     if (rotatenegative) {
                         while (readingFromSideSensor1 > readingFromSideSensor2) {
                             rb.rotate(-3, .7);
@@ -614,19 +621,22 @@ public class SingleTeleOp extends LinearOpMode {
                             rb.rotate(3, .7);
                         }
                     }
+                    */
                     //other code, i think will be more accurate?
                     double degreestorotate = 180 * (Math.atan2(distancedifference, lengthbetween)) / Math.PI;
                     rb.rotate(rotatedirection * (degreestorotate / 1.05), .7);
 
                     //back to code that is needed for everything
+                    /*
                     double timeBeforeWhile = runtime.milliseconds();
-                    while ((rb.sideRangeSensor.getDistance(DistanceUnit.MM) > 340) && (runtime.milliseconds() < timeBeforeWhile + 2000)) {
+                    while ((rb.angleRangeSensor1.getDistance(DistanceUnit.MM) > 340) && (runtime.milliseconds() < timeBeforeWhile + 2000)) {
                         rb.strafe(-.6, -.6);
                     }
                     timeBeforeWhile = runtime.milliseconds();
-                    while ((rb.sideRangeSensor.getDistance(DistanceUnit.MM) > 20) && (runtime.milliseconds() < timeBeforeWhile + 2000)) {
+                    while ((rb.angleRangeSensor2.getDistance(DistanceUnit.MM) > 20) && (runtime.milliseconds() < timeBeforeWhile + 2000)) {
                         rb.strafe(.6, .6);
                     }
+                    */
                 }
             }
         }
@@ -637,11 +647,13 @@ public class SingleTeleOp extends LinearOpMode {
         if(!intakeAutoStopped){ //logic may be flawed here
             if(!blockerswitch){
                 rb.leftBlocker.setPosition(BLOCKER_LEFT_DOWN);
+                rb.rightBlocker.setPosition(BLOCKER_RIGHT_DOWN);
                 blockerswitch = true;
             }
         }
         else{
             rb.leftBlocker.setPosition(BLOCKER_LEFT_UP);
+            rb.rightBlocker.setPosition(BLOCKER_RIGHT_UP);
             blockerswitch = false;
         }
         /*if (gamepad2.right_trigger > TRIGGER_THRESHOLD) {

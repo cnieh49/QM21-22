@@ -459,10 +459,10 @@ public class remoteAuto extends LinearOpMode {
             rb.setLifterMotor(true, -1);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
             rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.00);
-            rb.autoDriveSouthWestWithEncoderAndIMU(2620, rb.FL, .9, .05);
+            rb.autoDriveSouthWestWithEncoderAndIMU(2520, rb.FL, .9, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
-            rb.driveForwardByEncoderAndIMU(-1180, rb.FL, 1, .05, DEFAULT_ACCELERATION_INCREMENT);
+            rb.driveForwardByEncoderAndIMU(-1250, rb.FL, 1, .05, DEFAULT_ACCELERATION_INCREMENT);
             telemetry.addData(">", "Done with approach behind line");
             telemetry.update();
 
