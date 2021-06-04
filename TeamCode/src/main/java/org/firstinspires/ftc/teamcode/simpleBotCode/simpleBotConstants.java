@@ -53,9 +53,9 @@ public final class simpleBotConstants {
     public static final double BLOCKER_LEFT_UP = .43;
     public static final double BLOCKER_LEFT_DOWN = .84;
 
-    public static final double BLOCKER_RIGHT_START = 1;
-    public static final double BLOCKER_RIGHT_UP = .51;
-    public static final double BLOCKER_RIGHT_DOWN = .30;
+    public static final double BLOCKER_RIGHT_START = .69;
+    public static final double BLOCKER_RIGHT_UP = .36;
+    public static final double BLOCKER_RIGHT_DOWN = 0.01;
 
 
 //    public static final double LIFTER_MAXIMUM = .58;

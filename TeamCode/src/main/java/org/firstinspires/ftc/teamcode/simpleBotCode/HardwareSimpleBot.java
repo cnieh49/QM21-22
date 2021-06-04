@@ -44,6 +44,8 @@ public class HardwareSimpleBot {
     Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sideRangeSensor;
     public DistanceSensor wobble2mRangeSensor = null;
     Rev2mDistanceSensor sensorTimeOfFlight1 = (Rev2mDistanceSensor) wobble2mRangeSensor;
+    public DistanceSensor angleRangeSensor1 = null;
+    public DistanceSensor angleRangeSensor2 = null;
 
 
     public ColorSensor wobbleColorSensor = null;
@@ -52,6 +54,8 @@ public class HardwareSimpleBot {
     public Servo shooter = null;
     public Servo wobbleServo = null;
     public Servo leftBlocker = null;
+    public Servo rightBlocker = null;
+
     //imu:
     public BNO055IMU imu;
 
@@ -99,6 +103,8 @@ public class HardwareSimpleBot {
         shooter = hwMap.get(Servo.class, "shooter");
         wobbleServo = hwMap.get(Servo.class, "wobble_servo");
         leftBlocker = hwMap.get(Servo.class, "left_blocker");
+        rightBlocker = hwMap.get(Servo.class, "right_blocker");
+
 
         //Define and Initialize BNO055IMU
         imu = hwMap.get(BNO055IMU.class, "imu 1");
@@ -114,6 +120,9 @@ public class HardwareSimpleBot {
 
         wobble2mRangeSensor = hwMap.get(DistanceSensor.class, "wobble_2m_distance_sensor");
 
+        angleRangeSensor1 = hwMap.get(DistanceSensor.class, "angle_sensor_1");
+
+        angleRangeSensor2 = hwMap.get(DistanceSensor.class, "angle_sensor_2");
 
         // Define and Initialize LED's
         // blinkinLedDriver = hwMap.get(RevBlinkinLedDriver.class, "blinkin");
