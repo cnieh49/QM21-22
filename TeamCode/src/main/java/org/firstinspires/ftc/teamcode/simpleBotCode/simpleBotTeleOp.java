@@ -219,14 +219,14 @@ public class simpleBotTeleOp extends LinearOpMode {
             if (powershotSpeedActive = false) {
                 Thread.sleep(8); //8ms = time for ring to leave shooter
                 rb.flywheel.setPower(1); //Increase speed as soon as ring is not in contact with flywheel to increase time back to normal speed
-                Thread.sleep(100);
+                Thread.sleep(120);
                 rb.flywheel.setPower(FLYWHEEL_SPEED); //Return to normal speed
             } else {
                 Thread.sleep(100 + 8);
             }
             Thread.sleep(67); //Wait a tiny bit before going back (originally 200 but this value is subtracted from prior Thread.sleep statements)
             rb.moveShooter(false);
-            Thread.sleep(150); //Wait for flywheel to get back to 100 percent speed
+            Thread.sleep(130); //Wait for flywheel to get back to 100 percent speed
 
         }
 

@@ -458,7 +458,7 @@ public class remoteAuto extends LinearOpMode {
             rb.driveForwardByEncoderAndIMU(-536 - 125, rb.FL, 1, .06, DEFAULT_ACCELERATION_INCREMENT*4); //Reverse to get wobble goal out of lifter and to shooting spot on line
             rb.setLifterMotor(true, -1);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED);
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.00);
+            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
             rb.autoDriveSouthWestWithEncoderAndIMU(2520, rb.FL, .9, .05);
             telemetry.addData(">", "Done with south west");
             telemetry.update();
@@ -473,7 +473,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(250);
             rb.moveShooter(false);
 
-            rb.rotate(3, .3);
+            rb.rotate(2.85, .3);
             Thread.sleep(300);
 
             //Thread.sleep(350);
@@ -481,8 +481,8 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(250);
             rb.moveShooter(false);
 
-            rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
-            rb.rotate(2.45, .3); //Was 2.85 before
+            //b.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED - 0.065);
+            rb.rotate(2.3, .3); //Was 2.85 before
 
             Thread.sleep(330);
             rb.moveShooter(true); //Shot 3
@@ -493,7 +493,7 @@ public class remoteAuto extends LinearOpMode {
             Thread.sleep(250);
             rb.moveShooter(false);
 
-            rb.rotate(-6.1, .5); //rotate back to 0
+            rb.rotate(-5.95, .5); //rotate back to 0
             rb.runIntake(true, false);
             //rb.flywheel.setPower(FLYWHEEL_POWERSHOT_SPEED + 0.02); //added in
 
@@ -624,7 +624,7 @@ public class remoteAuto extends LinearOpMode {
 
             wobbleDetected = true;
 
-            rb.strafeRightByEncoderAndIMU(-60, rb.FL, .3, .05);
+            rb.strafeRightByEncoderAndIMU(-70, rb.FL, .3, .05);
             rb.driveStop(); // just a failsafe to make sure the robot is completley stopped for consistency
             Thread.sleep(340); //This is too make sure the robot is completley stopped before moving forwards
 
@@ -664,7 +664,8 @@ public class remoteAuto extends LinearOpMode {
 
             rb.flywheel.setPower(FLYWHEEL_SPEED);
             rb.driveForwardByEncoderAndIMU((int) (1.10 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
-            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 1.05), rb.FL, 1, .05);
+            rb.strafeRightByEncoderAndIMU((int) (-ENCODER_DRIVE_ONE_TILE * 1.32), rb.FL, 1, .05);
+            rb.rotate(0.2, .3);
             Thread.sleep(100);
             for (int x = rb.getNumberOfRingsInHopper() + 1; x > 0; x--) {
                 Thread.sleep(200);
@@ -695,7 +696,7 @@ public class remoteAuto extends LinearOpMode {
             }
             */
             //Start moving up to drop second wobble
-            rb.driveForwardByEncoderAndIMU((int) (1.23 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
+            rb.driveForwardByEncoderAndIMU((int) (1.247 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT + 0.2); //Drive to A Zone
             //rb.driveForwardByEncoderAndIMU((int) (3.28 * ENCODER_DRIVE_ONE_TILE), rb.FL, 1, .08, DEFAULT_ACCELERATION_INCREMENT); //Drive to A Zone
 
             rb.setLifterMotor(false, 0.8);
